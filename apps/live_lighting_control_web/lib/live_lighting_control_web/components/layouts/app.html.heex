@@ -18,11 +18,10 @@
       <a href={~p"/configuration"} class="hover:text-zinc-100">
         Configuration
       </a>
-      
     </div>
   </div>
 </header>
-<main>
+<main class="absolute top-16 inset-0 h-full w-full">
   <.flash_group flash={@flash} />
-    {@inner_content}
+  {@inner_content}
 </main>

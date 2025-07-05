@@ -17,7 +17,7 @@ defmodule LiveLightingControlWeb.Router do
   scope "/", LiveLightingControlWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", ControlPageLive, :home
   end
 
   # Other scopes may use custom stacks.
