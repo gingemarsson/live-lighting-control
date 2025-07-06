@@ -5,8 +5,9 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   def mount(_params, _session, socket) do
     cards = [
       %{id: UUID.uuid4(), type: :fixtures, cols: 2},
-      %{id: UUID.uuid4(), type: :scenes, cols: 1},
       %{id: UUID.uuid4(), type: :selected_fixtures, cols: 1},
+      %{id: UUID.uuid4(), type: :selected_fixtures, cols: 1},
+      %{id: UUID.uuid4(), type: :scenes, cols: 4},
     ]
 
     fixtures = [
@@ -18,9 +19,9 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     ]
 
     scenes = [
-      %{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 20}}},
-      %{id: UUID.uuid4(), label: "Party", description: "A vibrant party lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 100}}},
-      %{id: UUID.uuid4(), label: "Relax", description: "A relaxing lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 50}}}
+      %{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 20}}, state: %{master: 90}},
+      %{id: UUID.uuid4(), label: "Party", description: "A vibrant party lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 100}}, state: %{master: 50}},
+      %{id: UUID.uuid4(), label: "Relax", description: "A relaxing lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 50}}, state: %{master: 50}}
     ]
 
     {:ok, assign(socket,
@@ -44,6 +45,12 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
   end
 
+  def handle_event("slider_changed", %{"value" => master_value, "sliderId" => scene_id}, socket) do
+    updated_scenes = LiveLightingControlUtils.update_item_by_id(socket.assigns.scenes, scene_id, %{state: %{master: master_value}})
+    {:noreply, assign(socket, scenes: updated_scenes)}
+  end
+
+
   def render(assigns) do
     ~H"""
     <div class="flex-grow w-full h-full grid grid-cols-2 xl:grid-cols-4 grid-rows-2 gap-4 p-4">
@@ -60,6 +67,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         </div>
       <% end %>
     </div>
+    <div class="col-span-1 col-span-2 col-span-3 col-span-4" />
     """
   end
 end

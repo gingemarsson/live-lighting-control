@@ -22,7 +22,7 @@ defmodule LiveLightingControlWeb.FixturesLibraryCardComponent do
             phx-click="toggle_select_fixture"
             phx-value-fixture-id={fixture.id}
             >
-            <p class="text-sm text-gray-400"><%= fixture.label %></p>
+            <p class="text-sm"><%= fixture.label %></p>
           </div>
         <% end %>
       </div>
