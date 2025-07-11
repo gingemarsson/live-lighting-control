@@ -57,7 +57,8 @@ defmodule LiveLightingControlWeb.MixProject do
       {:gettext, "~> 0.26"},
       {:live_lighting_control, in_umbrella: true},
       {:jason, "~> 1.2"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:elixir_uuid, "~> 1.2"}
     ]
   end
 

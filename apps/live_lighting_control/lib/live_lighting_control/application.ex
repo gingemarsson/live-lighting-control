@@ -15,9 +15,10 @@ defmodule LiveLightingControl.Application do
       {DNSCluster, query: Application.get_env(:live_lighting_control, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: LiveLightingControl.PubSub},
       # Start the Finch HTTP client for sending emails
-      {Finch, name: LiveLightingControl.Finch}
+      {Finch, name: LiveLightingControl.Finch},
       # Start a worker by calling: LiveLightingControl.Worker.start_link(arg)
       # {LiveLightingControl.Worker, arg}
+      {LiveLightingControl.SceneManager, name: SceneManager},
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: LiveLightingControl.Supervisor)

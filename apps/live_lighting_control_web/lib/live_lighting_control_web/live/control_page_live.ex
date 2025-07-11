@@ -18,18 +18,19 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       %{id: UUID.uuid4(), label: "Axcore 5", dmx_address: 5, channels: [%{name: "Intensity", dmx_address: 1, type: :intensity}]}
     ]
 
-    scenes = [
-      %{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 20}}, state: %{master: 90}},
-      %{id: UUID.uuid4(), label: "Party", description: "A vibrant party lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 100}}, state: %{master: 50}},
-      %{id: UUID.uuid4(), label: "Relax", description: "A relaxing lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 50}}, state: %{master: 50}}
-    ]
+    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "scenes")
 
     {:ok, assign(socket,
       cards: cards,
       fixtures: fixtures,
-      scenes: scenes,
+      scenes: LiveLightingControl.SceneManager.get_scenes(),
       selected_fixture_ids: []
     )}
+  end
+
+  def handle_info({:scene_updated, _scene}, socket) do
+    # Always update all scenes
+    {:noreply, assign(socket, :scenes, LiveLightingControl.SceneManager.get_scenes())}
   end
 
   def handle_event("toggle_select_fixture", %{"fixture-id" => fixture_id}, socket) do
@@ -46,8 +47,9 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("slider_changed", %{"value" => master_value, "sliderId" => scene_id}, socket) do
-    updated_scenes = LiveLightingControlUtils.update_item_by_id(socket.assigns.scenes, scene_id, %{state: %{master: master_value}})
-    {:noreply, assign(socket, scenes: updated_scenes)}
+    LiveLightingControl.SceneManager.update_scene(%{id: scene_id, state: %{master: master_value}})
+
+    {:noreply, socket}
   end
 
 
