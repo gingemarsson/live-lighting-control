@@ -20,6 +20,8 @@ defmodule LiveLightingControl.OutputBroadcaster do
 
     Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, output})
 
+    LiveLightingControl.SACNSender.send_packet(output)
+
     schedule_tick()
 
     {:noreply, state}
@@ -36,11 +38,24 @@ defmodule LiveLightingControl.OutputBroadcaster do
     fixtures = LiveLightingControl.FixtureManager.get_fixtures()
     fixture_types_map = LiveLightingControl.FixtureManager.get_fixture_types_map()
 
-    # TODO
-    universe = 1
+    universes = fixtures
+      |> Enum.map(& &1.universe)
+      |> Enum.uniq()
 
-    output = LiveLightingControl.OutputCalculator.calculate_output(scenes, fixtures, fixture_types_map, universe)
+    output =
+      Enum.map(universes, fn universe_number ->
+        output_for_universe =
+          LiveLightingControl.OutputCalculator.calculate_output(
+            scenes,
+            fixtures,
+            fixture_types_map,
+            universe_number
+          )
 
-    %{1 => output}
+        {universe_number, output_for_universe}
+      end)
+      |> Map.new()
+
+    output
   end
 end

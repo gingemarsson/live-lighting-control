@@ -21,6 +21,7 @@ defmodule LiveLightingControl.Application do
       {LiveLightingControl.SceneManager, name: SceneManager},
       {LiveLightingControl.FixtureManager, name: FixtureManager},
       {LiveLightingControl.OutputBroadcaster, name: OutputBroadcaster},
+      {LiveLightingControl.SACNSender, name: SACNSender},
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: LiveLightingControl.Supervisor)

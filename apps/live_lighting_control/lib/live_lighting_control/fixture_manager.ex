@@ -69,7 +69,7 @@ defmodule LiveLightingControl.FixtureManager do
         id: "15867280-3f56-4824-a56c-5059b16b183b",
         label: "Dimmer 3",
         dmx_address: 3,
-        universe: 1,
+        universe: 2,
         fixture_type_id: dimmer_fixturetype_id
       },
       %Fixture{
