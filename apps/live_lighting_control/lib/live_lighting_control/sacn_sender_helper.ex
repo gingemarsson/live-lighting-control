@@ -1,7 +1,6 @@
 defmodule LiveLightingControl.SACNSenderHelper do
   import Bitwise
 
-  @port 5568
   @priority 100
   @cid <<0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15>> # Unique sender CID
   @source_name "Live Lighting Control sACN"
