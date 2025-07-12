@@ -19,6 +19,7 @@ defmodule LiveLightingControl.Application do
       # Start a worker by calling: LiveLightingControl.Worker.start_link(arg)
       # {LiveLightingControl.Worker, arg}
       {LiveLightingControl.SceneManager, name: SceneManager},
+      {LiveLightingControl.FixtureManager, name: FixtureManager},
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: LiveLightingControl.Supervisor)

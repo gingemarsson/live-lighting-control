@@ -20,9 +20,14 @@ defmodule LiveLightingControl.SceneManager do
   @impl true
   def init(_args) do
     scenes = [
-      %Scene{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 20}}, state: %{master: 90}},
-      %Scene{id: UUID.uuid4(), label: "Party", description: "A vibrant party lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 100}}, state: %{master: 50}},
-      %Scene{id: UUID.uuid4(), label: "Relax", description: "A relaxing lighting scene.", scene: %{fixture_id: UUID.uuid4(), values: %{"Intensity" => 50}}, state: %{master: 50}}
+      %Scene{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", scene: [%{fixture_id: "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a", values: %{"dimmer" => 20}}], state: %{master: 90}},
+      %Scene{id: UUID.uuid4(), label: "Party", description: "A vibrant party lighting scene.", scene: [%{fixture_id: "83e98c74-c272-42db-91b0-d4ce6adb4c90", values: %{"dimmer" => 100}}], state: %{master: 50}},
+      %Scene{id: UUID.uuid4(), label: "Relax", description: "A relaxing lighting scene.", scene: [%{fixture_id: "15867280-3f56-4824-a56c-5059b16b183b", values: %{"dimmer" => 50}}], state: %{master: 50}},
+      %Scene{id: UUID.uuid4(), label: "All lights", description: "A relaxing lighting scene.", scene: [
+        %{fixture_id: "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a", values: %{"dimmer" => 80}},
+        %{fixture_id: "83e98c74-c272-42db-91b0-d4ce6adb4c90", values: %{"dimmer" => 80}},
+        %{fixture_id: "15867280-3f56-4824-a56c-5059b16b183b", values: %{"dimmer" => 80}}
+        ], state: %{master: 50}}
     ]
 
     {:ok, Map.new(scenes, &{&1.id, &1})}

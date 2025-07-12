@@ -9,19 +9,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       %{id: UUID.uuid4(), type: :scenes, cols: 4},
     ]
 
-    fixtures = [
-      %{id: UUID.uuid4(), label: "Axcore 1", dmx_address: 1, channels: [%{name: "Intensity", dmx_address: 1, type: :intensity}]},
-      %{id: UUID.uuid4(), label: "Axcore 2", dmx_address: 2, channels: [%{name: "Intensity", dmx_address: 1, type: :intensity}]},
-      %{id: UUID.uuid4(), label: "Axcore 3", dmx_address: 3, channels: [%{name: "Intensity", dmx_address: 1, type: :intensity}]},
-      %{id: UUID.uuid4(), label: "Axcore 4", dmx_address: 4, channels: [%{name: "Intensity", dmx_address: 1, type: :intensity}]},
-      %{id: UUID.uuid4(), label: "Axcore 5", dmx_address: 5, channels: [%{name: "Intensity", dmx_address: 1, type: :intensity}]}
-    ]
-
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "scenes")
 
     {:ok, assign(socket,
       cards: cards,
-      fixtures: fixtures,
+      fixtures: LiveLightingControl.FixtureManager.get_fixtures(),
       scenes: LiveLightingControl.SceneManager.get_scenes(),
       selected_fixture_ids: []
     )}
