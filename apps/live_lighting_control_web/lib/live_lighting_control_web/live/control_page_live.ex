@@ -6,7 +6,6 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     cards = [
       %{id: UUID.uuid4(), type: :fixtures, cols: 2},
       %{id: UUID.uuid4(), type: :selected_fixtures, cols: 1},
-      %{id: UUID.uuid4(), type: :selected_fixtures, cols: 1},
       %{id: UUID.uuid4(), type: :scenes, cols: 4},
     ]
 
@@ -55,7 +54,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex-grow w-full h-full grid grid-cols-2 xl:grid-cols-4 grid-rows-2 gap-4 p-4">
+    <div class="flex-grow w-full max-w-[1920px] m-auto flex flex-col gap-4 p-4">
       <%= for card <- @cards do %>
         <div class={"bg-neutral-800 rounded-lg shadow-md col-span-#{card.cols}"}>
           <%= case card.type do %>

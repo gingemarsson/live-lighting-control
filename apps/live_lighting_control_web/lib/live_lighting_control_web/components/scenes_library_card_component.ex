@@ -28,7 +28,7 @@ defmodule LiveLightingControlWeb.ScenesLibraryCardComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="w-full flex flex-col h-full">
+    <div class="w-full flex flex-col h-96">
       <div class="bg-neutral-700 p-3 rounded-t-lg flex items-center justify-center">
         <h2 class="text-lg font-semibold">Scene Library</h2>
       </div>
