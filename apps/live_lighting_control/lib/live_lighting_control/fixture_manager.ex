@@ -5,6 +5,8 @@ defmodule LiveLightingControl.FixtureManager do
   alias LiveLightingControl.FixtureType
   alias LiveLightingControl.FixtureTypeChannel
 
+  alias UUID
+
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end

@@ -20,6 +20,7 @@ defmodule LiveLightingControl.Application do
       # {LiveLightingControl.Worker, arg}
       {LiveLightingControl.SceneManager, name: SceneManager},
       {LiveLightingControl.FixtureManager, name: FixtureManager},
+      {LiveLightingControl.ProgrammerManager, name: ProgrammerManager},
       {LiveLightingControl.OutputBroadcaster, name: OutputBroadcaster},
       {LiveLightingControl.SACNSender, name: SACNSender},
     ]

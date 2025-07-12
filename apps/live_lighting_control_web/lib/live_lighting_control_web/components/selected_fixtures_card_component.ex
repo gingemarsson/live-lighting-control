@@ -2,11 +2,6 @@ defmodule LiveLightingControlWeb.SelectedFixturesCardComponent do
   use Phoenix.LiveComponent
   alias Phoenix.LiveView.JS
 
-  def get_selected_fixtures(fixtures, selected_fixture_ids) do
-    find_fixture_by_id = &Enum.find(fixtures, fn fixture -> fixture.id == &1 end)
-    Enum.map(selected_fixture_ids, find_fixture_by_id)
-  end
-
   def render(assigns) do
     ~H"""
     <div class="w-full h-full flex flex-col">
@@ -24,7 +19,7 @@ defmodule LiveLightingControlWeb.SelectedFixturesCardComponent do
           </thead>
 
           <tbody>
-            <%= for fixture <- get_selected_fixtures(@fixtures, @selected_fixture_ids) do %>
+            <%= for fixture <- LiveLightingControl.Utils.get_selected_fixtures(@fixtures, @selected_fixture_ids) do %>
               <tr class="hover:bg-neutral-700 text-sm">
                 <td class="border border-neutral-600 px-4 py-2">{fixture.label}</td>
 

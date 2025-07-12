@@ -1,15 +1,17 @@
 defmodule LiveLightingControl.OutputCalculator do
   alias LiveLightingControl.Scene
 
-  def calculate_output(scenes, fixtures, fixture_types_map, universe_number) do
+  def calculate_output(scenes, programmer, fixtures, fixture_types_map, universe_number) do
     merged_scenes = merge_scenes(scenes)
+    merged_control_data = Map.merge(merged_scenes, programmer, fn _key, v1, v2 -> Map.merge(v1, v2) end)
+
     fixtures_for_universe = Enum.filter(fixtures, &(&1.universe == universe_number))
 
     # calculate list of maps, one for each fixtures
     all_channels =
       Enum.map(fixtures_for_universe, fn fixture ->
         fixture_type = Map.get(fixture_types_map, fixture.fixture_type_id)
-        fixture_attribute_values = Map.get(merged_scenes, fixture.id)
+        fixture_attribute_values = Map.get(merged_control_data, fixture.id)
 
         channels =
           Enum.map(fixture_type.channels, fn channel ->
