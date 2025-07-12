@@ -48,8 +48,6 @@ defmodule LiveLightingControl.SceneManager do
 
     new_scenes = Map.put(scenes, updated.id, updated)
 
-    IO.puts(inspect(new_scenes))
-
     notify_scene_updated(updated)
 
     {:noreply, new_scenes}
