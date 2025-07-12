@@ -1,6 +1,7 @@
 defmodule LiveLightingControlWeb.ControlPageLive do
   use LiveLightingControlWeb, :live_view
   require UUID
+  alias LiveLightingControl.Scene
 
   def mount(_params, _session, socket) do
     cards = [
@@ -71,6 +72,13 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_event("clear-programmer", _data, socket) do
     LiveLightingControl.ProgrammerManager.clear_programmer()
+
+    {:noreply, socket}
+  end
+
+  def handle_event("save-programmer", _data, socket) do
+    new_scene = %Scene{id: UUID.uuid4(), label: "New scene", fixtures: socket.assigns.programmer, state: %{master: 100}}
+    LiveLightingControl.SceneManager.update_scene(new_scene)
 
     {:noreply, socket}
   end

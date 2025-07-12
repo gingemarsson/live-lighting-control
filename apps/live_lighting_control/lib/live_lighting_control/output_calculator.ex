@@ -38,29 +38,21 @@ defmodule LiveLightingControl.OutputCalculator do
   end
 
   defp merge_scenes(scenes) do
-    test =
       scenes
       |> Enum.filter(&(&1.state.master > 0))
       |> Enum.map(&compute_scene_values/1)
-      |> Enum.flat_map(& &1)
-
-    Enum.reduce(test, %{}, &htp_fixture_merge/2)
+      |> Enum.reduce(%{}, &htp_fixture_merge/2)
   end
 
-  defp compute_scene_values(%Scene{fixtures: fixtures, state: state}) do
+  defp compute_scene_values(%Scene{fixtures: fixture_map, state: state}) do
     scaled_by_scene_master =
-      Enum.map(fixtures, fn fixture_map ->
         Enum.into(fixture_map, %{}, fn {guid, attributes_map} ->
-          updated_inner =
-            attributes_map
-            |> Enum.map(fn {attribute_key, attribute_value} ->
-              {attribute_key, attribute_value * state.master * 0.01}
-            end)
+          updated = attributes_map
+            |> Enum.map(fn {key, value} -> {key, value * state.master * 0.01} end)
             |> Enum.into(%{})
 
-          {guid, updated_inner}
+          {guid, updated}
         end)
-      end)
 
     scaled_by_scene_master
   end
