@@ -4,8 +4,7 @@ defstruct [
   id: nil,
   label: nil,
   description: nil,
-  scene: nil,
-  values: nil,
+  fixtures: nil,
   state: nil
 ]
 end

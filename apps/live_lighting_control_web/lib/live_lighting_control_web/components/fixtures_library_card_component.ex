@@ -12,9 +12,10 @@ defmodule LiveLightingControlWeb.FixturesLibraryCardComponent do
   def render(assigns) do
     ~H"""
     <div class="w-full h-fullflex flex-col">
-      <div class="bg-neutral-700 p-3 rounded-t-lg flex items-center justify-center h-full">
-        <h2 class="text-lg font-semibold">Fixture Library</h2>
+    <div class="bg-neutral-700 p-2 rounded-t-lg">
+        <h2 class="text-sm font-semibold">Fixture library</h2>
       </div>
+
       <div class="grid grid-cols-10 gap-2 p-2">
         <%= for fixture <- @fixtures do %>
           <div

@@ -3,7 +3,7 @@ defmodule LiveLightingControl.Fixture do
             label: nil,
             universe: nil,
             dmx_address: nil,
-            fixtureTypeId: nil
+            fixture_type_id: nil
 end
 
 defmodule LiveLightingControl.FixtureType do
@@ -15,7 +15,8 @@ end
 
 defmodule LiveLightingControl.FixtureTypeChannel do
   defstruct id: nil,
-            channel_function_key: nil,
+            attribute: nil,
             dmx_address: nil,
-            type: nil
+            type: nil,
+            default_value: 0
 end

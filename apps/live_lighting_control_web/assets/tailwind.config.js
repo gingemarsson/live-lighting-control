@@ -15,6 +15,11 @@ module.exports = {
     extend: {
       colors: {
         brand: "#FD4F00",
+      },
+      gridTemplateColumns: {
+        // Adds grid-cols-32 & 64
+        '32': 'repeat(32, minmax(0, 1fr))',
+        '64': 'repeat(64, minmax(0, 1fr))',
       }
     },
   },

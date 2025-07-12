@@ -9,9 +9,10 @@ defmodule LiveLightingControlWeb.SelectedFixturesCardComponent do
   def render(assigns) do
     ~H"""
     <div class="w-full h-full flex flex-col">
-      <div class="bg-neutral-700 p-3 rounded-t-lg flex items-center justify-center">
-        <h2 class="text-lg font-semibold">Selected Fixtures</h2>
+      <div class="bg-neutral-700 p-2 rounded-t-lg">
+        <h2 class="text-sm font-semibold">Selected fixtures</h2>
       </div>
+
       <div class="p-4 overflow-x-auto">
         <table class="table-auto w-full border-collapse border border-neutral-600">
           <thead>

@@ -4,25 +4,37 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def mount(_params, _session, socket) do
     cards = [
-      %{id: UUID.uuid4(), type: :fixtures, cols: 2},
-      %{id: UUID.uuid4(), type: :selected_fixtures, cols: 1},
-      %{id: UUID.uuid4(), type: :scenes, cols: 4},
+      %{id: UUID.uuid4(), type: :fixtures},
+      %{id: UUID.uuid4(), type: :selected_fixtures},
+      %{id: UUID.uuid4(), type: :output},
+      %{id: UUID.uuid4(), type: :scenes},
     ]
 
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "scenes")
+    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "output")
+
 
     {:ok, assign(socket,
       cards: cards,
       fixtures: LiveLightingControl.FixtureManager.get_fixtures(),
       scenes: LiveLightingControl.SceneManager.get_scenes(),
+      output: %{},
       selected_fixture_ids: []
     )}
   end
+
+  # Subscriptions from other parts of application
 
   def handle_info({:scene_updated, _scene}, socket) do
     # Always update all scenes
     {:noreply, assign(socket, :scenes, LiveLightingControl.SceneManager.get_scenes())}
   end
+
+  def handle_info({:output_update, output}, socket) do
+    {:noreply, assign(socket, :output, output)}
+  end
+
+  # Page events
 
   def handle_event("toggle_select_fixture", %{"fixture-id" => fixture_id}, socket) do
     selected_fixture_ids = socket.assigns.selected_fixture_ids
@@ -48,12 +60,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     ~H"""
     <div class="flex-grow w-full max-w-[1920px] m-auto flex flex-col gap-4 p-4">
       <%= for card <- @cards do %>
-        <div class={"bg-neutral-800 rounded-lg shadow-md col-span-#{card.cols}"}>
+        <div class={"bg-neutral-800 rounded-lg shadow-md"}>
           <%= case card.type do %>
             <% :fixtures -> %>
               <.live_component module={LiveLightingControlWeb.FixturesLibraryCardComponent} id={card.id} fixtures={@fixtures} selected_fixture_ids={@selected_fixture_ids} />
             <% :scenes -> %>
               <.live_component module={LiveLightingControlWeb.ScenesLibraryCardComponent} id={card.id} scenes={@scenes} />
+            <% :output -> %>
+              <.live_component module={LiveLightingControlWeb.OutputCardComponent} id={card.id} output={@output} />
             <% :selected_fixtures-> %>
             <.live_component module={LiveLightingControlWeb.SelectedFixturesCardComponent} id={card.id} fixtures={@fixtures} selected_fixture_ids={@selected_fixture_ids} />
           <% end %>
