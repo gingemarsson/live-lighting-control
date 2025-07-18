@@ -19,8 +19,9 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
     {:ok, assign(socket,
       cards: cards,
-      fixtures: LiveLightingControl.FixtureManager.get_fixtures(),
-      fixture_types: Map.values(LiveLightingControl.FixtureManager.get_fixture_types_map()),
+      fixtures: Map.values(LiveLightingControl.FixtureManager.get_fixtures_map()),
+      fixtures_map: LiveLightingControl.FixtureManager.get_fixtures_map(),
+      fixture_types_map: LiveLightingControl.FixtureManager.get_fixture_types_map(),
       scenes: LiveLightingControl.SceneManager.get_scenes(),
       programmer: LiveLightingControl.ProgrammerManager.get_programmer(),
       output: %{},
@@ -95,11 +96,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
             <% :scenes -> %>
               <.live_component module={LiveLightingControlWeb.ScenesLibraryCardComponent} id={card.id} scenes={@scenes} />
             <% :output -> %>
-              <.live_component module={LiveLightingControlWeb.OutputCardComponent} id={card.id} output={@output} />
+              <.live_component module={LiveLightingControlWeb.OutputCardComponent} id={card.id} output={@output} selected_fixture_ids={@selected_fixture_ids} fixtures={@fixtures_map} fixture_types={@fixture_types_map}/>
             <% :selected_fixtures-> %>
             <.live_component module={LiveLightingControlWeb.SelectedFixturesCardComponent} id={card.id} fixtures={@fixtures} selected_fixture_ids={@selected_fixture_ids} />
             <% :programmer-> %>
-            <.live_component module={LiveLightingControlWeb.ProgrammerCardComponent} id={card.id} programmer={@programmer} fixtures={@fixtures} fixture_types={@fixture_types} selected_fixture_ids={@selected_fixture_ids} />
+            <.live_component module={LiveLightingControlWeb.ProgrammerCardComponent} id={card.id} programmer={@programmer} fixtures={@fixtures} fixture_types={Map.values(@fixture_types_map)} selected_fixture_ids={@selected_fixture_ids} />
           <% end %>
         </div>
       <% end %>

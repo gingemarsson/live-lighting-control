@@ -36,10 +36,11 @@ defmodule LiveLightingControl.OutputBroadcaster do
   defp calculate_output do
     scenes = LiveLightingControl.SceneManager.get_scenes()
     programmer = LiveLightingControl.ProgrammerManager.get_programmer()
-    fixtures = LiveLightingControl.FixtureManager.get_fixtures()
+    fixtures = LiveLightingControl.FixtureManager.get_fixtures_map()
     fixture_types_map = LiveLightingControl.FixtureManager.get_fixture_types_map()
 
     universes = fixtures
+      |> Map.values()
       |> Enum.map(& &1.universe)
       |> Enum.uniq()
 

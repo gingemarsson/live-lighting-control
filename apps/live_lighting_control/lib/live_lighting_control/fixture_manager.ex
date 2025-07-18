@@ -11,8 +11,8 @@ defmodule LiveLightingControl.FixtureManager do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
-  def get_fixtures do
-    GenServer.call(__MODULE__, :get_fixtures)
+  def get_fixtures_map do
+    GenServer.call(__MODULE__, :get_fixtures_map)
   end
 
   def get_fixture_types_map do
@@ -120,8 +120,8 @@ defmodule LiveLightingControl.FixtureManager do
   end
 
   @impl true
-  def handle_call(:get_fixtures, _from, state) do
-    {:reply, Map.values(state.fixtures), state}
+  def handle_call(:get_fixtures_map, _from, state) do
+    {:reply, state.fixtures, state}
   end
 
   @impl true
