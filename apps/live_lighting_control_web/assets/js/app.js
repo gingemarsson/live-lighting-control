@@ -51,20 +51,6 @@ Hooks.VerticalSlider = {
 Hooks.ColorPickerHook = {
   mounted() {
     this.initColorPicker();
-
-    console.log('subscribing handleEvent')
-
-
-    this.handleEvent("test", () => {
-      console.log('test handleEvent')
-    });
-
-    this.handleEvent("update_color_picker", ({ red, green, blue, colorPickerType }) => {
-      console.log('handleEvent')
-      if (this.picker && colorPickerType === this.el.dataset.colorPickerType) {
-        this.picker.color.rgb = { r: red, g: green, b: blue };
-      }
-    });
   },
 
   initColorPicker() {
