@@ -18,6 +18,7 @@ defmodule LiveLightingControl.Application do
       {Finch, name: LiveLightingControl.Finch},
       # Start a worker by calling: LiveLightingControl.Worker.start_link(arg)
       # {LiveLightingControl.Worker, arg}
+      {LiveLightingControl.ConfigManager, name: ConfigManager},
       {LiveLightingControl.SceneManager, name: SceneManager},
       {LiveLightingControl.FixtureManager, name: FixtureManager},
       {LiveLightingControl.ProgrammerManager, name: ProgrammerManager},

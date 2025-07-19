@@ -20,7 +20,10 @@ defmodule LiveLightingControl.OutputBroadcaster do
 
     Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, output})
 
-    LiveLightingControl.SACNSender.send_packet(output)
+    config = LiveLightingControl.ConfigManager.get_config()
+    if config.enable_sacn_output do
+      LiveLightingControl.SACNSender.send_packet(output)
+    end
 
     schedule_tick()
 
@@ -34,6 +37,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
   end
 
   defp calculate_output do
+    config = LiveLightingControl.ConfigManager.get_config()
     scenes = LiveLightingControl.SceneManager.get_scenes()
     programmer = LiveLightingControl.ProgrammerManager.get_programmer()
     fixtures = LiveLightingControl.FixtureManager.get_fixtures_map()
@@ -48,6 +52,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
       Enum.map(universes, fn universe_number ->
         output_for_universe =
           LiveLightingControl.OutputCalculator.calculate_output(
+            config,
             scenes,
             programmer,
             fixtures,

@@ -1,7 +1,7 @@
 defmodule LiveLightingControl.SACNSender do
   use GenServer
 
-  @universe_configuration [] # Send no universes until configuration is built
+  @universe_configuration [1,2,3,4,5,6,7,8,9,10] # TODO Setup for this
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)

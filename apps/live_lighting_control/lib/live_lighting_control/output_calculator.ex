@@ -1,9 +1,14 @@
 defmodule LiveLightingControl.OutputCalculator do
   alias LiveLightingControl.Scene
 
-  def calculate_output(scenes, programmer, fixtures_map, fixture_types_map, universe_number) do
-    merged_scenes = merge_scenes(scenes)
-    merged_control_data = Map.merge(merged_scenes, programmer, fn _key, v1, v2 -> Map.merge(v1, v2) end)
+  def calculate_output(config, scenes, programmer, fixtures_map, fixture_types_map, universe_number) do
+    merged_control_data =
+      case {config.enable_scenes, config.enable_programmer} do
+        {true, true} -> Map.merge(merge_scenes(scenes), programmer, fn _key, v1, v2 -> Map.merge(v1, v2) end)
+        {true, false} -> merge_scenes(scenes)
+        {false, true} -> programmer
+        {false, false} -> %{}
+      end
 
     fixtures = Map.values(fixtures_map)
     fixtures_for_universe = Enum.filter(fixtures, &(&1.universe == universe_number))

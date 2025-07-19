@@ -5,6 +5,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def mount(_params, _session, socket) do
     cards = [
+      %{id: UUID.uuid4(), type: :config},
       %{id: UUID.uuid4(), type: :fixtures},
       # %{id: UUID.uuid4(), type: :selected_fixtures},
       %{id: UUID.uuid4(), type: :programmer},
@@ -12,6 +13,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       %{id: UUID.uuid4(), type: :scenes},
     ]
 
+    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "config")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "scenes")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "programmer")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "output")
@@ -19,6 +21,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
     {:ok, assign(socket,
       cards: cards,
+      config: LiveLightingControl.ConfigManager.get_config(),
       fixtures: Map.values(LiveLightingControl.FixtureManager.get_fixtures_map()),
       fixtures_map: LiveLightingControl.FixtureManager.get_fixtures_map(),
       fixture_types_map: LiveLightingControl.FixtureManager.get_fixture_types_map(),
@@ -44,7 +47,19 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket, :output, output)}
   end
 
+  def handle_info({:config_updated, config}, socket) do
+    {:noreply, assign(socket, :config, config)}
+  end
+
   # Page events
+
+  def handle_event("toggle_config", %{"config-name" => config_name_string}, socket) do
+    config_name = String.to_existing_atom(config_name_string)
+    LiveLightingControl.ConfigManager.set_config(%{config_name: config_name, value: !socket.assigns.config[config_name]})
+
+    {:noreply, socket}
+  end
+
 
   def handle_event("toggle_select_fixture", %{"fixture-id" => fixture_id}, socket) do
     selected_fixture_ids = socket.assigns.selected_fixture_ids
@@ -94,13 +109,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-
   def render(assigns) do
     ~H"""
     <div class="flex-grow w-full max-w-[1920px] m-auto flex flex-col gap-4 p-4">
       <%= for card <- @cards do %>
         <div class={"bg-neutral-800 rounded-lg shadow-md"}>
           <%= case card.type do %>
+            <% :config -> %>
+              <.live_component module={LiveLightingControlWeb.ConfigCardComponent} id={card.id} config={@config} />
             <% :fixtures -> %>
               <.live_component module={LiveLightingControlWeb.FixturesLibraryCardComponent} id={card.id} fixtures={@fixtures} selected_fixture_ids={@selected_fixture_ids} />
             <% :scenes -> %>
