@@ -14,7 +14,7 @@ defmodule LiveLightingControl.ProgrammerManager do
     GenServer.cast(__MODULE__, {:clear_programmer, nil})
   end
 
-  def update_programmer(%{fixture_ids: _fixture_ids, attribute: _attribute, value: value} = update) when value < 256 and value >= 0 do
+  def update_programmer(%{fixture_ids: _fixture_ids, attributes: _attributes} = update) do
     GenServer.cast(__MODULE__, {:update_programmer, update})
   end
 
@@ -31,11 +31,14 @@ defmodule LiveLightingControl.ProgrammerManager do
   end
 
   @impl true
-  def handle_cast({:update_programmer, %{fixture_ids: fixture_ids, attribute: attribute, value: value}}, programmer) do
+  def handle_cast({:update_programmer, %{fixture_ids: fixture_ids, attributes: attributes}}, programmer) do
     updated_programmer =
     Enum.reduce(fixture_ids, programmer, fn fixture_id, acc ->
       fixture_values = Map.get(acc, fixture_id, %{})
-      updated_fixture_values = Map.put(fixture_values, attribute, value)
+      updated_fixture_values =
+        Enum.reduce(attributes, fixture_values, fn %{attribute: attr, value: val}, fv_acc ->
+          Map.put(fv_acc, attr, val)
+        end)
       Map.put(acc, fixture_id, updated_fixture_values)
     end)
 

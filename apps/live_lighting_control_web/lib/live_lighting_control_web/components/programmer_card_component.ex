@@ -57,6 +57,11 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
     """
   end
 
+  def supports_rgb?(attributes_for_fixture) do
+    required = MapSet.new(["red", "green", "blue"])
+    MapSet.subset?(required, MapSet.new(attributes_for_fixture))
+  end
+
   def render(assigns) do
     ~H"""
     <div class="w-full flex flex-col h-96">
@@ -68,7 +73,9 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
       </div>
 
       <div class="flex flex-row flex-grow gap-2 m-2">
-        <%= for attribute <- get_fixture_attributes(@fixtures, @selected_fixture_ids, @fixture_types)  do %>
+        <% attributes = get_fixture_attributes(@fixtures, @selected_fixture_ids, @fixture_types) %>
+        <% supports_rgb = supports_rgb?(attributes) %>
+        <%= for attribute <- attributes do %>
           <div class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600">
             <p class={"text-sm #{ if 0 == 0 do "text-gray-500" else "" end}"}>
               {attribute}
@@ -90,6 +97,19 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
                 slider_type={:programmer}
               />
             </form>
+          </div>
+        <% end %>
+
+        <%= if supports_rgb do %>
+          <div class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600" id="wrapper" phx-update="ignore">
+            <div
+              id="color-picker"
+              phx-hook="ColorPickerHook"
+              data-color-picker-type={:programmer}
+              data-red={get_max_value_for_attibute("red", @programmer, @selected_fixture_ids)}
+              data-green={get_max_value_for_attibute("green", @programmer, @selected_fixture_ids)}
+              data-blue={get_max_value_for_attibute("blue", @programmer, @selected_fixture_ids)}
+            ></div>
           </div>
         <% end %>
       </div>

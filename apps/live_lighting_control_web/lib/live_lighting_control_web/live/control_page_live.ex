@@ -66,7 +66,17 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("slider_changed", %{"value" => value, "sliderId" => attribute, "sliderType" => "programmer"}, socket) do
-    LiveLightingControl.ProgrammerManager.update_programmer(%{fixture_ids: socket.assigns.selected_fixture_ids, attribute: attribute, value: round(value * 2.55)})
+    LiveLightingControl.ProgrammerManager.update_programmer(%{fixture_ids: socket.assigns.selected_fixture_ids, attributes: [%{attribute: attribute, value: round(value * 2.55)}]})
+
+    {:noreply, socket}
+  end
+
+  def handle_event("color_changed", %{"red" => value_red, "green" => value_green, "blue" => value_blue, "colorPickerType" => "programmer"}, socket) do
+    LiveLightingControl.ProgrammerManager.update_programmer(%{fixture_ids: socket.assigns.selected_fixture_ids, attributes: [
+        %{attribute: "red", value: round(value_red)},
+        %{attribute: "green", value: round(value_green)},
+        %{attribute: "blue", value: round(value_blue)},
+      ]})
 
     {:noreply, socket}
   end

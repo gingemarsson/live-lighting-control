@@ -48,6 +48,85 @@ Hooks.VerticalSlider = {
   }
 };
 
+Hooks.ColorPickerHook = {
+  mounted() {
+    this.initColorPicker();
+
+    console.log('subscribing handleEvent')
+
+
+    this.handleEvent("test", () => {
+      console.log('test handleEvent')
+    });
+
+    this.handleEvent("update_color_picker", ({ red, green, blue, colorPickerType }) => {
+      console.log('handleEvent')
+      if (this.picker && colorPickerType === this.el.dataset.colorPickerType) {
+        this.picker.color.rgb = { r: red, g: green, b: blue };
+      }
+    });
+  },
+
+  initColorPicker() {
+    const colorpicker = this.el;
+    const colorPickerType = colorpicker.dataset.colorPickerType;
+
+    const red = this.el.dataset.red;
+    const green = this.el.dataset.green;
+    const blue = this.el.dataset.blue;
+
+    this.picker = new iro.ColorPicker(this.el, {
+      width: 280,
+      layoutDirection: 'horizontal',
+      layout: [
+        {
+          component: iro.ui.Wheel,
+        },
+        {
+          component: iro.ui.Slider,
+          options: {
+            sliderType: 'hue',
+            sliderSize: 40,
+          }
+        },
+        {
+          component: iro.ui.Slider,
+          options: {
+            sliderType: 'saturation',
+            sliderSize: 40,
+          }
+        },
+        {
+          component: iro.ui.Slider,
+          options: {
+            sliderType: 'value',
+            sliderSize: 40,
+          }
+        },
+        {
+          component: iro.ui.Slider,
+          options: {
+            sliderType: 'kelvin',
+            sliderSize: 40,
+          }
+        },
+      ],
+      color: {r: red, g: green, b: blue}
+    });
+
+    this.picker.on('color:change', (color) => {
+      const { r, g, b } = color.rgb;
+      this.pushEvent("color_changed", { colorPickerType, red: r, green: g, blue: b});
+    });
+  },
+
+
+  destroyed() {
+    //this.picker && this.picker.destroy();
+  }
+}
+
+
 
 // If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.
