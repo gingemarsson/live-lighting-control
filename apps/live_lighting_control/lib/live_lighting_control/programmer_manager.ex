@@ -1,11 +1,14 @@
 defmodule LiveLightingControl.ProgrammerManager do
+  alias LiveLightingControl.CommonTypes
   use GenServer
 
+  @type state :: CommonTypes.fixture_attribute_map()
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  @spec get_programmer() :: CommonTypes.fixture_attribute_map()
   def get_programmer do
     GenServer.call(__MODULE__, :get_programmer)
   end
@@ -14,6 +17,10 @@ defmodule LiveLightingControl.ProgrammerManager do
     GenServer.cast(__MODULE__, {:clear_programmer, nil})
   end
 
+  @spec update_programmer(%{
+          :attributes => [%{attribute: CommonTypes.attribute_id(), value: integer()}],
+          :fixture_ids => [CommonTypes.fixture_id()]
+        }) :: :ok
   def update_programmer(%{fixture_ids: _fixture_ids, attributes: _attributes} = update) do
     GenServer.cast(__MODULE__, {:update_programmer, update})
   end

@@ -3,14 +3,29 @@ defmodule LiveLightingControl.SceneManager do
 
   alias LiveLightingControl.Scene
 
+
+  @typedoc "Scene ID, expected to be a UUID string"
+  @type scene_id :: String.t()
+
+  @typedoc "Map of scenes keyed by their ID"
+  @type scene_map :: %{scene_id() => Scene.t()}
+
+  @typedoc "Partial scene updates. Must include at least an `id` field."
+  @type partial_scene :: map() # Ideally, you'd define a more specific type in Scene module
+
+  @typedoc "GenServer state"
+  @type state :: scene_map()
+
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  @spec get_scenes() :: [Scene.t()]
   def get_scenes do
     GenServer.call(__MODULE__, :get_scenes)
   end
 
+  @spec update_scene(partial_scene()) :: :ok
   def update_scene(partial_scene) do
     GenServer.cast(__MODULE__, {:update_partial_scene, partial_scene})
   end
@@ -18,6 +33,7 @@ defmodule LiveLightingControl.SceneManager do
   # Server Callbacks
 
   @impl true
+  @spec init(any()) :: {:ok, state()}
   def init(_args) do
     scenes = [
       %Scene{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", fixtures: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 20}}, state: %{master: 90}},
@@ -35,6 +51,7 @@ defmodule LiveLightingControl.SceneManager do
   end
 
   @impl true
+  @spec handle_call(:get_scenes, GenServer.from(), state()) :: {:reply, [Scene.t()], state()}
   def handle_call(:get_scenes, _from, scenes) do
     {:reply, Map.values(scenes), scenes}
   end

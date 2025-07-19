@@ -4,6 +4,7 @@ defmodule LiveLightingControl.FixtureManager do
   alias LiveLightingControl.Fixture
   alias LiveLightingControl.FixtureType
   alias LiveLightingControl.FixtureTypeChannel
+  alias LiveLightingControl.CommonTypes
 
   alias UUID
 
@@ -11,10 +12,12 @@ defmodule LiveLightingControl.FixtureManager do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  @spec get_fixtures_map() :: %{CommonTypes.fixture_id() => LiveLightingControl.Fixture.t()}
   def get_fixtures_map do
     GenServer.call(__MODULE__, :get_fixtures_map)
   end
 
+  @spec get_fixture_types_map() :: %{CommonTypes.fixture_type_id() => LiveLightingControl.FixtureType.t()}
   def get_fixture_types_map do
     GenServer.call(__MODULE__, :get_fixture_types_map)
   end
