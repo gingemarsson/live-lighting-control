@@ -48,3 +48,16 @@ defmodule LiveLightingControl.Fixture do
             dmx_address: nil,
             fixture_type_id: nil
 end
+
+defmodule LiveLightingControl.FixtureGroup do
+  alias LiveLightingControl.CommonTypes
+
+  @type t :: %__MODULE__{
+    id: CommonTypes.fixture_id(),
+    label: String.t(),
+    fixture_ids: [CommonTypes.fixture_id()]
+  }
+  defstruct id: nil,
+            label: nil,
+            fixture_ids: nil
+end

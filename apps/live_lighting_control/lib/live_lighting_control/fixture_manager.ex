@@ -4,6 +4,7 @@ defmodule LiveLightingControl.FixtureManager do
   alias LiveLightingControl.Fixture
   alias LiveLightingControl.FixtureType
   alias LiveLightingControl.FixtureTypeChannel
+  alias LiveLightingControl.FixtureGroup
   alias LiveLightingControl.CommonTypes
 
   alias UUID
@@ -22,6 +23,11 @@ defmodule LiveLightingControl.FixtureManager do
     GenServer.call(__MODULE__, :get_fixture_types_map)
   end
 
+  @spec get_fixture_groups_map() :: %{CommonTypes.fixture_type_id() => LiveLightingControl.FixtureType.t()}
+  def get_fixture_groups_map do
+    GenServer.call(__MODULE__, :get_fixture_groups_map)
+  end
+
   # Server Callbacks
 
   @impl true
@@ -29,7 +35,7 @@ defmodule LiveLightingControl.FixtureManager do
     dimmer_fixturetype_id = UUID.uuid4()
     rgb_fixturetype_id = UUID.uuid4()
 
-    fixtureTypes = [
+    fixture_types = [
       %FixtureType{
         id: dimmer_fixturetype_id,
         label: "Dimmer",
@@ -78,7 +84,7 @@ defmodule LiveLightingControl.FixtureManager do
         fixture_type_id: dimmer_fixturetype_id
       },
       %Fixture{
-        id: UUID.uuid4(),
+        id: "34562280-3f56-4824-a56c-5059b16b183b",
         label: "Dimmer 4",
         dmx_address: 4,
         universe: 1,
@@ -114,9 +120,18 @@ defmodule LiveLightingControl.FixtureManager do
       }
     ]
 
+    fixture_groups = [
+      %FixtureGroup{
+        id: UUID.uuid4(),
+        label: "Dimmers",
+        fixture_ids: ["1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a", "83e98c74-c272-42db-91b0-d4ce6adb4c90", "15867280-3f56-4824-a56c-5059b16b183b", "34562280-3f56-4824-a56c-5059b16b183b"]
+      }
+    ]
+
     state = %{
       fixtures: Map.new(fixtures, &{&1.id, &1}),
-      fixture_types: Map.new(fixtureTypes, &{&1.id, &1})
+      fixture_types: Map.new(fixture_types, &{&1.id, &1}),
+      fixture_groups: Map.new(fixture_groups, &{&1.id, &1})
     }
 
     {:ok, state}
@@ -130,6 +145,11 @@ defmodule LiveLightingControl.FixtureManager do
   @impl true
   def handle_call(:get_fixture_types_map, _from, state) do
     {:reply, state.fixture_types, state}
+  end
+
+  @impl true
+  def handle_call(:get_fixture_groups_map, _from, state) do
+    {:reply, state.fixture_groups, state}
   end
 
 end

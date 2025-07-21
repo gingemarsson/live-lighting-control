@@ -6,6 +6,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   def mount(_params, _session, socket) do
     cards = [
       %{id: UUID.uuid4(), type: :config},
+      %{id: UUID.uuid4(), type: :fixture_groups},
       %{id: UUID.uuid4(), type: :fixtures},
       # %{id: UUID.uuid4(), type: :selected_fixtures},
       %{id: UUID.uuid4(), type: :programmer},
@@ -25,6 +26,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       fixtures: Map.values(LiveLightingControl.FixtureManager.get_fixtures_map()),
       fixtures_map: LiveLightingControl.FixtureManager.get_fixtures_map(),
       fixture_types_map: LiveLightingControl.FixtureManager.get_fixture_types_map(),
+      fixture_groups: Map.values(LiveLightingControl.FixtureManager.get_fixture_groups_map()),
+      fixture_groups_map: LiveLightingControl.FixtureManager.get_fixture_groups_map(),
       scenes: LiveLightingControl.SceneManager.get_scenes(),
       programmer: LiveLightingControl.ProgrammerManager.get_programmer(),
       output: %{},
@@ -69,6 +72,22 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         List.delete(selected_fixture_ids, fixture_id)
       else
         selected_fixture_ids ++ [fixture_id]
+      end
+
+    {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
+  end
+
+  def handle_event("toggle_select_group", %{"group-id" => group_id}, socket) do
+    selected_fixture_ids = socket.assigns.selected_fixture_ids
+    fixture_group = Map.get(socket.assigns.fixture_groups_map, group_id)
+
+    all_fixtures_are_already_selected = Enum.all?(fixture_group.fixture_ids, fn x -> x in selected_fixture_ids end)
+
+    updated_fixture_ids =
+      if all_fixtures_are_already_selected do
+        Enum.reject(selected_fixture_ids, fn x -> x in fixture_group.fixture_ids end)
+      else
+        selected_fixture_ids ++ fixture_group.fixture_ids
       end
 
     {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
@@ -119,6 +138,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
               <.live_component module={LiveLightingControlWeb.ConfigCardComponent} id={card.id} config={@config} />
             <% :fixtures -> %>
               <.live_component module={LiveLightingControlWeb.FixturesLibraryCardComponent} id={card.id} fixtures={@fixtures} selected_fixture_ids={@selected_fixture_ids} />
+              <% :fixture_groups -> %>
+              <.live_component module={LiveLightingControlWeb.FixtureGroupsLibraryCardComponent} id={card.id} fixture_groups={@fixture_groups} selected_fixture_ids={@selected_fixture_ids} />
             <% :scenes -> %>
               <.live_component module={LiveLightingControlWeb.ScenesLibraryCardComponent} id={card.id} scenes={@scenes} />
             <% :output -> %>
