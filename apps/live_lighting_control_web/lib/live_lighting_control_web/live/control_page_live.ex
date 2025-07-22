@@ -157,7 +157,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex-grow w-full max-w-[1920px] m-auto flex flex-col gap-4 p-4">
+    <div class="flex-grow w-full max-w-[1920px] mx-auto flex flex-col gap-4 p-4 pb-96">
       <%= for card <- @cards do %>
         <div class={"bg-neutral-800 rounded-lg shadow-md"}>
           <%= case card.type do %>
@@ -181,6 +181,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         </div>
       <% end %>
     </div>
+
+    <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
+      <.live_component module={LiveLightingControlWeb.ExecutorsAreaComponent} id={"executors"}/>
+    </div>
+
     <div class="col-span-1 col-span-2 col-span-3 col-span-4" />
     """
   end
