@@ -5,14 +5,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def mount(_params, _session, socket) do
     cards = [
-      %{id: UUID.uuid4(), type: :config},
-      %{id: UUID.uuid4(), type: :fixture_groups},
-      %{id: UUID.uuid4(), type: :fixtures},
-      %{id: UUID.uuid4(), type: :layouts},
-      # %{id: UUID.uuid4(), type: :selected_fixtures},
-      %{id: UUID.uuid4(), type: :programmer},
-      %{id: UUID.uuid4(), type: :output},
-      %{id: UUID.uuid4(), type: :scenes},
+      %{id: UUID.uuid4(), type: :config, configuration: %{}},
+      %{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
+      %{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
+      %{id: UUID.uuid4(), type: :layouts, configuration: %{}},
+      # %{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}},
+      %{id: UUID.uuid4(), type: :programmer, configuration: %{}},
+      %{id: UUID.uuid4(), type: :output, configuration: %{}},
+      %{id: UUID.uuid4(), type: :scenes, configuration: %{}},
     ]
 
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "config")
@@ -30,11 +30,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       fixture_groups: Map.values(LiveLightingControl.FixtureManager.get_fixture_groups_map()),
       fixture_groups_map: LiveLightingControl.FixtureManager.get_fixture_groups_map(),
       layouts: LiveLightingControl.LayoutManager.get_layouts(),
+      views: LiveLightingControl.ViewManager.get_views(),
       scenes: LiveLightingControl.SceneManager.get_scenes(),
       programmer: LiveLightingControl.ProgrammerManager.get_programmer(),
       output: %{},
-      selected_fixture_ids: [],
-      card_configuration: %{}
+      selected_fixture_ids: []
     )}
   end
 
@@ -81,14 +81,26 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("toggle_select_layout", %{"layout-id" => layout_id, "layout-card-id" => card_id}, socket) do
-    card_configuration = socket.assigns.card_configuration
+    cards = socket.assigns.cards
 
-    existing = Map.get(card_configuration, card_id, %{})
-    updated = Map.merge(existing, %{selected_layout_id: layout_id})
+    updated_cards = Enum.map(cards, fn card ->
+      if card.id == card_id do
+        existing = card.configuration
+        %{card | configuration: Map.merge(existing, %{selected_layout_id: layout_id})}
+      else
+        card
+      end
+    end)
 
-    updated_card_configuration = Map.put(card_configuration, card_id, updated)
+    {:noreply, assign(socket, :cards, updated_cards)}
+  end
 
-    {:noreply, assign(socket, :card_configuration, updated_card_configuration)}
+  def handle_event("toggle_select_view", %{"view-id" => view_id}, socket) do
+
+    views = socket.assigns.views
+    selected_view = Map.get(views, view_id)
+
+    {:noreply, assign(socket, :cards, selected_view.cards)}
   end
 
   def handle_event("toggle_select_group", %{"group-id" => group_id}, socket) do
@@ -150,13 +162,13 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         <div class={"bg-neutral-800 rounded-lg shadow-md"}>
           <%= case card.type do %>
             <% :config -> %>
-              <.live_component module={LiveLightingControlWeb.ConfigCardComponent} id={card.id} config={@config} />
+              <.live_component module={LiveLightingControlWeb.ConfigCardComponent} id={card.id} config={@config} views={@views} />
             <% :fixtures -> %>
               <.live_component module={LiveLightingControlWeb.FixturesLibraryCardComponent} id={card.id} fixtures={@fixtures} selected_fixture_ids={@selected_fixture_ids} />
             <% :fixture_groups -> %>
               <.live_component module={LiveLightingControlWeb.FixtureGroupsLibraryCardComponent} id={card.id} fixture_groups={@fixture_groups} selected_fixture_ids={@selected_fixture_ids} />
             <% :layouts -> %>
-              <.live_component module={LiveLightingControlWeb.LayoutsCardComponent} id={card.id} layouts={@layouts} card_configuration={Map.get(@card_configuration, card.id, %{})} selected_fixture_ids={@selected_fixture_ids}/>
+              <.live_component module={LiveLightingControlWeb.LayoutsCardComponent} id={card.id} layouts={@layouts} configuration={card.configuration} selected_fixture_ids={@selected_fixture_ids}/>
             <% :scenes -> %>
               <.live_component module={LiveLightingControlWeb.ScenesLibraryCardComponent} id={card.id} scenes={@scenes} />
             <% :output -> %>

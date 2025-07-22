@@ -35,7 +35,7 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
         <h2 class="text-sm font-semibold">Layout view</h2>
       </div>
 
-      <% selected_layout_id =  Map.get(@card_configuration, :selected_layout_id, nil) %>
+      <% selected_layout_id =  Map.get(@configuration, :selected_layout_id, nil) %>
       <% selected_layout = get_selected_layout(@layouts, selected_layout_id) %>
 
 
