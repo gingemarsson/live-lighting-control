@@ -52,7 +52,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             />
           <% end %>
 
-          <div class="border-l-2 mx-2 border-neutral-600" />
+          <div class="border-l-2 mx-1 border-neutral-600" />
 
           <div class="grid grid-cols-8 gap-2">
             <%= for executor_button_row_index <- 1..4 do %>
@@ -73,15 +73,15 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             <% end %>
           </div>
 
-          <div class="border-l-2 mx-2 border-neutral-600" />
+          <div class="border-l-2 mx-1 border-neutral-600" />
 
           <div class="flex flex-col justify-center items-center">
             <div
-              class="bg-neutral-800 w-24 h-16 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
+              class="bg-neutral-800 w-16 h-16 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
               phx-click="trigger_executor_action"
               phx-value-group-id={@id}
             >
-              <p class="">Page up</p>
+              <p class="">Up</p>
             </div>
 
             <p class="my-3">
@@ -89,15 +89,15 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             </p>
 
             <div
-              class="bg-neutral-800 w-24 h-16 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
+              class="bg-neutral-800 w-16 h-16 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
               phx-click="trigger_executor_action"
               phx-value-group-id={@id}
             >
-              <p class="">Page down</p>
+              <p class="">Down</p>
             </div>
           </div>
 
-          <div class="border-l-2 mx-2 border-neutral-600" />
+          <div class="border-l-2 mx-1 border-neutral-600" />
 
           <% value = 50 %>
           <% label = "Transition" %>
