@@ -36,6 +36,20 @@ defmodule LiveLightingControl.LayoutManager do
           "15867280-3f56-4824-a56c-5059b16b183b" => %{x: 60, y: 60, label: "▲"},
           "34562280-3f56-4824-a56c-5059b16b183b" => %{x: 90, y: 90, label: "▲"}
         }
+      },
+      %Layout{
+        id: UUID.uuid4(),
+        label: "SixPars Vertical Rows",
+        fixtures: %{
+          "687eb125-ba48-4000-a088-f8c5d5919baf" => %{x: 20, y: 20, label: "SixPar 1"},
+          "3f647c7b-d068-440f-905f-6e13b2ab2f62" => %{x: 20, y: 40, label: "SixPar 3"},
+          "5f647c7b-d068-440f-905f-6e13b2ab2f64" => %{x: 20, y: 60, label: "SixPar 5"},
+          "7f647c7b-d068-440f-905f-6e13b2ab2f66" => %{x: 20, y: 80, label: "SixPar 7"},
+          "2e647c7b-d068-440f-905f-6e13b2ab2f61" => %{x: 80, y: 20, label: "SixPar 2"},
+          "4f647c7b-d068-440f-905f-6e13b2ab2f63" => %{x: 80, y: 40, label: "SixPar 4"},
+          "6f647c7b-d068-440f-905f-6e13b2ab2f65" => %{x: 80, y: 60, label: "SixPar 6"},
+          "8f647c7b-d068-440f-905f-6e13b2ab2f67" => %{x: 80, y: 80, label: "SixPar 8"}
+        }
       }
     ]
 
