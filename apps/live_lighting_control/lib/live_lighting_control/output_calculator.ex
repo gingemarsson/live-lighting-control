@@ -9,6 +9,7 @@ defmodule LiveLightingControl.OutputCalculator do
         fixture_types_map,
         universe_number
       ) do
+    # The merged control data is a map of fixture ids, pointing to a map of attributes pointing to values between 0 and 255
     merged_control_data =
       case {config.enable_scenes, config.enable_programmer} do
         {true, true} ->
@@ -24,6 +25,16 @@ defmodule LiveLightingControl.OutputCalculator do
           %{}
       end
 
+    scale_factor =
+      if config.blackout do
+        0
+      else
+        config.main_master / 255
+      end
+
+    merged_control_data_after_main_master_and_blackout =
+      scale_dimmers(merged_control_data, scale_factor)
+
     fixtures = Map.values(fixtures_map)
     fixtures_for_universe = Enum.filter(fixtures, &(&1.universe == universe_number))
 
@@ -31,7 +42,9 @@ defmodule LiveLightingControl.OutputCalculator do
     all_channels =
       Enum.map(fixtures_for_universe, fn fixture ->
         fixture_type = Map.get(fixture_types_map, fixture.fixture_type_id)
-        fixture_attribute_values = Map.get(merged_control_data, fixture.id)
+
+        fixture_attribute_values =
+          Map.get(merged_control_data_after_main_master_and_blackout, fixture.id)
 
         channels =
           Enum.map(fixture_type.channels, fn channel ->
@@ -86,6 +99,21 @@ defmodule LiveLightingControl.OutputCalculator do
       end)
 
     scaled_by_scene_master
+  end
+
+  def scale_dimmers(fixtures, factor) do
+    for {fixture_id, attribute_map} <- fixtures, into: %{} do
+      new_attribute_map =
+        case attribute_map do
+          %{"dimmer" => dimmer} when is_number(dimmer) ->
+            Map.put(attribute_map, "dimmer", dimmer * factor)
+
+          _ ->
+            attribute_map
+        end
+
+      {fixture_id, new_attribute_map}
+    end
   end
 
   defp htp_fixture_merge(map_1, map_2) do

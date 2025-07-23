@@ -171,10 +171,36 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_event(
         "slider_changed",
+        %{"value" => value, "sliderId" => "master-executor", "sliderType" => "executor"},
+        socket
+      ) do
+    LiveLightingControl.ConfigManager.set_config(%{
+      config_name: :main_master,
+      value: value
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "slider_changed",
         %{"value" => value, "sliderId" => executor_id, "sliderType" => "executor"},
         socket
       ) do
     LiveLightingControl.ExecutorManager.handle_executor_slider(executor_id, value)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "trigger_executor_action_button_down",
+        %{"executorId" => "master-executor"},
+        socket
+      ) do
+    LiveLightingControl.ConfigManager.set_config(%{
+      config_name: :blackout,
+      value: !socket.assigns.config[:blackout]
+    })
 
     {:noreply, socket}
   end
@@ -258,7 +284,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  # TODO Move to real config
+  # TODO Move to real config (toggle sacn)
   def handle_event(
         "midi_event",
         %{
@@ -275,7 +301,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  # TODO Move to real config
+  # TODO Move to real config (Blind/enable programmer)
   def handle_event(
         "midi_event",
         %{
@@ -292,7 +318,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  # TODO Move to real config
+  # TODO Move to real config (page up)
   def handle_event(
         "midi_event",
         %{
@@ -309,7 +335,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
      )}
   end
 
-  # TODO Move to real config
+  # TODO Move to real config (Page down)
   def handle_event(
         "midi_event",
         %{
@@ -324,6 +350,41 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        :current_page_index,
        rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
      )}
+  end
+
+  # TODO Move to real config (Blackout)
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => 122,
+          "status" => 144
+        },
+        socket
+      ) do
+    LiveLightingControl.ConfigManager.set_config(%{
+      config_name: :blackout,
+      value: !socket.assigns.config[:blackout]
+    })
+
+    {:noreply, socket}
+  end
+
+  # TODO Move to real config (Main master)
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => 56,
+          "data2" => raw_value,
+          "status" => 176
+        },
+        socket
+      ) do
+    LiveLightingControl.ConfigManager.set_config(%{
+      config_name: :main_master,
+      value: MidiUtils.get_value_from_midi_value(raw_value)
+    })
+
+    {:noreply, socket}
   end
 
   def handle_event(
@@ -438,6 +499,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         executor_pages={@executor_pages}
         current_page_index={@current_page_index}
         scenes={@scenes_map}
+        config={@config}
       />
     </div>
 

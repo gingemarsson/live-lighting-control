@@ -24,7 +24,9 @@ defmodule LiveLightingControl.ConfigManager do
     state = %{
       enable_programmer: true,
       enable_scenes: true,
-      enable_sacn_output: false
+      enable_sacn_output: false,
+      blackout: false,
+      main_master: 255
     }
 
     {:ok, state}

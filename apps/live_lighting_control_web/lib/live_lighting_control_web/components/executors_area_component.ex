@@ -178,17 +178,14 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
 
           <div class="border-l-2 mx-1 border-neutral-600" />
 
-          <% value = 50 %>
-          <% label = "Transition" %>
-          <% button_label = "Toggle" %>
           <.live_component
             module={LiveLightingControlWeb.ExecutorComponent}
             id="master-executor"
             executor_id="master-executor"
-            executor_active={false}
-            value={value}
-            label={label}
-            button_label={button_label}
+            executor_active={@config.blackout}
+            value={@config.main_master}
+            label="Main Master"
+            button_label="Blackout"
           />
         </div>
       </div>
