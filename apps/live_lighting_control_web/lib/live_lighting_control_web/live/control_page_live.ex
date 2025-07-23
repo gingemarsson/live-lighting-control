@@ -3,6 +3,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   require UUID
   alias LiveLightingControl.Scene
   alias LiveLightingControl.Utils
+  alias LiveLightingControl.MidiUtils
 
   def mount(_params, _session, socket) do
     cards = [
@@ -224,6 +225,29 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
+  def handle_event("midi_event", %{
+    "data1" => element_id,
+    "data2" => raw_value,
+    "status" => status
+  }, socket) do
+    %{row_number: row_number, executor_number: executor_number} = MidiUtils.get_executor_position_from_midi(element_id)
+    action = MidiUtils.get_action_from_midi_status(status)
+    value = MidiUtils.get_value_from_midi_value(raw_value)
+
+    current_page = Enum.at(socket.assigns.executor_pages, socket.assigns.current_page_index)
+    executor = Utils.get_executor(row_number, executor_number, current_page)
+
+    if (executor) do
+      case action do
+        :button_down -> LiveLightingControl.ExecutorManager.handle_executor_action(executor.id)
+        :button_up -> nil
+        :slider_change -> LiveLightingControl.ExecutorManager.handle_executor_slider(executor.id, value)
+      end
+    end
+
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="flex-grow w-full max-w-[1920px] mx-auto flex flex-col gap-4 p-4 pb-96">
@@ -298,6 +322,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
       <.live_component module={LiveLightingControlWeb.ExecutorsAreaComponent} id="executors" executor_pages={@executor_pages} current_page_index={@current_page_index} scenes={@scenes_map}/>
     </div>
+
+    <div id="midi" phx-hook="MidiHook" />
 
     <div class="col-span-1 col-span-2 col-span-3 col-span-4" />
     """

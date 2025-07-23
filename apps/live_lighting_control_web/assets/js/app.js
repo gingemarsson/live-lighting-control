@@ -113,6 +113,32 @@ Hooks.ColorPickerHook = {
 }
 
 
+Hooks.MidiHook = {
+  mounted() {
+    if (!navigator.requestMIDIAccess) {
+      console.warn("Web MIDI API not supported.");
+      return;
+    }
+
+    navigator.requestMIDIAccess().then((midiAccess) => {
+      for (let input of midiAccess.inputs.values()) {
+        input.onmidimessage = (message) => {
+          const [status, data1, data2] = message.data;
+
+          const midi_event_data = {
+            status,
+            data1,
+            data2,
+            timestamp: message.timeStamp
+          }
+
+          this.pushEvent("midi_event", midi_event_data);
+        };
+      }
+    });
+  }
+}
+
 
 // If you want to use Phoenix channels, run `mix help phx.gen.channel`
 // to get started and then uncomment the line below.

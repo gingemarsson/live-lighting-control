@@ -1,15 +1,10 @@
 defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   use Phoenix.LiveComponent
   alias Phoenix.LiveView.JS
-
-  def get_executor(row_number, executor_number, current_page) do
-    current_page.executors
-    |> Enum.at(row_number)
-    |> Enum.at(executor_number - 1)
-  end
+  alias LiveLightingControl.Utils
 
   def get_id_for_executor(row_number, executor_number, current_page) do
-    case get_executor(row_number, executor_number, current_page) do
+    case Utils.get_executor(row_number, executor_number, current_page) do
       nil ->
         nil
 
@@ -19,7 +14,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   end
 
   def get_value_for_executor(row_number, executor_number, current_page, scenes) do
-    case get_executor(row_number, executor_number, current_page) do
+    case Utils.get_executor(row_number, executor_number, current_page) do
       nil ->
         0
 
@@ -33,7 +28,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   end
 
   def get_label_for_executor(row_number, executor_number, current_page, scenes) do
-    case get_executor(row_number, executor_number, current_page) do
+    case Utils.get_executor(row_number, executor_number, current_page) do
       nil ->
         "-"
 
@@ -47,7 +42,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   end
 
   def get_button_label_for_executor(row_number, executor_number, current_page, _scenes) do
-    case get_executor(row_number, executor_number, current_page) do
+    case Utils.get_executor(row_number, executor_number, current_page) do
       nil ->
         "-"
 
