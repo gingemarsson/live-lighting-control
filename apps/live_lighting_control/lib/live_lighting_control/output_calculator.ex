@@ -69,7 +69,7 @@ defmodule LiveLightingControl.OutputCalculator do
       max(
         state.master,
         if Access.get(state, :flash) do
-          100
+          255
         else
           0
         end
@@ -79,7 +79,7 @@ defmodule LiveLightingControl.OutputCalculator do
       Enum.into(fixture_map, %{}, fn {guid, attributes_map} ->
         updated =
           attributes_map
-          |> Enum.map(fn {key, value} -> {key, value * scene_master * 0.01} end)
+          |> Enum.map(fn {key, value} -> {key, value * scene_master / 255} end)
           |> Enum.into(%{})
 
         {guid, updated}

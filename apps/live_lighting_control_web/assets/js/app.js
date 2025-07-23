@@ -15,9 +15,9 @@ Hooks.VerticalSlider = {
     const getValueFromY = (clientY) => {
       const rect = slider.getBoundingClientRect();
       const offset = rect.bottom - clientY;
-      let percent = (offset / rect.height) * 100;
-      percent = Math.max(0, Math.min(100, percent));
-      return Math.round(percent);
+      let value = (offset / rect.height) * 255;
+      value = Math.max(0, Math.min(255, value));
+      return Math.round(value * 1000) / 1000;
     };
 
     const onMove = (e) => {

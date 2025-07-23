@@ -96,7 +96,7 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
                 module={LiveLightingControlWeb.VerticalSliderComponent}
                 id={attribute}
                 value={
-                  get_max_value_for_attibute(attribute, @programmer, @selected_fixture_ids) / 2.55
+                  get_max_value_for_attibute(attribute, @programmer, @selected_fixture_ids)
                 }
                 slider_id={attribute}
                 slider_type={:programmer}

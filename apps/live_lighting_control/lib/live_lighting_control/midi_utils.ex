@@ -20,7 +20,7 @@ defmodule LiveLightingControl.MidiUtils do
   end
 
   def get_value_from_midi_value(midi_value) do
-    round(midi_value / 1.27)
+    round(midi_value / 1.27 * 2.55)
   end
 
   def get_action_from_midi_status(status) when status in 0x80..0x8F, do: :button_up
