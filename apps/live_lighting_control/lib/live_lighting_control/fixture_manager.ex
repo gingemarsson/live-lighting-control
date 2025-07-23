@@ -185,21 +185,21 @@ defmodule LiveLightingControl.FixtureManager do
           %Fixture{
             id: UUID.uuid4(),
             label: "Tourled 1",
-            dmx_address: 10,
+            dmx_address: 210,
             universe: 1,
             fixture_type_id: rgb_fixturetype_id
           },
           %Fixture{
             id: UUID.uuid4(),
             label: "Tourled 2",
-            dmx_address: 15,
+            dmx_address: 215,
             universe: 1,
             fixture_type_id: rgb_fixturetype_id
           },
           %Fixture{
             id: UUID.uuid4(),
             label: "Tourled 3",
-            dmx_address: 20,
+            dmx_address: 220,
             universe: 1,
             fixture_type_id: rgb_fixturetype_id
           },
