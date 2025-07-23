@@ -8,13 +8,14 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
         {@label}
       </p>
 
-      <div
+      <button
+        phx-hook="ExecutorButtonHook"
+        id={"executor-slider-button-#{@executor_id}"}
+        data-executor-id={@executor_id}
         class="bg-neutral-800 py-1 w-16 my-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
-        phx-click="trigger_executor_action"
-        phx-value-executor-id={@executor_id}
       >
         <p class="text-sm">{@button_label}</p>
-      </div>
+      </button>
 
       <div class="text-sm text-gray-700 font-medium">
         {@value}

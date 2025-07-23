@@ -165,21 +165,30 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event(
-    "slider_changed",
-    %{"value" => value, "sliderId" => executor_id, "sliderType" => "executor"},
-    socket
-  ) do
+        "slider_changed",
+        %{"value" => value, "sliderId" => executor_id, "sliderType" => "executor"},
+        socket
+      ) do
     LiveLightingControl.ExecutorManager.handle_executor_slider(executor_id, value)
 
     {:noreply, socket}
   end
 
   def handle_event(
-    "trigger_executor_action",
-    %{"executor-id" => executor_id},
-    socket
-  ) do
+        "trigger_executor_action_button_down",
+        %{"executorId" => executor_id},
+        socket
+      ) do
     LiveLightingControl.ExecutorManager.handle_executor_action(executor_id, :button_down)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "trigger_executor_action_button_up",
+        %{"executorId" => executor_id},
+        socket
+      ) do
     LiveLightingControl.ExecutorManager.handle_executor_action(executor_id, :button_up)
 
     {:noreply, socket}
@@ -226,23 +235,34 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  def handle_event("midi_event", %{
-    "data1" => element_id,
-    "data2" => raw_value,
-    "status" => status
-  }, socket) do
-    %{row_number: row_number, executor_number: executor_number} = MidiUtils.get_executor_position_from_midi(element_id)
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => element_id,
+          "data2" => raw_value,
+          "status" => status
+        },
+        socket
+      ) do
+    %{row_number: row_number, executor_number: executor_number} =
+      MidiUtils.get_executor_position_from_midi(element_id)
+
     action = MidiUtils.get_action_from_midi_status(status)
     value = MidiUtils.get_value_from_midi_value(raw_value)
 
     current_page = Enum.at(socket.assigns.executor_pages, socket.assigns.current_page_index)
     executor = Utils.get_executor(row_number, executor_number, current_page)
 
-    if (executor) do
+    if executor do
       case action do
-        :button_down -> LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_down)
-        :button_up -> LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_up)
-        :slider_change -> LiveLightingControl.ExecutorManager.handle_executor_slider(executor.id, value)
+        :button_down ->
+          LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_down)
+
+        :button_up ->
+          LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_up)
+
+        :slider_change ->
+          LiveLightingControl.ExecutorManager.handle_executor_slider(executor.id, value)
       end
     end
 
@@ -321,7 +341,13 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     </div>
 
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
-      <.live_component module={LiveLightingControlWeb.ExecutorsAreaComponent} id="executors" executor_pages={@executor_pages} current_page_index={@current_page_index} scenes={@scenes_map}/>
+      <.live_component
+        module={LiveLightingControlWeb.ExecutorsAreaComponent}
+        id="executors"
+        executor_pages={@executor_pages}
+        current_page_index={@current_page_index}
+        scenes={@scenes_map}
+      />
     </div>
 
     <div id="midi" phx-hook="MidiHook" />

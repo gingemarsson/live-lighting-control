@@ -65,7 +65,16 @@ defmodule LiveLightingControl.OutputCalculator do
   end
 
   defp compute_scene_values(%Scene{fixtures: fixture_map, state: state}) do
-    scene_master = max(state.master, if Access.get(state, :flash) do 100 else 0 end)
+    scene_master =
+      max(
+        state.master,
+        if Access.get(state, :flash) do
+          100
+        else
+          0
+        end
+      )
+
     scaled_by_scene_master =
       Enum.into(fixture_map, %{}, fn {guid, attributes_map} ->
         updated =

@@ -112,6 +112,17 @@ Hooks.ColorPickerHook = {
   }
 }
 
+Hooks.ExecutorButtonHook = {
+  mounted() {
+    this.el.addEventListener("mousedown", () => {
+      this.pushEvent("trigger_executor_action_button_down", { executorId: this.el.dataset.executorId });
+    });
+
+    this.el.addEventListener("mouseup", () => {
+      this.pushEvent("trigger_executor_action_button_up", { executorId: this.el.dataset.executorId  });
+    });
+  }
+};
 
 Hooks.MidiHook = {
   mounted() {

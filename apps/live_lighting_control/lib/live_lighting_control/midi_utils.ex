@@ -1,12 +1,21 @@
 defmodule LiveLightingControl.MidiUtils do
-
   # Note: This is currently hardcoded for AKAI APC mini MK2
   def get_executor_position_from_midi(midi_position) do
     cond do
-      midi_position >= 48 and midi_position <= 55 -> %{row_number: 0, executor_number: midi_position - 47} # Sliders
-      midi_position >= 100 and midi_position <= 1007 -> %{row_number: 0, executor_number: midi_position - 99} # Slider buttons
-      midi_position >= 0 and midi_position <= 31 ->  %{row_number: div(31 - midi_position, 8) + 1, executor_number: rem(midi_position, 8) + 1} # Flash buttons
-      true -> %{row_number: 1, executor_number: 1}
+      # Sliders
+      midi_position >= 48 and midi_position <= 55 ->
+        %{row_number: 0, executor_number: midi_position - 47}
+
+      # Slider buttons
+      midi_position >= 100 and midi_position <= 1007 ->
+        %{row_number: 0, executor_number: midi_position - 99}
+
+      # Flash buttons
+      midi_position >= 0 and midi_position <= 31 ->
+        %{row_number: div(31 - midi_position, 8) + 1, executor_number: rem(midi_position, 8) + 1}
+
+      true ->
+        %{row_number: 1, executor_number: 1}
     end
   end
 

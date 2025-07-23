@@ -46,12 +46,16 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
       nil ->
         "-"
 
-      %{button_type: :go} -> "Go"
-      %{button_type: :flash} -> "Flash"
+      %{button_type: :go} ->
+        "Go"
+
+      %{button_type: :flash} ->
+        "Flash"
 
       _other ->
         "N/A"
-    end  end
+    end
+  end
 
   def render(assigns) do
     ~H"""
@@ -73,7 +77,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <%= for executor_number <- 1..8 do %>
             <% value = get_value_for_executor(0, executor_number, current_page, @scenes) %>
             <% label = get_label_for_executor(0, executor_number, current_page, @scenes) %>
-            <% button_label = get_button_label_for_executor(0,executor_number, current_page, @scenes) %>
+            <% button_label = get_button_label_for_executor(0, executor_number, current_page, @scenes) %>
             <% executor_id = get_id_for_executor(0, executor_number, current_page) %>
             <.live_component
               module={LiveLightingControlWeb.ExecutorComponent}
@@ -91,23 +95,42 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             <%= for executor_button_row_index <- 1..4 do %>
               <%= for executor_button_col_index <- 1..8 do %>
                 <% _value =
-                  get_value_for_executor(executor_button_row_index, executor_button_col_index, current_page, @scenes) %>
+                  get_value_for_executor(
+                    executor_button_row_index,
+                    executor_button_col_index,
+                    current_page,
+                    @scenes
+                  ) %>
                 <% label =
-                  get_label_for_executor(executor_button_row_index, executor_button_col_index, current_page, @scenes) %>
+                  get_label_for_executor(
+                    executor_button_row_index,
+                    executor_button_col_index,
+                    current_page,
+                    @scenes
+                  ) %>
                 <% button_label =
                   get_button_label_for_executor(
                     executor_button_row_index,
-                    executor_button_col_index, current_page, @scenes
+                    executor_button_col_index,
+                    current_page,
+                    @scenes
                   ) %>
-                <% executor_id = get_id_for_executor(executor_button_row_index, executor_button_col_index, current_page) %>
-                <div
+                <% executor_id =
+                  get_id_for_executor(
+                    executor_button_row_index,
+                    executor_button_col_index,
+                    current_page
+                  ) %>
+
+                <button
+                  phx-hook="ExecutorButtonHook"
+                  id={"executor-#{current_page_number}-#{executor_button_row_index}-#{executor_button_col_index}"}
+                  data-executor-id={executor_id}
                   class="bg-neutral-800 w-24 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
-                  phx-click="trigger_executor_action"
-                  phx-value-executor-id={executor_id}
                 >
                   <p class="">{label}</p>
                   <p class="text-sm">{button_label}</p>
-                </div>
+                </button>
               <% end %>
             <% end %>
           </div>
@@ -142,7 +165,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <.live_component
             module={LiveLightingControlWeb.ExecutorComponent}
             id="master-executor"
-            executor_id={"master-executor"}
+            executor_id="master-executor"
             value={value}
             label={label}
             button_label={button_label}

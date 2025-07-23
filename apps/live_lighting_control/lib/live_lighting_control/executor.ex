@@ -4,7 +4,8 @@ defmodule LiveLightingControl.ExecutorPage do
   @type t :: %__MODULE__{
           id: String.t(),
           label: String.t(),
-          executors: [[Executor.t()]], # Note: Always 5 rows, top row contains faders, rest 1-4 are buttons. Each row has 8 elements.
+          # Note: Always 5 rows, top row contains faders, rest 1-4 are buttons. Each row has 8 elements.
+          executors: [[Executor.t()]]
         }
 
   defstruct id: nil,
