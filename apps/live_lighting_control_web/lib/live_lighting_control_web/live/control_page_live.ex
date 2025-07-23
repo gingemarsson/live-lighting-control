@@ -199,6 +199,24 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
+  def handle_event("page_up", _data, socket) do
+    {:noreply,
+     assign(
+       socket,
+       :current_page_index,
+       rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
+     )}
+  end
+
+  def handle_event("page_down", _data, socket) do
+    {:noreply,
+     assign(
+       socket,
+       :current_page_index,
+       rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
+     )}
+  end
+
   def handle_event(
         "color_changed",
         %{
@@ -272,6 +290,40 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     })
 
     {:noreply, socket}
+  end
+
+  # TODO Move to real config
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => 118,
+          "status" => 144
+        },
+        socket
+      ) do
+    {:noreply,
+     assign(
+       socket,
+       :current_page_index,
+       rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
+     )}
+  end
+
+  # TODO Move to real config
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => 119,
+          "status" => 144
+        },
+        socket
+      ) do
+    {:noreply,
+     assign(
+       socket,
+       :current_page_index,
+       rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
+     )}
   end
 
   def handle_event(
@@ -380,6 +432,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     </div>
 
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
+      {@current_page_index}
       <.live_component
         module={LiveLightingControlWeb.ExecutorsAreaComponent}
         id="executors"

@@ -93,6 +93,24 @@ defmodule LiveLightingControl.ExecutorManager do
           [],
           []
         ]
+      },
+      %ExecutorPage{
+        id: "17c82518-62dc-4ddc-8db9-2c745f0a2f10",
+        label: "Page 2",
+        executors: [
+          [
+            %Executor{
+              id: UUID.uuid4(),
+              type: :scene,
+              entity_id: "69ac89df-fdaf-481d-9788-d522a159a465",
+              button_type: :flash
+            }
+          ],
+          [],
+          [],
+          [],
+          []
+        ]
       }
     ]
 
