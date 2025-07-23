@@ -41,7 +41,7 @@ defmodule LiveLightingControl.SceneManager do
         id: "69ac89df-fdaf-481d-9788-d522a159a465",
         label: "Moody",
         description: "A moody lighting scene.",
-        fixtures: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 20}},
+        fixtures: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}},
         state: %{master: 90}
       },
       %Scene{
@@ -55,7 +55,7 @@ defmodule LiveLightingControl.SceneManager do
         id: "7b7f7fc7-69c0-4eb2-86a5-22fa8e2d1144",
         label: "Relax",
         description: "A relaxing lighting scene.",
-        fixtures: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 50}},
+        fixtures: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}},
         state: %{master: 50}
       },
       %Scene{
