@@ -1,21 +1,55 @@
 defmodule LiveLightingControl.MidiUtils do
   # Note: This is currently hardcoded for AKAI APC mini MK2
-  def get_executor_position_from_midi(midi_position) do
+  def get_executor_position_or_command_from_midi(midi_position, action) do
     cond do
+      ### Executors
+      #
+
       # Sliders
-      midi_position >= 48 and midi_position <= 55 ->
-        %{row_number: 0, executor_number: midi_position - 47}
+      midi_position >= 48 and midi_position <= 55 and action == :slider_change ->
+        %{type: :executor_position, row_number: 0, executor_number: midi_position - 47}
 
       # Slider buttons
-      midi_position >= 100 and midi_position <= 1007 ->
-        %{row_number: 0, executor_number: midi_position - 99}
+      midi_position >= 100 and midi_position <= 107 ->
+        %{type: :executor_position, row_number: 0, executor_number: midi_position - 99}
 
       # Flash buttons
       midi_position >= 0 and midi_position <= 31 ->
-        %{row_number: div(31 - midi_position, 8) + 1, executor_number: rem(midi_position, 8) + 1}
+        %{
+          type: :executor_position,
+          row_number: div(31 - midi_position, 8) + 1,
+          executor_number: rem(midi_position, 8) + 1
+        }
+
+      ### Actions
+      #
+
+      # Toggle sACN output
+      midi_position == 112 ->
+        %{type: :command, command: :toggle_sacn_output}
+
+      # Toggle programmer
+      midi_position == 113 ->
+        %{type: :command, command: :toggle_programmer}
+
+      # Page up
+      midi_position == 118 ->
+        %{type: :command, command: :page_up}
+
+      # Page down
+      midi_position == 119 ->
+        %{type: :command, command: :page_down}
+
+      # Blackout toggle
+      midi_position == 122 ->
+        %{type: :command, command: :toggle_blackout}
+
+      # Main master (fader)
+      midi_position == 56 ->
+        %{type: :command, command: :main_master}
 
       true ->
-        %{row_number: 1, executor_number: 1}
+        nil
     end
   end
 

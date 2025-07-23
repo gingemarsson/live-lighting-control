@@ -284,109 +284,6 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  # TODO Move to real config (toggle sacn)
-  def handle_event(
-        "midi_event",
-        %{
-          "data1" => 112,
-          "status" => 144
-        },
-        socket
-      ) do
-    LiveLightingControl.ConfigManager.set_config(%{
-      config_name: :enable_sacn_output,
-      value: !socket.assigns.config[:enable_sacn_output]
-    })
-
-    {:noreply, socket}
-  end
-
-  # TODO Move to real config (Blind/enable programmer)
-  def handle_event(
-        "midi_event",
-        %{
-          "data1" => 113,
-          "status" => 144
-        },
-        socket
-      ) do
-    LiveLightingControl.ConfigManager.set_config(%{
-      config_name: :enable_programmer,
-      value: !socket.assigns.config[:enable_programmer]
-    })
-
-    {:noreply, socket}
-  end
-
-  # TODO Move to real config (page up)
-  def handle_event(
-        "midi_event",
-        %{
-          "data1" => 118,
-          "status" => 144
-        },
-        socket
-      ) do
-    {:noreply,
-     assign(
-       socket,
-       :current_page_index,
-       rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
-     )}
-  end
-
-  # TODO Move to real config (Page down)
-  def handle_event(
-        "midi_event",
-        %{
-          "data1" => 119,
-          "status" => 144
-        },
-        socket
-      ) do
-    {:noreply,
-     assign(
-       socket,
-       :current_page_index,
-       rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
-     )}
-  end
-
-  # TODO Move to real config (Blackout)
-  def handle_event(
-        "midi_event",
-        %{
-          "data1" => 122,
-          "status" => 144
-        },
-        socket
-      ) do
-    LiveLightingControl.ConfigManager.set_config(%{
-      config_name: :blackout,
-      value: !socket.assigns.config[:blackout]
-    })
-
-    {:noreply, socket}
-  end
-
-  # TODO Move to real config (Main master)
-  def handle_event(
-        "midi_event",
-        %{
-          "data1" => 56,
-          "data2" => raw_value,
-          "status" => 176
-        },
-        socket
-      ) do
-    LiveLightingControl.ConfigManager.set_config(%{
-      config_name: :main_master,
-      value: MidiUtils.get_value_from_midi_value(raw_value)
-    })
-
-    {:noreply, socket}
-  end
-
   def handle_event(
         "midi_event",
         %{
@@ -396,29 +293,90 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         },
         socket
       ) do
-    %{row_number: row_number, executor_number: executor_number} =
-      MidiUtils.get_executor_position_from_midi(element_id)
-
     action = MidiUtils.get_action_from_midi_status(status)
-    value = MidiUtils.get_value_from_midi_value(raw_value)
 
-    current_page = Enum.at(socket.assigns.executor_pages, socket.assigns.current_page_index)
-    executor = Utils.get_executor(row_number, executor_number, current_page)
+    case MidiUtils.get_executor_position_or_command_from_midi(element_id, action) do
+      %{type: :executor_position, row_number: row_number, executor_number: executor_number} ->
+        current_page = Enum.at(socket.assigns.executor_pages, socket.assigns.current_page_index)
+        executor = Utils.get_executor(row_number, executor_number, current_page)
 
-    if executor do
-      case action do
-        :button_down ->
-          LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_down)
+        if executor do
+          case action do
+            :button_down ->
+              LiveLightingControl.ExecutorManager.handle_executor_action(
+                executor.id,
+                :button_down
+              )
 
-        :button_up ->
-          LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_up)
+              {:noreply, socket}
 
-        :slider_change ->
-          LiveLightingControl.ExecutorManager.handle_executor_slider(executor.id, value)
-      end
+            :button_up ->
+              LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_up)
+              {:noreply, socket}
+
+            :slider_change ->
+              LiveLightingControl.ExecutorManager.handle_executor_slider(
+                executor.id,
+                MidiUtils.get_value_from_midi_value(raw_value)
+              )
+
+              {:noreply, socket}
+          end
+        else
+          {:noreply, socket}
+        end
+
+      %{type: :command, command: :toggle_sacn_output} when action == :button_down ->
+        LiveLightingControl.ConfigManager.set_config(%{
+          config_name: :enable_sacn_output,
+          value: !socket.assigns.config[:enable_sacn_output]
+        })
+
+        {:noreply, socket}
+
+      %{type: :command, command: :toggle_programmer} when action == :button_down ->
+        LiveLightingControl.ConfigManager.set_config(%{
+          config_name: :enable_programmer,
+          value: !socket.assigns.config[:enable_programmer]
+        })
+
+        {:noreply, socket}
+
+      %{type: :command, command: :page_up} when action == :button_down ->
+        {:noreply,
+         assign(
+           socket,
+           :current_page_index,
+           rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
+         )}
+
+      %{type: :command, command: :page_down} when action == :button_down ->
+        {:noreply,
+         assign(
+           socket,
+           :current_page_index,
+           rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
+         )}
+
+      %{type: :command, command: :toggle_blackout} when action == :button_down ->
+        LiveLightingControl.ConfigManager.set_config(%{
+          config_name: :blackout,
+          value: !socket.assigns.config[:blackout]
+        })
+
+        {:noreply, socket}
+
+      %{type: :command, command: :main_master} when action == :slider_change ->
+        LiveLightingControl.ConfigManager.set_config(%{
+          config_name: :main_master,
+          value: MidiUtils.get_value_from_midi_value(raw_value)
+        })
+
+        {:noreply, socket}
+
+      _ ->
+        {:noreply, socket}
     end
-
-    {:noreply, socket}
   end
 
   def render(assigns) do

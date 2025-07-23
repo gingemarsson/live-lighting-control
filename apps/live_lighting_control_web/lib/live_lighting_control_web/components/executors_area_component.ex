@@ -145,7 +145,8 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
                   phx-hook="ExecutorButtonHook"
                   id={"executor-#{current_page_number}-#{executor_button_row_index}-#{executor_button_col_index}"}
                   data-executor-id={executor_id}
-                  class={"bg-neutral-800 w-24 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{if executor_active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
+                  class={"bg-neutral-800 w-24 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer disabled:cursor-default disabled:border-neutral-700 #{if executor_active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
+                  disabled={executor_id == nil}
                 >
                   <p class="">{label}</p>
                   <p class="text-sm">{button_label}</p>
