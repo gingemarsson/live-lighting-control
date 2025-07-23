@@ -38,16 +38,21 @@ defmodule LiveLightingControl.ProgrammerManager do
   end
 
   @impl true
-  def handle_cast({:update_programmer, %{fixture_ids: fixture_ids, attributes: attributes}}, programmer) do
+  def handle_cast(
+        {:update_programmer, %{fixture_ids: fixture_ids, attributes: attributes}},
+        programmer
+      ) do
     updated_programmer =
-    Enum.reduce(fixture_ids, programmer, fn fixture_id, acc ->
-      fixture_values = Map.get(acc, fixture_id, %{})
-      updated_fixture_values =
-        Enum.reduce(attributes, fixture_values, fn %{attribute: attr, value: val}, fv_acc ->
-          Map.put(fv_acc, attr, val)
-        end)
-      Map.put(acc, fixture_id, updated_fixture_values)
-    end)
+      Enum.reduce(fixture_ids, programmer, fn fixture_id, acc ->
+        fixture_values = Map.get(acc, fixture_id, %{})
+
+        updated_fixture_values =
+          Enum.reduce(attributes, fixture_values, fn %{attribute: attr, value: val}, fv_acc ->
+            Map.put(fv_acc, attr, val)
+          end)
+
+        Map.put(acc, fixture_id, updated_fixture_values)
+      end)
 
     notify_programmer_updated(updated_programmer)
     {:noreply, updated_programmer}
@@ -62,6 +67,10 @@ defmodule LiveLightingControl.ProgrammerManager do
   end
 
   defp notify_programmer_updated(updated_programmer) do
-    Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "programmer", {:programmer_updated, updated_programmer})
+    Phoenix.PubSub.broadcast(
+      LiveLightingControl.PubSub,
+      "programmer",
+      {:programmer_updated, updated_programmer}
+    )
   end
 end

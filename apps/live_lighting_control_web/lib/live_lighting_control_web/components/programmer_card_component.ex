@@ -67,7 +67,10 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
     <div class="w-full flex flex-col h-96">
       <div class="bg-neutral-700 p-2 rounded-t-lg flex flex-row">
         <h2 class="text-sm font-semibold">Programmer</h2>
-        <button class="text-xs m-0 mx-2 px-3 py-1 rounded-sm border border-neutral-600 hover:border-neutral-400 active:border-orange-600 text-white font-semibold transition-colors" phx-click="clear-programmer">
+        <button
+          class="text-xs m-0 mx-2 px-3 py-1 rounded-sm border border-neutral-600 hover:border-neutral-400 active:border-orange-600 text-white font-semibold transition-colors"
+          phx-click="clear-programmer"
+        >
           Clear Programmer
         </button>
       </div>
@@ -92,7 +95,9 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
               <.live_component
                 module={LiveLightingControlWeb.VerticalSliderComponent}
                 id={attribute}
-                value={get_max_value_for_attibute(attribute, @programmer, @selected_fixture_ids) / 2.55}
+                value={
+                  get_max_value_for_attibute(attribute, @programmer, @selected_fixture_ids) / 2.55
+                }
                 slider_id={attribute}
                 slider_type={:programmer}
               />
@@ -101,7 +106,11 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
         <% end %>
 
         <%= if supports_rgb do %>
-          <div class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600" id="wrapper" phx-update="ignore">
+          <div
+            class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600"
+            id="wrapper"
+            phx-update="ignore"
+          >
             <div
               id="color-picker"
               phx-hook="ColorPickerHook"
@@ -109,7 +118,8 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
               data-red={get_max_value_for_attibute("red", @programmer, @selected_fixture_ids)}
               data-green={get_max_value_for_attibute("green", @programmer, @selected_fixture_ids)}
               data-blue={get_max_value_for_attibute("blue", @programmer, @selected_fixture_ids)}
-            ></div>
+            >
+            </div>
           </div>
         <% end %>
       </div>

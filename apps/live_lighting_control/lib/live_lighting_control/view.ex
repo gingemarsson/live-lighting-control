@@ -13,9 +13,7 @@ defmodule LiveLightingControl.View do
             cards: nil
 end
 
-
 defmodule LiveLightingControl.Card do
-
   @type t :: %__MODULE__{
           id: String.t(),
           type: Atom.t(),

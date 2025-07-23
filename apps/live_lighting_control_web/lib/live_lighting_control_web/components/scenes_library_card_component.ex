@@ -29,7 +29,10 @@ defmodule LiveLightingControlWeb.ScenesLibraryCardComponent do
     <div class="w-full flex flex-col h-96">
       <div class="bg-neutral-700 p-2 rounded-t-lg flex flex-row">
         <h2 class="text-sm font-semibold">Scenes</h2>
-        <button class="text-xs m-0 mx-2 px-3 py-1 rounded-sm border border-neutral-600 hover:border-neutral-400 active:border-orange-600 text-white font-semibold transition-colors" phx-click="save-programmer">
+        <button
+          class="text-xs m-0 mx-2 px-3 py-1 rounded-sm border border-neutral-600 hover:border-neutral-400 active:border-orange-600 text-white font-semibold transition-colors"
+          phx-click="save-programmer"
+        >
           Save Programmer as Scene
         </button>
       </div>

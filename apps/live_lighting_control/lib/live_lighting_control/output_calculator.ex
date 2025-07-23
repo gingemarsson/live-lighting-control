@@ -1,13 +1,27 @@
 defmodule LiveLightingControl.OutputCalculator do
   alias LiveLightingControl.Scene
 
-  def calculate_output(config, scenes, programmer, fixtures_map, fixture_types_map, universe_number) do
+  def calculate_output(
+        config,
+        scenes,
+        programmer,
+        fixtures_map,
+        fixture_types_map,
+        universe_number
+      ) do
     merged_control_data =
       case {config.enable_scenes, config.enable_programmer} do
-        {true, true} -> Map.merge(merge_scenes(scenes), programmer, fn _key, v1, v2 -> Map.merge(v1, v2) end)
-        {true, false} -> merge_scenes(scenes)
-        {false, true} -> programmer
-        {false, false} -> %{}
+        {true, true} ->
+          Map.merge(merge_scenes(scenes), programmer, fn _key, v1, v2 -> Map.merge(v1, v2) end)
+
+        {true, false} ->
+          merge_scenes(scenes)
+
+        {false, true} ->
+          programmer
+
+        {false, false} ->
+          %{}
       end
 
     fixtures = Map.values(fixtures_map)
@@ -44,21 +58,22 @@ defmodule LiveLightingControl.OutputCalculator do
   end
 
   defp merge_scenes(scenes) do
-      scenes
-      |> Enum.filter(&(&1.state.master > 0))
-      |> Enum.map(&compute_scene_values/1)
-      |> Enum.reduce(%{}, &htp_fixture_merge/2)
+    scenes
+    |> Enum.filter(&(&1.state.master > 0))
+    |> Enum.map(&compute_scene_values/1)
+    |> Enum.reduce(%{}, &htp_fixture_merge/2)
   end
 
   defp compute_scene_values(%Scene{fixtures: fixture_map, state: state}) do
     scaled_by_scene_master =
-        Enum.into(fixture_map, %{}, fn {guid, attributes_map} ->
-          updated = attributes_map
-            |> Enum.map(fn {key, value} -> {key, value * state.master * 0.01} end)
-            |> Enum.into(%{})
+      Enum.into(fixture_map, %{}, fn {guid, attributes_map} ->
+        updated =
+          attributes_map
+          |> Enum.map(fn {key, value} -> {key, value * state.master * 0.01} end)
+          |> Enum.into(%{})
 
-          {guid, updated}
-        end)
+        {guid, updated}
+      end)
 
     scaled_by_scene_master
   end

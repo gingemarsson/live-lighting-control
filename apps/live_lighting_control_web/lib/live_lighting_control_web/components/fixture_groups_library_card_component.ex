@@ -6,8 +6,10 @@ defmodule LiveLightingControlWeb.FixtureGroupsLibraryCardComponent do
     cond do
       Enum.all?(fixture_group.fixture_ids, fn x -> x in selected_fixture_ids end) ->
         "border-orange-600"
+
       Enum.any?(fixture_group.fixture_ids, fn x -> x in selected_fixture_ids end) ->
         "border-orange-600 border-dashed"
+
       true ->
         "border-neutral-600 hover:border-neutral-400"
     end

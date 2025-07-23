@@ -4,6 +4,7 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
 
   def get_layout_border_color(layout, layouts, selected_layout_id_or_nil) do
     selected_layout_id = get_selected_layout_id(layouts, selected_layout_id_or_nil)
+
     if layout.id == selected_layout_id do
       "border-orange-600"
     else
@@ -20,7 +21,7 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
   end
 
   def get_selected_layout_id(layouts, selected_layout_id_or_nil) do
-    selected_layout_id_or_nil || (List.first(Map.values(layouts)).id)
+    selected_layout_id_or_nil || List.first(Map.values(layouts)).id
   end
 
   def get_selected_layout(layouts, selected_layout_id_or_nil) do
@@ -35,9 +36,8 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
         <h2 class="text-sm font-semibold">Layout view</h2>
       </div>
 
-      <% selected_layout_id =  Map.get(@configuration, :selected_layout_id, nil) %>
+      <% selected_layout_id = Map.get(@configuration, :selected_layout_id, nil) %>
       <% selected_layout = get_selected_layout(@layouts, selected_layout_id) %>
-
 
       <div id={"hidden-content-#{@id}"}>
         <div class="grid grid-cols-10 gap-2 p-2">
@@ -62,7 +62,7 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
                   style={"left: #{x}%; top: #{y}%; transform: translate(-50%, -50%);"}
                   phx-click="toggle_select_fixture"
                   phx-value-fixture-id={fixture_id}
-                  >
+                >
                   {label}
                 </div>
               <% end %>

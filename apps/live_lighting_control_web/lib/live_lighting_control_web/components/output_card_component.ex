@@ -7,11 +7,24 @@ defmodule LiveLightingControlWeb.OutputCardComponent do
     fixture_type = Map.get(fixture_types, fixture.fixture_type_id)
     channel_count = Enum.max_by(fixture_type.channels, & &1.dmx_address).dmx_address
 
-    %{universe: fixture.universe, start: fixture.dmx_address, end: fixture.dmx_address + channel_count}
+    %{
+      universe: fixture.universe,
+      start: fixture.dmx_address,
+      end: fixture.dmx_address + channel_count
+    }
   end
 
-  def get_dmx_channel_position_in_selected_fixtures(universe, channel, selected_fixture_ids, fixtures, fixture_types) do
-    channels_of_selected_fixtures = Enum.map(selected_fixture_ids, fn fixture_id -> get_dmx_range_of_fixture(fixture_id, fixtures, fixture_types) end)
+  def get_dmx_channel_position_in_selected_fixtures(
+        universe,
+        channel,
+        selected_fixture_ids,
+        fixtures,
+        fixture_types
+      ) do
+    channels_of_selected_fixtures =
+      Enum.map(selected_fixture_ids, fn fixture_id ->
+        get_dmx_range_of_fixture(fixture_id, fixtures, fixture_types)
+      end)
 
     Enum.find_value(channels_of_selected_fixtures, fn %{universe: u, start: s, end: e} ->
       cond do
@@ -25,9 +38,15 @@ defmodule LiveLightingControlWeb.OutputCardComponent do
   end
 
   def border_class(:single), do: "border-orange-600"
-  def border_class(:start), do: "border-l-orange-600 border-t-orange-600 border-b-orange-600 border-transparent"
+
+  def border_class(:start),
+    do: "border-l-orange-600 border-t-orange-600 border-b-orange-600 border-transparent"
+
   def border_class(:middle), do: "border-t-orange-600 border-b-orange-600 border-transparent"
-  def border_class(:end), do: "border-r-orange-600 border-t-orange-600 border-b-orange-600 border-transparent"
+
+  def border_class(:end),
+    do: "border-r-orange-600 border-t-orange-600 border-b-orange-600 border-transparent"
+
   def border_class(:outside), do: "border-transparent"
 
   def render(assigns) do
@@ -44,7 +63,14 @@ defmodule LiveLightingControlWeb.OutputCardComponent do
           <div class="grid grid-cols-64 gap-0">
             <%= for {value, channel} <- Enum.with_index(values, 1) do %>
               <% color = "rgb(#{value}, #{value}, #{value})" %>
-              <% pos = get_dmx_channel_position_in_selected_fixtures(universe_number, channel, @selected_fixture_ids, @fixtures, @fixture_types) %>
+              <% pos =
+                get_dmx_channel_position_in_selected_fixtures(
+                  universe_number,
+                  channel,
+                  @selected_fixture_ids,
+                  @fixtures,
+                  @fixture_types
+                ) %>
               <div
                 class={"flex items-center justify-center text-xs font-mono py-2 border border-2  #{border_class(pos)}"}
                 style={"background-color: #{color}; color: #{if value > 128, do: "black", else: "white"};"}

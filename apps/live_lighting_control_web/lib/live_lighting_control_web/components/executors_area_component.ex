@@ -29,7 +29,10 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   def render(assigns) do
     ~H"""
     <div class="w-full flex flex-col">
-      <div class="bg-neutral-700 p-2 rounded-t-lg flex flex-row" phx-click={JS.toggle(to: "#hidden-content-executors")}>
+      <div
+        class="bg-neutral-700 p-2 rounded-t-lg flex flex-row"
+        phx-click={JS.toggle(to: "#hidden-content-executors")}
+      >
         <h2 class="text-sm font-semibold">Executors</h2>
         <%!-- <button class="text-xs m-0 mx-2 px-3 py-1 rounded-sm border border-neutral-600 hover:border-neutral-400 active:border-orange-600 text-white font-semibold transition-colors" phx-click="clear-programmer">
           Clear Programmer
@@ -57,10 +60,17 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <div class="grid grid-cols-8 gap-2">
             <%= for executor_button_row_index <- 1..4 do %>
               <%= for executor_button_col_index <- 1..8 do %>
-                <% _value = get_value_for_executor_button(executor_button_row_index, executor_button_col_index) %>
-                <% label = get_label_for_executor_button(executor_button_row_index, executor_button_col_index) %>
-                <% button_label = get_button_label_for_executor_button(executor_button_row_index, executor_button_col_index) %>
-                <% _executor_button_id = "executor-button-#{executor_button_row_index}-#{executor_button_col_index}" %>
+                <% _value =
+                  get_value_for_executor_button(executor_button_row_index, executor_button_col_index) %>
+                <% label =
+                  get_label_for_executor_button(executor_button_row_index, executor_button_col_index) %>
+                <% button_label =
+                  get_button_label_for_executor_button(
+                    executor_button_row_index,
+                    executor_button_col_index
+                  ) %>
+                <% _executor_button_id =
+                  "executor-button-#{executor_button_row_index}-#{executor_button_col_index}" %>
                 <div
                   class="bg-neutral-800 w-24 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
                   phx-click="trigger_executor_action"
@@ -103,12 +113,12 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <% label = "Transition" %>
           <% button_label = "Toggle" %>
           <.live_component
-              module={LiveLightingControlWeb.ExecutorComponent}
-              id={"master-executor"}
-              value={value}
-              label={label}
-              button_label={button_label}
-            />
+            module={LiveLightingControlWeb.ExecutorComponent}
+            id="master-executor"
+            value={value}
+            label={label}
+            button_label={button_label}
+          />
         </div>
       </div>
     </div>

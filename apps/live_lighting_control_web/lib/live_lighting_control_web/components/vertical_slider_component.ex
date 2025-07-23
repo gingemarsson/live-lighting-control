@@ -12,10 +12,8 @@ defmodule LiveLightingControlWeb.VerticalSliderComponent do
       class="relative w-full h-full bg-neutral-700 rounded cursor-pointer"
     >
       <!-- Filled portion -->
-      <div
-        class="absolute bottom-0 left-0 w-full bg-neutral-500 rounded"
-        style={"height: #{@value}%"}
-      ></div>
+      <div class="absolute bottom-0 left-0 w-full bg-neutral-500 rounded" style={"height: #{@value}%"}>
+      </div>
     </div>
     """
   end

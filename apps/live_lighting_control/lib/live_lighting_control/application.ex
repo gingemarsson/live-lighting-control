@@ -10,9 +10,10 @@ defmodule LiveLightingControl.Application do
     children = [
       LiveLightingControl.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:live_lighting_control, :ecto_repos),
-        skip: skip_migrations?()},
-      {DNSCluster, query: Application.get_env(:live_lighting_control, :dns_cluster_query) || :ignore},
+       repos: Application.fetch_env!(:live_lighting_control, :ecto_repos),
+       skip: skip_migrations?()},
+      {DNSCluster,
+       query: Application.get_env(:live_lighting_control, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: LiveLightingControl.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: LiveLightingControl.Finch},
@@ -25,7 +26,7 @@ defmodule LiveLightingControl.Application do
       {LiveLightingControl.ViewManager, name: ViewManager},
       {LiveLightingControl.ProgrammerManager, name: ProgrammerManager},
       {LiveLightingControl.OutputBroadcaster, name: OutputBroadcaster},
-      {LiveLightingControl.SACNSender, name: SACNSender},
+      {LiveLightingControl.SACNSender, name: SACNSender}
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: LiveLightingControl.Supervisor)

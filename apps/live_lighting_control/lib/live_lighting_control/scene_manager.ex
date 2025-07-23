@@ -3,7 +3,6 @@ defmodule LiveLightingControl.SceneManager do
 
   alias LiveLightingControl.Scene
 
-
   @typedoc "Scene ID, expected to be a UUID string"
   @type scene_id :: String.t()
 
@@ -11,7 +10,8 @@ defmodule LiveLightingControl.SceneManager do
   @type scene_map :: %{scene_id() => Scene.t()}
 
   @typedoc "Partial scene updates. Must include at least an `id` field."
-  @type partial_scene :: map() # Ideally, you'd define a more specific type in Scene module
+  # Ideally, you'd define a more specific type in Scene module
+  @type partial_scene :: map()
 
   @typedoc "GenServer state"
   @type state :: scene_map()
@@ -36,15 +36,38 @@ defmodule LiveLightingControl.SceneManager do
   @spec init(any()) :: {:ok, state()}
   def init(_args) do
     scenes = [
-      %Scene{id: UUID.uuid4(), label: "Moody", description: "A moody lighting scene.", fixtures: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 20}}, state: %{master: 90}},
-      %Scene{id: UUID.uuid4(), label: "Party", description: "A vibrant party lighting scene.", fixtures: %{"83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}}, state: %{master: 50}},
-      %Scene{id: UUID.uuid4(), label: "Relax", description: "A relaxing lighting scene.", fixtures: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 50}}, state: %{master: 50}},
-      %Scene{id: UUID.uuid4(), label: "All lights", description: "A relaxing lighting scene.", fixtures:
-        %{
+      %Scene{
+        id: UUID.uuid4(),
+        label: "Moody",
+        description: "A moody lighting scene.",
+        fixtures: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 20}},
+        state: %{master: 90}
+      },
+      %Scene{
+        id: UUID.uuid4(),
+        label: "Party",
+        description: "A vibrant party lighting scene.",
+        fixtures: %{"83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}},
+        state: %{master: 50}
+      },
+      %Scene{
+        id: UUID.uuid4(),
+        label: "Relax",
+        description: "A relaxing lighting scene.",
+        fixtures: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 50}},
+        state: %{master: 50}
+      },
+      %Scene{
+        id: UUID.uuid4(),
+        label: "All lights",
+        description: "A relaxing lighting scene.",
+        fixtures: %{
           "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255},
           "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255},
           "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
-        }, state: %{master: 50}}
+        },
+        state: %{master: 50}
+      }
     ]
 
     {:ok, Map.new(scenes, &{&1.id, &1})}

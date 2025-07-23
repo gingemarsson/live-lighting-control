@@ -5,7 +5,7 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
     ~H"""
     <div class="w-24 bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600">
       <p class={"text-sm #{ if @value == 0, do: "text-gray-500", else: "" }"}>
-        <%= @label %>
+        {@label}
       </p>
 
       <div
@@ -13,11 +13,11 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
         phx-click="trigger_executor_action"
         phx-value-group-id={@id}
       >
-        <p class="text-sm"><%= @button_label %></p>
+        <p class="text-sm">{@button_label}</p>
       </div>
 
       <div class="text-sm text-gray-700 font-medium">
-        <%= @value %>
+        {@value}
       </div>
 
       <form class="w-12 h-56 h-full">

@@ -28,7 +28,7 @@ defmodule LiveLightingControl.ViewManager do
           # %{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}},
           %{id: UUID.uuid4(), type: :programmer, configuration: %{}},
           %{id: UUID.uuid4(), type: :output, configuration: %{}},
-          %{id: UUID.uuid4(), type: :scenes, configuration: %{}},
+          %{id: UUID.uuid4(), type: :scenes, configuration: %{}}
         ]
       },
       %View{
@@ -39,7 +39,7 @@ defmodule LiveLightingControl.ViewManager do
           %{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
           %{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
           %{id: UUID.uuid4(), type: :layouts, configuration: %{}},
-          %{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}},
+          %{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}}
         ]
       },
       %View{
@@ -49,10 +49,9 @@ defmodule LiveLightingControl.ViewManager do
           %{id: UUID.uuid4(), type: :config, configuration: %{}},
           %{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
           %{id: UUID.uuid4(), type: :programmer, configuration: %{}},
-          %{id: UUID.uuid4(), type: :output, configuration: %{}},
+          %{id: UUID.uuid4(), type: :output, configuration: %{}}
         ]
       }
-
     ]
 
     {:ok, Map.new(views, &{&1.id, &1})}

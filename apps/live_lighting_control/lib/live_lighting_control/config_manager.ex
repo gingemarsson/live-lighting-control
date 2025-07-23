@@ -21,7 +21,6 @@ defmodule LiveLightingControl.ConfigManager do
 
   @impl true
   def init(_args) do
-
     state = %{
       enable_programmer: true,
       enable_scenes: true,
@@ -39,8 +38,13 @@ defmodule LiveLightingControl.ConfigManager do
   @impl true
   def handle_cast({:set_config, %{config_name: config_name, value: value}}, state) do
     updated_state = Map.put(state, config_name, value)
-    Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "config", {:config_updated, updated_state})
+
+    Phoenix.PubSub.broadcast(
+      LiveLightingControl.PubSub,
+      "config",
+      {:config_updated, updated_state}
+    )
+
     {:noreply, updated_state}
   end
-
 end

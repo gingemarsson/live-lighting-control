@@ -21,6 +21,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
     Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, output})
 
     config = LiveLightingControl.ConfigManager.get_config()
+
     if config.enable_sacn_output do
       LiveLightingControl.SACNSender.send_packet(output)
     end
@@ -43,7 +44,8 @@ defmodule LiveLightingControl.OutputBroadcaster do
     fixtures = LiveLightingControl.FixtureManager.get_fixtures_map()
     fixture_types_map = LiveLightingControl.FixtureManager.get_fixture_types_map()
 
-    universes = fixtures
+    universes =
+      fixtures
       |> Map.values()
       |> Enum.map(& &1.universe)
       |> Enum.uniq()
