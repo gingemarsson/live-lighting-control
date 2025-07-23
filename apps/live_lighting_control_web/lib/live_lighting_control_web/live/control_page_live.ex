@@ -163,7 +163,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       ) do
     LiveLightingControl.ProgrammerManager.update_programmer(%{
       fixture_ids: socket.assigns.selected_fixture_ids,
-      attributes: [%{attribute: attribute, value: round(value * 2.55)}]
+      attributes: [%{attribute: attribute, value: round(value)}]
     })
 
     {:noreply, socket}
