@@ -174,12 +174,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"value" => value, "sliderId" => "master-executor", "sliderType" => "executor"},
         socket
       ) do
-    LiveLightingControl.ConfigManager.set_config(%{
-      config_name: :main_master,
-      value: value
-    })
-
-    {:noreply, socket}
+    execute_command(socket, :main_master, value)
   end
 
   def handle_event(
@@ -226,21 +221,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("page_up", _data, socket) do
-    {:noreply,
-     assign(
-       socket,
-       :current_page_index,
-       rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
-     )}
+    execute_command(socket, :page_up, nil)
   end
 
   def handle_event("page_down", _data, socket) do
-    {:noreply,
-     assign(
-       socket,
-       :current_page_index,
-       rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
-     )}
+    execute_command(socket, :page_down, nil)
   end
 
   def handle_event(
@@ -326,7 +311,20 @@ defmodule LiveLightingControlWeb.ControlPageLive do
           {:noreply, socket}
         end
 
-      %{type: :command, command: :toggle_sacn_output} when action == :button_down ->
+      %{type: :command, command: command} when action == :button_down ->
+        execute_command(socket, command, nil)
+
+      %{type: :command, command: :main_master} when action == :slider_change ->
+        execute_command(socket, :main_master, MidiUtils.get_value_from_midi_value(raw_value))
+
+      _ ->
+        {:noreply, socket}
+    end
+  end
+
+  def execute_command(socket, command, value) do
+    case command do
+      :toggle_sacn_output ->
         LiveLightingControl.ConfigManager.set_config(%{
           config_name: :enable_sacn_output,
           value: !socket.assigns.config[:enable_sacn_output]
@@ -334,7 +332,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
         {:noreply, socket}
 
-      %{type: :command, command: :toggle_programmer} when action == :button_down ->
+      :toggle_programmer ->
         LiveLightingControl.ConfigManager.set_config(%{
           config_name: :enable_programmer,
           value: !socket.assigns.config[:enable_programmer]
@@ -342,7 +340,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
         {:noreply, socket}
 
-      %{type: :command, command: :page_up} when action == :button_down ->
+      :page_up ->
         {:noreply,
          assign(
            socket,
@@ -350,7 +348,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
            rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
          )}
 
-      %{type: :command, command: :page_down} when action == :button_down ->
+      :page_down ->
         {:noreply,
          assign(
            socket,
@@ -358,7 +356,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
            rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
          )}
 
-      %{type: :command, command: :toggle_blackout} when action == :button_down ->
+      :toggle_blackout ->
         LiveLightingControl.ConfigManager.set_config(%{
           config_name: :blackout,
           value: !socket.assigns.config[:blackout]
@@ -366,15 +364,12 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
         {:noreply, socket}
 
-      %{type: :command, command: :main_master} when action == :slider_change ->
+      :main_master ->
         LiveLightingControl.ConfigManager.set_config(%{
           config_name: :main_master,
-          value: MidiUtils.get_value_from_midi_value(raw_value)
+          value: value
         })
 
-        {:noreply, socket}
-
-      _ ->
         {:noreply, socket}
     end
   end
