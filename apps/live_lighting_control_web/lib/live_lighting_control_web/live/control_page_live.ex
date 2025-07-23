@@ -2,6 +2,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   use LiveLightingControlWeb, :live_view
   require UUID
   alias LiveLightingControl.Scene
+  alias LiveLightingControl.Utils
 
   def mount(_params, _session, socket) do
     cards = [
@@ -57,6 +58,22 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket, :config, config)}
   end
 
+  # Helper functions
+
+  def toggle_select_fixtures(fixture_ids, selected_fixture_ids) do
+    all_fixtures_are_already_selected =
+      Utils.is_fixtures_selected?(fixture_ids, selected_fixture_ids)
+
+    updated_fixture_ids =
+      if all_fixtures_are_already_selected do
+        Enum.reject(selected_fixture_ids, fn x -> x in fixture_ids end)
+      else
+        selected_fixture_ids ++ fixture_ids
+      end
+
+    updated_fixture_ids
+  end
+
   # Page events
 
   def handle_event("toggle_config", %{"config-name" => config_name_string}, socket) do
@@ -70,31 +87,42 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  def handle_event("toggle_select_fixture", %{"fixture-id" => fixture_id}, socket) do
-    selected_fixture_ids = socket.assigns.selected_fixture_ids
-
+  def handle_event(
+        "click_entity",
+        %{"entity-type" => "fixture", "entity-id" => fixture_id},
+        socket
+      ) do
     updated_fixture_ids =
-      if fixture_id in selected_fixture_ids do
-        List.delete(selected_fixture_ids, fixture_id)
-      else
-        selected_fixture_ids ++ [fixture_id]
-      end
+      toggle_select_fixtures([fixture_id], socket.assigns.selected_fixture_ids)
 
     {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
   end
 
   def handle_event(
-        "toggle_select_layout",
-        %{"layout-id" => layout_id, "layout-card-id" => card_id},
+        "click_entity",
+        %{"entity-type" => "fixture_group", "entity-id" => group_id},
+        socket
+      ) do
+    fixture_group = Map.get(socket.assigns.fixture_groups_map, group_id)
+
+    updated_fixture_ids =
+      toggle_select_fixtures(fixture_group.fixture_ids, socket.assigns.selected_fixture_ids)
+
+    {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
+  end
+
+  def handle_event(
+        "update_card_configuration",
+        %{"key" => key_string, "value" => value, "card-id" => card_id},
         socket
       ) do
     cards = socket.assigns.cards
+    key = String.to_atom(key_string)
 
     updated_cards =
       Enum.map(cards, fn card ->
         if card.id == card_id do
-          existing = card.configuration
-          %{card | configuration: Map.merge(existing, %{selected_layout_id: layout_id})}
+          %{card | configuration: Map.merge(card.configuration, %{key => value})}
         else
           card
         end
@@ -108,23 +136,6 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     selected_view = Map.get(views, view_id)
 
     {:noreply, assign(socket, :cards, selected_view.cards)}
-  end
-
-  def handle_event("toggle_select_group", %{"group-id" => group_id}, socket) do
-    selected_fixture_ids = socket.assigns.selected_fixture_ids
-    fixture_group = Map.get(socket.assigns.fixture_groups_map, group_id)
-
-    all_fixtures_are_already_selected =
-      Enum.all?(fixture_group.fixture_ids, fn x -> x in selected_fixture_ids end)
-
-    updated_fixture_ids =
-      if all_fixtures_are_already_selected do
-        Enum.reject(selected_fixture_ids, fn x -> x in fixture_group.fixture_ids end)
-      else
-        selected_fixture_ids ++ fixture_group.fixture_ids
-      end
-
-    {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
   end
 
   def handle_event(

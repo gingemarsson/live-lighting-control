@@ -44,9 +44,10 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
           <%= for layout <- Map.values(@layouts) do %>
             <div
               class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_layout_border_color(layout, @layouts, selected_layout_id)}"}
-              phx-click="toggle_select_layout"
-              phx-value-layout-id={layout.id}
-              phx-value-layout-card-id={@id}
+              phx-click="update_card_configuration"
+              phx-value-value={layout.id}
+              phx-value-key="selected_layout_id"
+              phx-value-card-id={@id}
             >
               <p class="text-sm">{layout.label}</p>
             </div>
@@ -60,8 +61,9 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
                 <div
                   class={"absolute text-white text-lg px-2 py-1 cursor-pointer rounded-lg border #{get_fixture_border_color(fixture_id, @selected_fixture_ids)}"}
                   style={"left: #{x}%; top: #{y}%; transform: translate(-50%, -50%);"}
-                  phx-click="toggle_select_fixture"
-                  phx-value-fixture-id={fixture_id}
+                  phx-click="click_entity"
+                  phx-value-entity-id={fixture_id}
+                  phx-value-entity-type="fixture"
                 >
                   {label}
                 </div>

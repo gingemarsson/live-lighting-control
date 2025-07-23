@@ -1,16 +1,19 @@
 defmodule LiveLightingControlWeb.FixtureGroupsLibraryCardComponent do
   use Phoenix.LiveComponent
   alias Phoenix.LiveView.JS
+  alias LiveLightingControl.Utils
 
   def get_border_color(fixture_group, selected_fixture_ids) do
-    cond do
-      Enum.all?(fixture_group.fixture_ids, fn x -> x in selected_fixture_ids end) ->
+    IO.puts(inspect(Utils.is_fixtures_selected?(fixture_group.fixture_ids, selected_fixture_ids)))
+
+    case Utils.is_fixtures_selected?(fixture_group.fixture_ids, selected_fixture_ids) do
+      :all ->
         "border-orange-600"
 
-      Enum.any?(fixture_group.fixture_ids, fn x -> x in selected_fixture_ids end) ->
-        "border-orange-600 border-dashed"
+      :some ->
+        "border-yellow-600"
 
-      true ->
+      _ ->
         "border-neutral-600 hover:border-neutral-400"
     end
   end
@@ -27,8 +30,9 @@ defmodule LiveLightingControlWeb.FixtureGroupsLibraryCardComponent do
           <%= for fixture_group <- @fixture_groups do %>
             <div
               class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(fixture_group, @selected_fixture_ids)}"}
-              phx-click="toggle_select_group"
-              phx-value-group-id={fixture_group.id}
+              phx-click="click_entity"
+              phx-value-entity-id={fixture_group.id}
+              phx-value-entity-type="fixture_group"
             >
               <p class="text-sm">{fixture_group.label}</p>
             </div>

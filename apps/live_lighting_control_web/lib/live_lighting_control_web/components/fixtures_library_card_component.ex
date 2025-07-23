@@ -19,13 +19,14 @@ defmodule LiveLightingControlWeb.FixturesLibraryCardComponent do
 
       <div id={"hidden-content-#{@id}"}>
         <div class="grid grid-cols-10 gap-2 p-2">
-          <%= for fixture <- Enum.sort_by(@fixtures, & &1.label) do %>
+          <%= for %{id: fixture_id, label: label} <- Enum.sort_by(@fixtures, & &1.label) do %>
             <div
-              class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(fixture.id, @selected_fixture_ids)}"}
-              phx-click="toggle_select_fixture"
-              phx-value-fixture-id={fixture.id}
+              class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(fixture_id, @selected_fixture_ids)}"}
+              phx-click="click_entity"
+              phx-value-entity-id={fixture_id}
+              phx-value-entity-type="fixture"
             >
-              <p class="text-sm">{fixture.label}</p>
+              <p class="text-sm">{label}</p>
             </div>
           <% end %>
         </div>
