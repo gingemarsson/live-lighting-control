@@ -179,7 +179,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     %{"executor-id" => executor_id},
     socket
   ) do
-    LiveLightingControl.ExecutorManager.handle_executor_action(executor_id)
+    LiveLightingControl.ExecutorManager.handle_executor_action(executor_id, :button_down)
+    LiveLightingControl.ExecutorManager.handle_executor_action(executor_id, :button_up)
 
     {:noreply, socket}
   end
@@ -239,8 +240,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
     if (executor) do
       case action do
-        :button_down -> LiveLightingControl.ExecutorManager.handle_executor_action(executor.id)
-        :button_up -> nil
+        :button_down -> LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_down)
+        :button_up -> LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_up)
         :slider_change -> LiveLightingControl.ExecutorManager.handle_executor_slider(executor.id, value)
       end
     end

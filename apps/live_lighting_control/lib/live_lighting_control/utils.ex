@@ -22,4 +22,12 @@ defmodule LiveLightingControl.Utils do
         false
     end
   end
+
+  def deep_merge(map1, map2) when is_map(map1) and is_map(map2) do
+    Map.merge(map1, map2, fn _key, val1, val2 ->
+      deep_merge(val1, val2)
+    end)
+  end
+
+  def deep_merge(_val1, val2), do: val2
 end

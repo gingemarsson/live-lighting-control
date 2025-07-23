@@ -2,6 +2,7 @@ defmodule LiveLightingControl.SceneManager do
   use GenServer
 
   alias LiveLightingControl.Scene
+  alias LiveLightingControl.Utils
 
   @typedoc "Scene ID, expected to be a UUID string"
   @type scene_id :: String.t()
@@ -84,7 +85,7 @@ defmodule LiveLightingControl.SceneManager do
     id = partial_scene.id
 
     existing = Map.get(scenes, id, %Scene{id: id})
-    updated = Map.merge(existing, partial_scene)
+    updated = Utils.deep_merge(existing, partial_scene)
 
     new_scenes = Map.put(scenes, updated.id, updated)
 
