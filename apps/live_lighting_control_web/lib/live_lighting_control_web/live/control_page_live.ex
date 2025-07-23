@@ -20,6 +20,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "config")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "scenes")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "programmer")
+    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "executor")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "output")
 
     {:ok,
@@ -55,6 +56,10 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_info({:output_update, output}, socket) do
     {:noreply, assign(socket, :output, output)}
+  end
+
+  def handle_info({:executor_updated, updated_executor_pages}, socket) do
+    {:noreply, assign(socket, :executor_pages, updated_executor_pages)}
   end
 
   def handle_info({:config_updated, config}, socket) do

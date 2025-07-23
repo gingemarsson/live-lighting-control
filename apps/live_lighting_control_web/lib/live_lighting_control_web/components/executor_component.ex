@@ -12,7 +12,7 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
         phx-hook="ExecutorButtonHook"
         id={"executor-slider-button-#{@executor_id}"}
         data-executor-id={@executor_id}
-        class="bg-neutral-800 py-1 w-16 my-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
+        class={"bg-neutral-800 py-1 w-16 my-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{if @executor_active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
       >
         <p class="text-sm">{@button_label}</p>
       </button>

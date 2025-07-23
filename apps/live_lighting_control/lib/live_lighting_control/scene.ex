@@ -1,7 +1,7 @@
 defmodule LiveLightingControl.Scene do
   alias LiveLightingControl.CommonTypes
 
-  @type state_map :: %{:master => 0..100}
+  @type state_map :: %{:master => 0..100, :flash => boolean()}
 
   @type t :: %__MODULE__{
           id: String.t(),

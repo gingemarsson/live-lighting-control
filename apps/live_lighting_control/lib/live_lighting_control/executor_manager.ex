@@ -3,6 +3,7 @@ defmodule LiveLightingControl.ExecutorManager do
 
   alias LiveLightingControl.ExecutorPage
   alias LiveLightingControl.Executor
+  alias LiveLightingControl.Utils
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
@@ -133,8 +134,6 @@ defmodule LiveLightingControl.ExecutorManager do
     executors = Enum.flat_map(executor_pages, fn page -> List.flatten(page.executors) end)
     executor = Enum.find(executors, fn %Executor{id: id} -> id == executor_id end)
 
-    # TODO
-
     case {executor, action} do
       {nil, _} ->
         nil
@@ -149,6 +148,36 @@ defmodule LiveLightingControl.ExecutorManager do
         nil
     end
 
-    {:noreply, executor_pages}
+    updated_executor_pages =
+      update_executor_by_id(executor_pages, executor_id, fn x ->
+        Utils.deep_merge(x, %{state: %{active: action == :button_down}})
+      end)
+
+    notify_executor_updated(updated_executor_pages)
+
+    {:noreply, updated_executor_pages}
+  end
+
+  defp notify_executor_updated(updated_executor_pages) do
+    Phoenix.PubSub.broadcast(
+      LiveLightingControl.PubSub,
+      "executor",
+      {:executor_updated, updated_executor_pages}
+    )
+  end
+
+  defp update_executor_by_id(pages, target_id, update_fn) when is_list(pages) do
+    Enum.map(pages, fn page ->
+      %ExecutorPage{page | executors: update_executors_2d(page.executors, target_id, update_fn)}
+    end)
+  end
+
+  defp update_executors_2d(executors_2d, target_id, update_fn) do
+    Enum.map(executors_2d, fn row ->
+      Enum.map(row, fn
+        %Executor{id: ^target_id} = exec -> update_fn.(exec)
+        exec -> exec
+      end)
+    end)
   end
 end

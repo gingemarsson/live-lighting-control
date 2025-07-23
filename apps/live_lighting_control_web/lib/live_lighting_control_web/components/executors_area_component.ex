@@ -13,6 +13,16 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
     end
   end
 
+  def get_active_for_executor(row_number, executor_number, current_page) do
+    case Utils.get_executor(row_number, executor_number, current_page) do
+      nil ->
+        nil
+
+      %{state: state} ->
+        Access.get(state, :active, false)
+    end
+  end
+
   def get_value_for_executor(row_number, executor_number, current_page, scenes) do
     case Utils.get_executor(row_number, executor_number, current_page) do
       nil ->
@@ -67,9 +77,6 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
         phx-click={JS.toggle(to: "#hidden-content-executors")}
       >
         <h2 class="text-sm font-semibold">Executors</h2>
-        <%!-- <button class="text-xs m-0 mx-2 px-3 py-1 rounded-sm border border-neutral-600 hover:border-neutral-400 active:border-orange-600 text-white font-semibold transition-colors" phx-click="clear-programmer">
-          Clear Programmer
-        </button> --%>
       </div>
 
       <div class="m-2 mx-auto" id="hidden-content-executors">
@@ -79,10 +86,17 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             <% label = get_label_for_executor(0, executor_number, current_page, @scenes) %>
             <% button_label = get_button_label_for_executor(0, executor_number, current_page, @scenes) %>
             <% executor_id = get_id_for_executor(0, executor_number, current_page) %>
+            <% executor_active =
+              get_active_for_executor(
+                0,
+                executor_number,
+                current_page
+              ) %>
             <.live_component
               module={LiveLightingControlWeb.ExecutorComponent}
               id={"executor-#{current_page_number}-0-#{executor_number}"}
               executor_id={executor_id}
+              executor_active={executor_active}
               value={value}
               label={label}
               button_label={button_label}
@@ -90,7 +104,6 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <% end %>
 
           <div class="border-l-2 mx-1 border-neutral-600" />
-
           <div class="grid grid-cols-8 gap-2">
             <%= for executor_button_row_index <- 1..4 do %>
               <%= for executor_button_col_index <- 1..8 do %>
@@ -121,12 +134,18 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
                     executor_button_col_index,
                     current_page
                   ) %>
+                <% executor_active =
+                  get_active_for_executor(
+                    executor_button_row_index,
+                    executor_button_col_index,
+                    current_page
+                  ) %>
 
                 <button
                   phx-hook="ExecutorButtonHook"
                   id={"executor-#{current_page_number}-#{executor_button_row_index}-#{executor_button_col_index}"}
                   data-executor-id={executor_id}
-                  class="bg-neutral-800 w-24 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
+                  class={"bg-neutral-800 w-24 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{if executor_active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
                 >
                   <p class="">{label}</p>
                   <p class="text-sm">{button_label}</p>
@@ -166,6 +185,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             module={LiveLightingControlWeb.ExecutorComponent}
             id="master-executor"
             executor_id="master-executor"
+            executor_active={false}
             value={value}
             label={label}
             button_label={button_label}

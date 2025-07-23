@@ -15,15 +15,19 @@ defmodule LiveLightingControl.ExecutorPage do
 end
 
 defmodule LiveLightingControl.Executor do
+  @type executor_state_map :: %{:active => boolean()}
+
   @type t :: %__MODULE__{
           id: String.t(),
           type: atom(),
           button_type: atom(),
-          entity_id: String.t()
+          entity_id: String.t(),
+          state: executor_state_map()
         }
 
   defstruct id: nil,
             type: nil,
             button_type: nil,
-            entity_id: nil
+            entity_id: nil,
+            state: nil
 end
