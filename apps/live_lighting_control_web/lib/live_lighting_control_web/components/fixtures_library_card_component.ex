@@ -1,14 +1,7 @@
 defmodule LiveLightingControlWeb.FixturesLibraryCardComponent do
   use Phoenix.LiveComponent
   alias Phoenix.LiveView.JS
-
-  def get_border_color(fixture_id, selected_fixture_ids) do
-    if fixture_id in selected_fixture_ids do
-      "border-orange-600"
-    else
-      "border-neutral-600 hover:border-neutral-400"
-    end
-  end
+  alias LiveLightingControl.Utils
 
   def render(assigns) do
     ~H"""
@@ -21,12 +14,14 @@ defmodule LiveLightingControlWeb.FixturesLibraryCardComponent do
         <div class="grid grid-cols-10 gap-2 p-2">
           <%= for %{id: fixture_id, label: label} <- Enum.sort_by(@fixtures, & &1.label) do %>
             <div
-              class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(fixture_id, @selected_fixture_ids)}"}
+              class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{Utils.get_fixture_border_color(fixture_id, @selected_fixture_ids, @primary_selected_fixture_id)}"}
               phx-click="click_entity"
               phx-value-entity-id={fixture_id}
               phx-value-entity-type="fixture"
             >
-              <p class="text-sm">{label}</p>
+              <p class={"text-sm #{if fixture_id == @primary_selected_fixture_id do "font-bold" end}"}>
+                {label}
+              </p>
             </div>
           <% end %>
         </div>

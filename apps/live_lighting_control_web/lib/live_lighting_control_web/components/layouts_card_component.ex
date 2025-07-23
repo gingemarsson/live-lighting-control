@@ -1,6 +1,7 @@
 defmodule LiveLightingControlWeb.LayoutsCardComponent do
   use Phoenix.LiveComponent
   alias Phoenix.LiveView.JS
+  alias LiveLightingControl.Utils
 
   def get_layout_border_color(layout, layouts, selected_layout_id_or_nil) do
     selected_layout_id = get_selected_layout_id(layouts, selected_layout_id_or_nil)
@@ -9,14 +10,6 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
       "border-orange-600"
     else
       "border-neutral-600 hover:border-neutral-400"
-    end
-  end
-
-  def get_fixture_border_color(fixture_id, selected_fixture_ids) do
-    if fixture_id in selected_fixture_ids do
-      "border-orange-600"
-    else
-      "border-transparent hover:border-neutral-400"
     end
   end
 
@@ -59,7 +52,7 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
             <div class="relative w-full" style="height: 500px;">
               <%= for {fixture_id, %{x: x, y: y, label: label}} <- selected_layout.fixtures do %>
                 <div
-                  class={"absolute text-white text-lg px-2 py-1 cursor-pointer rounded-lg border #{get_fixture_border_color(fixture_id, @selected_fixture_ids)}"}
+                  class={"absolute text-white text-lg px-2 py-1 cursor-pointer rounded-lg border #{Utils.get_fixture_border_color(fixture_id, @selected_fixture_ids, @primary_selected_fixture_id)}"}
                   style={"left: #{x}%; top: #{y}%; transform: translate(-50%, -50%);"}
                   phx-click="click_entity"
                   phx-value-entity-id={fixture_id}

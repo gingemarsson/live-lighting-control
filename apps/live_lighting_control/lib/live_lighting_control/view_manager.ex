@@ -35,11 +35,10 @@ defmodule LiveLightingControl.ViewManager do
         id: "abaa628c-c33e-4082-908c-7afa19f4970c",
         label: "Select fixtures",
         cards: [
-          %{cardid: UUID.uuid4(), type: :config, configuration: %{}},
-          %{cardid: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
-          %{cardid: UUID.uuid4(), type: :fixtures, configuration: %{}},
-          %{cardid: UUID.uuid4(), type: :layouts, configuration: %{}},
-          %{cardid: UUID.uuid4(), type: :selected_fixtures, configuration: %{}}
+          %Card{id: UUID.uuid4(), type: :config, configuration: %{}},
+          %Card{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
+          %Card{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
+          %Card{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}}
         ]
       },
       %View{

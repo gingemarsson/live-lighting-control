@@ -41,6 +41,40 @@ defmodule LiveLightingControlWeb.ConfigCardComponent do
             <p class="text-sm">sACN Output</p>
           </div>
 
+          <div class="border-l-2 mx-1 border-neutral-600" />
+
+          <div
+            class={"bg-neutral-800 p-2 w-36 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            phx-click="execute_command"
+            phx-value-action-name="highlight"
+          >
+            <p class="text-sm">Highlight</p>
+          </div>
+
+          <div
+            class={"bg-neutral-800 p-2 w-36 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            phx-click="execute_command"
+            phx-value-action-name="reset_primary_selection"
+          >
+            <p class="text-sm">Set</p>
+          </div>
+
+          <div
+            class={"bg-neutral-800 p-2 w-36 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            phx-click="execute_command"
+            phx-value-action-name="next_primary_selection"
+          >
+            <p class="text-sm">Next</p>
+          </div>
+
+          <div
+            class={"bg-neutral-800 p-2 w-36 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            phx-click="execute_command"
+            phx-value-action-name="previous_primary_selection"
+          >
+            <p class="text-sm">Previous</p>
+          </div>
+
           <div class="flex-grow" />
 
           <%= for view <- Map.values(@views) do %>

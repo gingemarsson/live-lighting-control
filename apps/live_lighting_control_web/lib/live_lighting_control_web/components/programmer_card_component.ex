@@ -65,6 +65,12 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
   def render(assigns) do
     ~H"""
     <div class="w-full flex flex-col h-96">
+      <% selected_fixture_ids =
+        if @primary_selected_fixture_id != nil do
+          [@primary_selected_fixture_id]
+        else
+          @selected_fixture_ids
+        end %>
       <div class="bg-neutral-700 p-2 rounded-t-lg flex flex-row">
         <h2 class="text-sm font-semibold">Programmer</h2>
         <button
@@ -76,7 +82,7 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
       </div>
 
       <div class="flex flex-row flex-grow gap-2 m-2">
-        <% attributes = get_fixture_attributes(@fixtures, @selected_fixture_ids, @fixture_types) %>
+        <% attributes = get_fixture_attributes(@fixtures, selected_fixture_ids, @fixture_types) %>
         <% supports_rgb = supports_rgb?(attributes) %>
         <%= for attribute <- attributes do %>
           <div class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600">
@@ -86,8 +92,8 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
 
             <div class="text-sm text-gray-700 font-medium">
               {format_min_max(
-                get_min_value_for_attibute(attribute, @programmer, @selected_fixture_ids),
-                get_max_value_for_attibute(attribute, @programmer, @selected_fixture_ids)
+                get_min_value_for_attibute(attribute, @programmer, selected_fixture_ids),
+                get_max_value_for_attibute(attribute, @programmer, selected_fixture_ids)
               )}
             </div>
 
@@ -95,7 +101,7 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
               <.live_component
                 module={LiveLightingControlWeb.VerticalSliderComponent}
                 id={attribute}
-                value={get_max_value_for_attibute(attribute, @programmer, @selected_fixture_ids)}
+                value={get_max_value_for_attibute(attribute, @programmer, selected_fixture_ids)}
                 slider_id={attribute}
                 slider_type={:programmer}
               />
@@ -113,9 +119,9 @@ defmodule LiveLightingControlWeb.ProgrammerCardComponent do
               id="color-picker"
               phx-hook="ColorPickerHook"
               data-color-picker-type={:programmer}
-              data-red={get_max_value_for_attibute("red", @programmer, @selected_fixture_ids)}
-              data-green={get_max_value_for_attibute("green", @programmer, @selected_fixture_ids)}
-              data-blue={get_max_value_for_attibute("blue", @programmer, @selected_fixture_ids)}
+              data-red={get_max_value_for_attibute("red", @programmer, selected_fixture_ids)}
+              data-green={get_max_value_for_attibute("green", @programmer, selected_fixture_ids)}
+              data-blue={get_max_value_for_attibute("blue", @programmer, selected_fixture_ids)}
             >
             </div>
           </div>

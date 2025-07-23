@@ -22,29 +22,34 @@ defmodule LiveLightingControl.MidiUtils do
         }
 
       ### Actions
-      #
 
-      # Toggle sACN output
       midi_position == 112 ->
         %{type: :command, command: :toggle_sacn_output}
 
-      # Toggle programmer
       midi_position == 113 ->
         %{type: :command, command: :toggle_programmer}
 
-      # Page up
+      midi_position == 114 ->
+        %{type: :command, command: :highlight}
+
+      midi_position == 115 ->
+        %{type: :command, command: :reset_primary_selection}
+
+      midi_position == 116 ->
+        %{type: :command, command: :previous_primary_selection}
+
+      midi_position == 117 ->
+        %{type: :command, command: :next_primary_selection}
+
       midi_position == 118 ->
         %{type: :command, command: :page_up}
 
-      # Page down
       midi_position == 119 ->
         %{type: :command, command: :page_down}
 
-      # Blackout toggle
       midi_position == 122 ->
         %{type: :command, command: :toggle_blackout}
 
-      # Main master (fader)
       midi_position == 56 ->
         %{type: :command, command: :main_master}
 

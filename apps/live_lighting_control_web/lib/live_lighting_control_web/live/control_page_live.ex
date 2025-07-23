@@ -10,11 +10,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       %{id: UUID.uuid4(), type: :config, configuration: %{}},
       %{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
       %{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
-      %{id: UUID.uuid4(), type: :layouts, configuration: %{}},
-      # %{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}},
-      %{id: UUID.uuid4(), type: :programmer, configuration: %{}},
-      %{id: UUID.uuid4(), type: :output, configuration: %{}},
-      %{id: UUID.uuid4(), type: :scenes, configuration: %{}}
+      %{id: UUID.uuid4(), type: :output, configuration: %{}}
     ]
 
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "config")
@@ -39,6 +35,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        programmer: LiveLightingControl.ProgrammerManager.get_programmer(),
        output: %{},
        selected_fixture_ids: [],
+       primary_selected_fixture_id: nil,
        current_page_index: 0
      )}
   end
@@ -70,7 +67,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def toggle_select_fixtures(fixture_ids, selected_fixture_ids) do
     all_fixtures_are_already_selected =
-      Utils.is_fixtures_selected?(fixture_ids, selected_fixture_ids)
+      Utils.is_fixtures_selected?(fixture_ids, selected_fixture_ids) == :all
 
     updated_fixture_ids =
       if all_fixtures_are_already_selected do
@@ -103,7 +100,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     updated_fixture_ids =
       toggle_select_fixtures([fixture_id], socket.assigns.selected_fixture_ids)
 
-    {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
+    {:noreply,
+     assign(socket, selected_fixture_ids: updated_fixture_ids, primary_selected_fixture_id: nil)}
   end
 
   def handle_event(
@@ -116,7 +114,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     updated_fixture_ids =
       toggle_select_fixtures(fixture_group.fixture_ids, socket.assigns.selected_fixture_ids)
 
-    {:noreply, assign(socket, :selected_fixture_ids, updated_fixture_ids)}
+    {:noreply,
+     assign(socket, selected_fixture_ids: updated_fixture_ids, primary_selected_fixture_id: nil)}
   end
 
   def handle_event(
@@ -125,7 +124,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         socket
       ) do
     cards = socket.assigns.cards
-    key = String.to_atom(key_string)
+    key = String.to_existing_atom(key_string)
 
     updated_cards =
       Enum.map(cards, fn card ->
@@ -161,8 +160,15 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"value" => value, "sliderId" => attribute, "sliderType" => "programmer"},
         socket
       ) do
+    selected_fixture_ids =
+      if socket.assigns.primary_selected_fixture_id != nil do
+        [socket.assigns.primary_selected_fixture_id]
+      else
+        socket.assigns.selected_fixture_ids
+      end
+
     LiveLightingControl.ProgrammerManager.update_programmer(%{
-      fixture_ids: socket.assigns.selected_fixture_ids,
+      fixture_ids: selected_fixture_ids,
       attributes: [%{attribute: attribute, value: round(value)}]
     })
 
@@ -238,8 +244,15 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         },
         socket
       ) do
+    selected_fixture_ids =
+      if socket.assigns.primary_selected_fixture_id != nil do
+        [socket.assigns.primary_selected_fixture_id]
+      else
+        socket.assigns.selected_fixture_ids
+      end
+
     LiveLightingControl.ProgrammerManager.update_programmer(%{
-      fixture_ids: socket.assigns.selected_fixture_ids,
+      fixture_ids: selected_fixture_ids,
       attributes: [
         %{attribute: "red", value: round(value_red)},
         %{attribute: "green", value: round(value_green)},
@@ -248,6 +261,22 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     })
 
     {:noreply, socket}
+  end
+
+  @approved_commands [
+    "toggle_sacn_output",
+    "toggle_programmer",
+    "page_up",
+    "page_down",
+    "toggle_blackout",
+    "main_master",
+    "highlight",
+    "reset_primary_selection",
+    "next_primary_selection",
+    "previous_primary_selection"
+  ]
+  def handle_event("execute_command", %{"action-name" => action_name}, socket) do
+    execute_command(socket, String.to_existing_atom(action_name), nil)
   end
 
   def handle_event("clear-programmer", _data, socket) do
@@ -371,6 +400,60 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         })
 
         {:noreply, socket}
+
+      :highlight ->
+        IO.puts(":highlight")
+        {:noreply, socket}
+
+      :reset_primary_selection ->
+        {:noreply, assign(socket, :primary_selected_fixture_id, nil)}
+
+      :next_primary_selection ->
+        current_primary_selected_fixture_id = socket.assigns.primary_selected_fixture_id
+        selected_fixture_ids = socket.assigns.selected_fixture_ids
+
+        new_primary_selected_fixture_id =
+          case current_primary_selected_fixture_id do
+            nil ->
+              Enum.at(selected_fixture_ids, 0)
+
+            _ ->
+              current_index =
+                Enum.find_index(
+                  selected_fixture_ids,
+                  &(&1 == current_primary_selected_fixture_id)
+                )
+
+              new_index = rem(current_index + 1, length(selected_fixture_ids))
+              Enum.at(selected_fixture_ids, new_index)
+          end
+
+        {:noreply, assign(socket, :primary_selected_fixture_id, new_primary_selected_fixture_id)}
+
+      :previous_primary_selection ->
+        current_primary_selected_fixture_id = socket.assigns.primary_selected_fixture_id
+        selected_fixture_ids = socket.assigns.selected_fixture_ids
+
+        new_primary_selected_fixture_id =
+          case current_primary_selected_fixture_id do
+            nil ->
+              Enum.at(selected_fixture_ids, 0)
+
+            _ ->
+              current_index =
+                Enum.find_index(
+                  selected_fixture_ids,
+                  &(&1 == current_primary_selected_fixture_id)
+                )
+
+              new_index = rem(current_index - 1, length(selected_fixture_ids))
+              Enum.at(selected_fixture_ids, new_index)
+          end
+
+        {:noreply, assign(socket, :primary_selected_fixture_id, new_primary_selected_fixture_id)}
+
+      _ ->
+        {:noreply, socket}
     end
   end
 
@@ -393,6 +476,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 id={card.id}
                 fixtures={@fixtures}
                 selected_fixture_ids={@selected_fixture_ids}
+                primary_selected_fixture_id={@primary_selected_fixture_id}
               />
             <% :fixture_groups -> %>
               <.live_component
@@ -408,6 +492,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 layouts={@layouts}
                 configuration={card.configuration}
                 selected_fixture_ids={@selected_fixture_ids}
+                primary_selected_fixture_id={@primary_selected_fixture_id}
               />
             <% :scenes -> %>
               <.live_component
@@ -421,6 +506,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 id={card.id}
                 output={@output}
                 selected_fixture_ids={@selected_fixture_ids}
+                primary_selected_fixture_id={@primary_selected_fixture_id}
                 fixtures={@fixtures_map}
                 fixture_types={@fixture_types_map}
               />
@@ -430,6 +516,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 id={card.id}
                 fixtures={@fixtures}
                 selected_fixture_ids={@selected_fixture_ids}
+                primary_selected_fixture_id={@primary_selected_fixture_id}
               />
             <% :programmer-> %>
               <.live_component
@@ -439,6 +526,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 fixtures={@fixtures}
                 fixture_types={Map.values(@fixture_types_map)}
                 selected_fixture_ids={@selected_fixture_ids}
+                primary_selected_fixture_id={@primary_selected_fixture_id}
               />
           <% end %>
         </div>

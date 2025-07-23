@@ -30,4 +30,20 @@ defmodule LiveLightingControl.Utils do
   end
 
   def deep_merge(_val1, val2), do: val2
+
+  def get_fixture_border_color(fixture_id, selected_fixture_ids, primary_selected_fixture_id) do
+    cond do
+      fixture_id == primary_selected_fixture_id ->
+        "border-orange-600"
+
+      fixture_id in selected_fixture_ids and primary_selected_fixture_id == nil ->
+        "border-orange-600"
+
+      fixture_id in selected_fixture_ids ->
+        "border-yellow-800"
+
+      true ->
+        "border-neutral-600 hover:border-neutral-400"
+    end
+  end
 end
