@@ -432,7 +432,6 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     </div>
 
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
-      {@current_page_index}
       <.live_component
         module={LiveLightingControlWeb.ExecutorsAreaComponent}
         id="executors"
