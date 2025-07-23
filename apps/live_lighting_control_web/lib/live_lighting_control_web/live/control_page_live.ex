@@ -240,6 +240,40 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
+  # TODO Move to real config
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => 112,
+          "status" => 144
+        },
+        socket
+      ) do
+    LiveLightingControl.ConfigManager.set_config(%{
+      config_name: :enable_sacn_output,
+      value: !socket.assigns.config[:enable_sacn_output]
+    })
+
+    {:noreply, socket}
+  end
+
+  # TODO Move to real config
+  def handle_event(
+        "midi_event",
+        %{
+          "data1" => 113,
+          "status" => 144
+        },
+        socket
+      ) do
+    LiveLightingControl.ConfigManager.set_config(%{
+      config_name: :enable_programmer,
+      value: !socket.assigns.config[:enable_programmer]
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_event(
         "midi_event",
         %{
