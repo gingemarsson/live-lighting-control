@@ -1,5 +1,4 @@
 defmodule LiveLightingControl.View do
-  alias LiveLightingControl.CommonTypes
   alias LiveLightingControl.Card
 
   @type t :: %__MODULE__{
@@ -16,7 +15,7 @@ end
 defmodule LiveLightingControl.Card do
   @type t :: %__MODULE__{
           id: String.t(),
-          type: Atom.t(),
+          type: atom(),
           configuration: any()
         }
 

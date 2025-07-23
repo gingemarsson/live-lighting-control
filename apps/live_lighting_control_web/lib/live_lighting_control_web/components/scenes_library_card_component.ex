@@ -38,7 +38,7 @@ defmodule LiveLightingControlWeb.ScenesLibraryCardComponent do
       </div>
 
       <div class="flex flex-row flex-grow gap-2 m-2">
-        <%= for scene <- @scenes do %>
+        <%= for scene <- Map.values(@scenes) do %>
           <div class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600">
             <p class={"text-sm #{ if scene.state.master == 0 do "text-gray-500" else "" end}"}>
               {scene.label}

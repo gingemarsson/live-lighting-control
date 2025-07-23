@@ -39,7 +39,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
 
   defp calculate_output do
     config = LiveLightingControl.ConfigManager.get_config()
-    scenes = LiveLightingControl.SceneManager.get_scenes()
+    scenes = LiveLightingControl.SceneManager.get_scenes() |> Map.values()
     programmer = LiveLightingControl.ProgrammerManager.get_programmer()
     fixtures = LiveLightingControl.FixtureManager.get_fixtures_map()
     fixture_types_map = LiveLightingControl.FixtureManager.get_fixture_types_map()

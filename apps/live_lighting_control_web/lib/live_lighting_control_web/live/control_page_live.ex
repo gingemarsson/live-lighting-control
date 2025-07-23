@@ -30,12 +30,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        fixture_types_map: LiveLightingControl.FixtureManager.get_fixture_types_map(),
        fixture_groups: Map.values(LiveLightingControl.FixtureManager.get_fixture_groups_map()),
        fixture_groups_map: LiveLightingControl.FixtureManager.get_fixture_groups_map(),
+       executor_pages: LiveLightingControl.ExecutorManager.get_executor_pages(),
        layouts: LiveLightingControl.LayoutManager.get_layouts(),
        views: LiveLightingControl.ViewManager.get_views(),
-       scenes: LiveLightingControl.SceneManager.get_scenes(),
+       scenes_map: LiveLightingControl.SceneManager.get_scenes(),
        programmer: LiveLightingControl.ProgrammerManager.get_programmer(),
        output: %{},
-       selected_fixture_ids: []
+       selected_fixture_ids: [],
+       current_page_index: 0
      )}
   end
 
@@ -43,7 +45,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_info({:scene_updated, _scene}, socket) do
     # Always update all scenes
-    {:noreply, assign(socket, :scenes, LiveLightingControl.SceneManager.get_scenes())}
+    {:noreply, assign(socket, :scenes_map, LiveLightingControl.SceneManager.get_scenes())}
   end
 
   def handle_info({:programmer_updated, updated_programmer}, socket) do
@@ -162,6 +164,26 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event(
+    "slider_changed",
+    %{"value" => value, "sliderId" => executor_id, "sliderType" => "executor"},
+    socket
+  ) do
+    LiveLightingControl.ExecutorManager.handle_executor_slider(executor_id, value)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
+    "trigger_executor_action",
+    %{"executor-id" => executor_id},
+    socket
+  ) do
+    LiveLightingControl.ExecutorManager.handle_executor_action(executor_id)
+
+    {:noreply, socket}
+  end
+
+  def handle_event(
         "color_changed",
         %{
           "red" => value_red,
@@ -241,7 +263,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
               <.live_component
                 module={LiveLightingControlWeb.ScenesLibraryCardComponent}
                 id={card.id}
-                scenes={@scenes}
+                scenes={@scenes_map}
               />
             <% :output -> %>
               <.live_component
@@ -274,7 +296,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     </div>
 
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
-      <.live_component module={LiveLightingControlWeb.ExecutorsAreaComponent} id="executors" />
+      <.live_component module={LiveLightingControlWeb.ExecutorsAreaComponent} id="executors" executor_pages={@executor_pages} current_page_index={@current_page_index} scenes={@scenes_map}/>
     </div>
 
     <div class="col-span-1 col-span-2 col-span-3 col-span-4" />

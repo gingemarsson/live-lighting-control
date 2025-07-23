@@ -11,7 +11,7 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
       <div
         class="bg-neutral-800 py-1 w-16 my-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
         phx-click="trigger_executor_action"
-        phx-value-group-id={@id}
+        phx-value-executor-id={@executor_id}
       >
         <p class="text-sm">{@button_label}</p>
       </div>
@@ -25,7 +25,7 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
           module={LiveLightingControlWeb.VerticalSliderComponent}
           id={@id}
           value={@value}
-          slider_id={@id}
+          slider_id={@executor_id}
           slider_type={:executor}
         />
       </form>

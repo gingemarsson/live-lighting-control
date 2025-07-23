@@ -4,8 +4,6 @@ defmodule LiveLightingControlWeb.FixtureGroupsLibraryCardComponent do
   alias LiveLightingControl.Utils
 
   def get_border_color(fixture_group, selected_fixture_ids) do
-    IO.puts(inspect(Utils.is_fixtures_selected?(fixture_group.fixture_ids, selected_fixture_ids)))
-
     case Utils.is_fixtures_selected?(fixture_group.fixture_ids, selected_fixture_ids) do
       :all ->
         "border-orange-600"

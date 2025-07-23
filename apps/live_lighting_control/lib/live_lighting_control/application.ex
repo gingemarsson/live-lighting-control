@@ -24,6 +24,7 @@ defmodule LiveLightingControl.Application do
       {LiveLightingControl.FixtureManager, name: FixtureManager},
       {LiveLightingControl.LayoutManager, name: LayoutManager},
       {LiveLightingControl.ViewManager, name: ViewManager},
+      {LiveLightingControl.ExecutorManager, name: ExecutorManager},
       {LiveLightingControl.ProgrammerManager, name: ProgrammerManager},
       {LiveLightingControl.OutputBroadcaster, name: OutputBroadcaster},
       {LiveLightingControl.SACNSender, name: SACNSender}
