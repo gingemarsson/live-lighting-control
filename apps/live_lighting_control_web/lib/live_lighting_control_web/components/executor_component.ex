@@ -3,7 +3,7 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="w-24 bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600">
+    <div class="w-20 bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors border-neutral-600">
       <p class={"text-sm #{ if @value == 0, do: "text-gray-500", else: "" }"}>
         {@label}
       </p>
@@ -15,10 +15,10 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
         class={"bg-neutral-800 py-1 w-16 my-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer disabled:cursor-default disabled:border-neutral-700 #{if @executor_active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
         disabled={@executor_id == nil}
       >
-        <p class="text-sm">{@button_label}</p>
+        <p class="text-xs">{@button_label}</p>
       </button>
 
-      <div class="text-sm text-gray-700 font-medium">
+      <div class="text-xs mb-1 text-gray-700 font-medium">
         {@value}
       </div>
 
