@@ -52,7 +52,7 @@ defmodule LiveLightingControlWeb.ConfigCardComponent do
           </div>
 
           <div
-            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(false)}"}
             phx-click="execute_command"
             phx-value-action-name="reset_primary_selection"
           >
@@ -60,7 +60,7 @@ defmodule LiveLightingControlWeb.ConfigCardComponent do
           </div>
 
           <div
-            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(false)}"}
             phx-click="execute_command"
             phx-value-action-name="next_primary_selection"
           >
@@ -68,7 +68,7 @@ defmodule LiveLightingControlWeb.ConfigCardComponent do
           </div>
 
           <div
-            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
+            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(false)}"}
             phx-click="execute_command"
             phx-value-action-name="previous_primary_selection"
           >
