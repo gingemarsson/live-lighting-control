@@ -1,7 +1,7 @@
 defmodule LiveLightingControlWeb.ControlPageLive do
   use LiveLightingControlWeb, :live_view
   require UUID
-  alias LiveLightingControl.Scene
+  alias LiveLightingControl.Models.Scene
   alias LiveLightingControl.Utils
   alias LiveLightingControl.MidiUtils
 
@@ -13,27 +13,33 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       %{id: UUID.uuid4(), type: :output, configuration: %{}}
     ]
 
-    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "config")
-    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "scenes")
-    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "programmer")
-    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "executor")
+    Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "state")
     Phoenix.PubSub.subscribe(LiveLightingControl.PubSub, "output")
+
+    state = LiveLightingControl.StateManager.get_state()
 
     {:ok,
      assign(socket,
-       cards: cards,
-       config: LiveLightingControl.ConfigManager.get_config(),
-       fixtures: Map.values(LiveLightingControl.FixtureManager.get_fixtures_map()),
-       fixtures_map: LiveLightingControl.FixtureManager.get_fixtures_map(),
-       fixture_types_map: LiveLightingControl.FixtureManager.get_fixture_types_map(),
-       fixture_groups: Map.values(LiveLightingControl.FixtureManager.get_fixture_groups_map()),
-       fixture_groups_map: LiveLightingControl.FixtureManager.get_fixture_groups_map(),
-       executor_pages: LiveLightingControl.ExecutorManager.get_executor_pages(),
-       layouts: LiveLightingControl.LayoutManager.get_layouts(),
-       views: LiveLightingControl.ViewManager.get_views(),
-       scenes_map: LiveLightingControl.SceneManager.get_scenes(),
-       programmer: LiveLightingControl.ProgrammerManager.get_programmer(),
+       # State
+       config: state.config,
+       programmer: state.programmer,
+       fixtures: state.fixtures,
+       fixture_types: state.fixture_types,
+       fixture_groups: state.fixture_groups,
+       executor_pages: state.executor_pages,
+       layouts: state.layouts,
+       views: state.views,
+       scenes: state.scenes,
+       fixtures_map: Map.new(state.fixtures, &{&1.id, &1}),
+       fixture_types_map: Map.new(state.fixture_types, &{&1.id, &1}),
+       fixture_groups_map: Map.new(state.fixture_groups, &{&1.id, &1}),
+       layouts_map: Map.new(state.layouts, &{&1.id, &1}),
+       views_map: Map.new(state.views, &{&1.id, &1}),
+       scenes_map: Map.new(state.scenes, &{&1.id, &1}),
+       # Output
        output: %{},
+       # Local
+       cards: cards,
        selected_fixture_ids: [],
        primary_selected_fixture_id: nil,
        current_page_index: 0
@@ -42,25 +48,30 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   # Subscriptions from other parts of application
 
-  def handle_info({:scene_updated, _scene}, socket) do
+  def handle_info({:state_update, updated_state}, socket) do
     # Always update all scenes
-    {:noreply, assign(socket, :scenes_map, LiveLightingControl.SceneManager.get_scenes())}
-  end
-
-  def handle_info({:programmer_updated, updated_programmer}, socket) do
-    {:noreply, assign(socket, :programmer, updated_programmer)}
+    {:noreply,
+     assign(socket,
+       config: updated_state.config,
+       programmer: updated_state.programmer,
+       fixtures: updated_state.fixtures,
+       fixture_types: updated_state.fixture_types,
+       fixture_groups: updated_state.fixture_groups,
+       executor_pages: updated_state.executor_pages,
+       layouts: updated_state.layouts,
+       views: updated_state.views,
+       scenes: updated_state.scenes,
+       fixtures_map: Map.new(updated_state.fixtures, &{&1.id, &1}),
+       fixture_types_map: Map.new(updated_state.fixture_types, &{&1.id, &1}),
+       fixture_groups_map: Map.new(updated_state.fixture_groups, &{&1.id, &1}),
+       layouts_map: Map.new(updated_state.layouts, &{&1.id, &1}),
+       views_map: Map.new(updated_state.views, &{&1.id, &1}),
+       scenes_map: Map.new(updated_state.scenes, &{&1.id, &1})
+     )}
   end
 
   def handle_info({:output_update, output}, socket) do
     {:noreply, assign(socket, :output, output)}
-  end
-
-  def handle_info({:executor_updated, updated_executor_pages}, socket) do
-    {:noreply, assign(socket, :executor_pages, updated_executor_pages)}
-  end
-
-  def handle_info({:config_updated, config}, socket) do
-    {:noreply, assign(socket, :config, config)}
   end
 
   # Helper functions
@@ -84,7 +95,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   def handle_event("toggle_config", %{"config-name" => config_name_string}, socket) do
     config_name = String.to_existing_atom(config_name_string)
 
-    LiveLightingControl.ConfigManager.set_config(%{
+    LiveLightingControl.StateManager.set_config(%{
       config_name: config_name,
       value: !socket.assigns.config[config_name]
     })
@@ -139,8 +150,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("toggle_select_view", %{"view-id" => view_id}, socket) do
-    views = socket.assigns.views
-    selected_view = Map.get(views, view_id)
+    views_map = socket.assigns.views_map
+    selected_view = Map.get(views_map, view_id)
 
     {:noreply, assign(socket, :cards, selected_view.cards)}
   end
@@ -150,7 +161,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"value" => master_value, "sliderId" => scene_id, "sliderType" => "scene"},
         socket
       ) do
-    LiveLightingControl.SceneManager.update_scene(%{id: scene_id, state: %{master: master_value}})
+    LiveLightingControl.StateManager.update_scene(%{id: scene_id, state: %{master: master_value}})
 
     {:noreply, socket}
   end
@@ -167,7 +178,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         socket.assigns.selected_fixture_ids
       end
 
-    LiveLightingControl.ProgrammerManager.update_programmer(%{
+    LiveLightingControl.StateManager.update_programmer(%{
       fixture_ids: selected_fixture_ids,
       attributes: [%{attribute: attribute, value: round(value)}]
     })
@@ -188,7 +199,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"value" => value, "sliderId" => executor_id, "sliderType" => "executor"},
         socket
       ) do
-    LiveLightingControl.ExecutorManager.handle_executor_slider(executor_id, value)
+    LiveLightingControl.ExecutorManager.handle_executor_slider(
+      executor_id,
+      value,
+      socket.assigns.executor_pages
+    )
 
     {:noreply, socket}
   end
@@ -198,7 +213,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"executorId" => "master-executor"},
         socket
       ) do
-    LiveLightingControl.ConfigManager.set_config(%{
+    LiveLightingControl.StateManager.set_config(%{
       config_name: :blackout,
       value: !socket.assigns.config[:blackout]
     })
@@ -251,7 +266,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         socket.assigns.selected_fixture_ids
       end
 
-    LiveLightingControl.ProgrammerManager.update_programmer(%{
+    LiveLightingControl.StateManager.update_programmer(%{
       fixture_ids: selected_fixture_ids,
       attributes: [
         %{attribute: "red", value: round(value_red)},
@@ -280,7 +295,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("clear-programmer", _data, socket) do
-    LiveLightingControl.ProgrammerManager.clear_programmer()
+    LiveLightingControl.StateManager.clear_programmer()
 
     {:noreply, socket}
   end
@@ -293,7 +308,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       state: %{master: 100}
     }
 
-    LiveLightingControl.SceneManager.update_scene(new_scene)
+    LiveLightingControl.StateManager.update_scene(new_scene)
 
     {:noreply, socket}
   end
@@ -319,19 +334,26 @@ defmodule LiveLightingControlWeb.ControlPageLive do
             :button_down ->
               LiveLightingControl.ExecutorManager.handle_executor_action(
                 executor.id,
-                :button_down
+                :button_down,
+                socket.assigns.executor_pages
               )
 
               {:noreply, socket}
 
             :button_up ->
-              LiveLightingControl.ExecutorManager.handle_executor_action(executor.id, :button_up)
+              LiveLightingControl.ExecutorManager.handle_executor_action(
+                executor.id,
+                :button_up,
+                socket.assigns.executor_pages
+              )
+
               {:noreply, socket}
 
             :slider_change ->
               LiveLightingControl.ExecutorManager.handle_executor_slider(
                 executor.id,
-                MidiUtils.get_value_from_midi_value(raw_value)
+                MidiUtils.get_value_from_midi_value(raw_value),
+                socket.assigns.executor_pages
               )
 
               {:noreply, socket}
@@ -354,7 +376,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   def execute_command(socket, command, value) do
     case command do
       :toggle_sacn_output ->
-        LiveLightingControl.ConfigManager.set_config(%{
+        LiveLightingControl.StateManager.set_config(%{
           config_name: :enable_sacn_output,
           value: !socket.assigns.config[:enable_sacn_output]
         })
@@ -362,7 +384,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         {:noreply, socket}
 
       :toggle_programmer ->
-        LiveLightingControl.ConfigManager.set_config(%{
+        LiveLightingControl.StateManager.set_config(%{
           config_name: :enable_programmer,
           value: !socket.assigns.config[:enable_programmer]
         })
@@ -386,7 +408,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
          )}
 
       :toggle_blackout ->
-        LiveLightingControl.ConfigManager.set_config(%{
+        LiveLightingControl.StateManager.set_config(%{
           config_name: :blackout,
           value: !socket.assigns.config[:blackout]
         })
@@ -394,7 +416,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         {:noreply, socket}
 
       :main_master ->
-        LiveLightingControl.ConfigManager.set_config(%{
+        LiveLightingControl.StateManager.set_config(%{
           config_name: :main_master,
           value: value
         })
@@ -489,7 +511,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
               <.live_component
                 module={LiveLightingControlWeb.LayoutsCardComponent}
                 id={card.id}
-                layouts={@layouts}
+                layouts_map={@layouts_map}
                 configuration={card.configuration}
                 selected_fixture_ids={@selected_fixture_ids}
                 primary_selected_fixture_id={@primary_selected_fixture_id}

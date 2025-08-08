@@ -1,4 +1,4 @@
-defmodule LiveLightingControl.CommonTypes do
+defmodule LiveLightingControl.Models.CommonTypes do
   @typedoc "Fixture id, a UUID"
   @type fixture_id :: String.t()
 

@@ -18,14 +18,7 @@ defmodule LiveLightingControl.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: LiveLightingControl.Finch},
       # Start a worker by calling: LiveLightingControl.Worker.start_link(arg)
-      # {LiveLightingControl.Worker, arg}
-      {LiveLightingControl.ConfigManager, name: ConfigManager},
-      {LiveLightingControl.SceneManager, name: SceneManager},
-      {LiveLightingControl.FixtureManager, name: FixtureManager},
-      {LiveLightingControl.LayoutManager, name: LayoutManager},
-      {LiveLightingControl.ViewManager, name: ViewManager},
-      {LiveLightingControl.ExecutorManager, name: ExecutorManager},
-      {LiveLightingControl.ProgrammerManager, name: ProgrammerManager},
+      {LiveLightingControl.StateManager, name: StateManager},
       {LiveLightingControl.OutputBroadcaster, name: OutputBroadcaster},
       {LiveLightingControl.SACNSender, name: SACNSender}
     ]

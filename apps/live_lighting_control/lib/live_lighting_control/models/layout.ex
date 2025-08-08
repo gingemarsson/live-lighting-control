@@ -1,5 +1,5 @@
-defmodule LiveLightingControl.Layout do
-  alias LiveLightingControl.CommonTypes
+defmodule LiveLightingControl.Models.Layout do
+  alias LiveLightingControl.Models.CommonTypes
 
   @type t :: %__MODULE__{
           id: String.t(),

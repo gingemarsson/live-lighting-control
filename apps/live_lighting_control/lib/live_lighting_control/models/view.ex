@@ -1,5 +1,5 @@
-defmodule LiveLightingControl.View do
-  alias LiveLightingControl.Card
+defmodule LiveLightingControl.Models.View do
+  alias LiveLightingControl.Models.Card
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -12,7 +12,7 @@ defmodule LiveLightingControl.View do
             cards: nil
 end
 
-defmodule LiveLightingControl.Card do
+defmodule LiveLightingControl.Models.Card do
   @type t :: %__MODULE__{
           id: String.t(),
           type: atom(),

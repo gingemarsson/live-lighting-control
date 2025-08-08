@@ -30,13 +30,13 @@ defmodule LiveLightingControlWeb.LayoutsCardComponent do
       </div>
 
       <% selected_layout_id = Map.get(@configuration, :selected_layout_id, nil) %>
-      <% selected_layout = get_selected_layout(@layouts, selected_layout_id) %>
+      <% selected_layout = get_selected_layout(@layouts_map, selected_layout_id) %>
 
       <div id={"hidden-content-#{@id}"}>
         <div class="grid grid-cols-10 gap-2 p-2">
-          <%= for layout <- Map.values(@layouts) do %>
+          <%= for layout <- Map.values(@layouts_map) do %>
             <div
-              class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_layout_border_color(layout, @layouts, selected_layout_id)}"}
+              class={"bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_layout_border_color(layout, @layouts_map, selected_layout_id)}"}
               phx-click="update_card_configuration"
               phx-value-value={layout.id}
               phx-value-key="selected_layout_id"

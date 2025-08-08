@@ -1,5 +1,5 @@
-defmodule LiveLightingControl.Scene do
-  alias LiveLightingControl.CommonTypes
+defmodule LiveLightingControl.Models.Scene do
+  alias LiveLightingControl.Models.CommonTypes
 
   @type state_map :: %{:master => 0..100, :flash => boolean()}
 

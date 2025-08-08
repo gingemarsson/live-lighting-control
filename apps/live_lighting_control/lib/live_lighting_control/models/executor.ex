@@ -1,4 +1,4 @@
-defmodule LiveLightingControl.ExecutorPage do
+defmodule LiveLightingControl.Models.ExecutorPage do
   alias LiveLightingControl.Executor
 
   @type t :: %__MODULE__{
@@ -14,7 +14,7 @@ defmodule LiveLightingControl.ExecutorPage do
             executor_buttons: nil
 end
 
-defmodule LiveLightingControl.Executor do
+defmodule LiveLightingControl.Models.Executor do
   @type executor_state_map :: %{:active => boolean()}
 
   @type t :: %__MODULE__{

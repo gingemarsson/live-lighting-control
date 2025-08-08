@@ -77,7 +77,7 @@ defmodule LiveLightingControlWeb.ConfigCardComponent do
 
           <div class="flex-grow" />
 
-          <%= for view <- Map.values(@views) do %>
+          <%= for view <- @views do %>
             <div
               class="bg-neutral-800 w-36 p-2 rounded-lg flex flex-col items-center justify-center border text-center transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
               phx-click="toggle_select_view"

@@ -1,5 +1,5 @@
 defmodule LiveLightingControl.OutputCalculator do
-  alias LiveLightingControl.Scene
+  alias LiveLightingControl.Models.Scene
 
   def calculate_output(
         config,

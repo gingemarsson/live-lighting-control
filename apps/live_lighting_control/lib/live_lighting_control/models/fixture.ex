@@ -1,5 +1,5 @@
-defmodule LiveLightingControl.FixtureTypeChannel do
-  alias LiveLightingControl.CommonTypes
+defmodule LiveLightingControl.Models.FixtureTypeChannel do
+  alias LiveLightingControl.Models.CommonTypes
 
   @type t :: %__MODULE__{
           id: CommonTypes.fixture_type_channel_id(),
@@ -16,9 +16,9 @@ defmodule LiveLightingControl.FixtureTypeChannel do
             default_value: 0
 end
 
-defmodule LiveLightingControl.FixtureType do
+defmodule LiveLightingControl.Models.FixtureType do
   alias LiveLightingControl.FixtureTypeChannel
-  alias LiveLightingControl.CommonTypes
+  alias LiveLightingControl.Models.CommonTypes
 
   @type t :: %__MODULE__{
           id: CommonTypes.fixture_type_id(),
@@ -31,8 +31,8 @@ defmodule LiveLightingControl.FixtureType do
             channels: nil
 end
 
-defmodule LiveLightingControl.Fixture do
-  alias LiveLightingControl.CommonTypes
+defmodule LiveLightingControl.Models.Fixture do
+  alias LiveLightingControl.Models.CommonTypes
 
   @type t :: %__MODULE__{
           id: CommonTypes.fixture_id(),
@@ -48,8 +48,8 @@ defmodule LiveLightingControl.Fixture do
             fixture_type_id: nil
 end
 
-defmodule LiveLightingControl.FixtureGroup do
-  alias LiveLightingControl.CommonTypes
+defmodule LiveLightingControl.Models.FixtureGroup do
+  alias LiveLightingControl.Models.CommonTypes
 
   @type t :: %__MODULE__{
           id: CommonTypes.fixture_id(),

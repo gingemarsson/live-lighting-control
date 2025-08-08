@@ -1,4 +1,4 @@
-defmodule LiveLightingControl.Config do
+defmodule LiveLightingControl.Models.Config do
   @type t :: %__MODULE__{
           enable_programmer: boolean(),
           enable_scenes: boolean(),
