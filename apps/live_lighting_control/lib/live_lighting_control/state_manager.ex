@@ -23,6 +23,10 @@ defmodule LiveLightingControl.StateManager do
     update_element_in_list_by_id(:scenes, updated_scene)
   end
 
+  def update_user(updated_user) do
+    update_element_in_list_by_id(:users, updated_user)
+  end
+
   @spec set_config(%{:config_name => String.t(), value: any()}) :: :ok
   def set_config(%{config_name: _config_name, value: _value} = update) do
     GenServer.cast(__MODULE__, {:set_config, update})

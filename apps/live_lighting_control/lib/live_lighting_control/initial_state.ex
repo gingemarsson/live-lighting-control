@@ -10,6 +10,7 @@ defmodule LiveLightingControl.InitialState do
   alias LiveLightingControl.Models.Scene
   alias LiveLightingControl.Models.State
   alias LiveLightingControl.Models.View
+  alias LiveLightingControl.Models.User
 
   def get_initial_state do
     config = %{
@@ -458,6 +459,17 @@ defmodule LiveLightingControl.InitialState do
       }
     ]
 
+    users = [
+      %User{
+        id: "a7114549-d9db-444c-9249-ed635869f3d3",
+        label: "User A",
+      },
+      %User{
+        id: "a7114549-d9db-444c-9249-ed635869f3d3",
+        label: "User B",
+      }
+    ]
+
     state = %State{
       config: config,
       programmer: %{},
@@ -467,7 +479,8 @@ defmodule LiveLightingControl.InitialState do
       fixture_types: fixture_types,
       fixture_groups: fixture_groups,
       executor_pages: executor_pages,
-      views: views
+      views: views,
+      users: users
     }
 
     state
