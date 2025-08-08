@@ -171,6 +171,13 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket, :cards, selected_view.cards)}
   end
 
+  def handle_event("toggle_select_user", %{"user-id" => user_id}, socket) do
+    user = Enum.find(socket.assigns.users, &(&1.id == user_id))
+    {:noreply, assign(socket, current_user_id: user_id, selected_fixture_ids: user.selected_fixture_ids,
+    primary_selected_fixture_id: user.primary_selected_fixture_id,
+    current_page_index: user.current_page_index)}
+  end
+
   def handle_event(
         "slider_changed",
         %{"value" => master_value, "sliderId" => scene_id, "sliderType" => "scene"},
@@ -293,18 +300,6 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  @approved_commands [
-    "toggle_sacn_output",
-    "toggle_programmer",
-    "page_up",
-    "page_down",
-    "toggle_blackout",
-    "main_master",
-    "highlight",
-    "reset_primary_selection",
-    "next_primary_selection",
-    "previous_primary_selection"
-  ]
   def handle_event("execute_command", %{"action-name" => action_name}, socket) do
     execute_command(socket, String.to_existing_atom(action_name), nil)
   end
@@ -500,6 +495,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 id={card.id}
                 config={@config}
                 views={@views}
+                users={@users}
+                current_user_id={@current_user_id}
               />
             <% :fixtures -> %>
               <.live_component
