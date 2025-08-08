@@ -1,29 +1,24 @@
 defmodule LiveLightingControl.OutputCalculator do
   alias LiveLightingControl.Models.Scene
+  alias LiveLightingControl.Utils
 
   def calculate_output(
         config,
         scenes,
         programmer,
+        users,
         fixtures_map,
         fixture_types_map,
         universe_number
       ) do
+    highlight_data = get_highlight_data(users)
+
     # The merged control data is a map of fixture ids, pointing to a map of attributes pointing to values between 0 and 255
     merged_control_data =
-      case {config.enable_scenes, config.enable_programmer} do
-        {true, true} ->
-          Map.merge(merge_scenes(scenes), programmer, fn _key, v1, v2 -> Map.merge(v1, v2) end)
-
-        {true, false} ->
-          merge_scenes(scenes)
-
-        {false, true} ->
-          programmer
-
-        {false, false} ->
-          %{}
-      end
+      %{}
+      |> Utils.deep_merge(if(config.enable_scenes, do: merge_scenes(scenes), else: %{}))
+      |> Utils.deep_merge(if(config.enable_programmer, do: programmer, else: %{}))
+      |> Utils.deep_merge(highlight_data)
 
     scale_factor =
       if config.blackout do
@@ -122,5 +117,23 @@ defmodule LiveLightingControl.OutputCalculator do
 
   defp htp_merge(map_1, map_2) do
     Map.merge(map_1, map_2, fn _key, v1, v2 -> max(v1, v2) end)
+  end
+
+  defp get_highlight_data(users) do
+    users
+    |> Enum.filter(& &1.highlight)
+    |> Enum.reduce(%{}, fn user, acc ->
+      fixture_ids =
+        case user.primary_selected_fixture_id do
+          nil -> user.selected_fixture_ids
+          id -> [id]
+        end
+
+      Enum.reduce(fixture_ids, acc, fn fixture_id, acc2 ->
+        Map.update(acc2, fixture_id, %{"dimmer" => 255}, fn attrs ->
+          Map.put(attrs, "dimmer", 255)
+        end)
+      end)
+    end)
   end
 end

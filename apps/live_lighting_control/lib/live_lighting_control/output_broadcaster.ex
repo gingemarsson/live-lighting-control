@@ -42,6 +42,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
     config = state.config
     scenes = state.scenes
     programmer = state.programmer
+    users = state.users
     fixtures_map = Map.new(state.fixtures, &{&1.id, &1})
     fixture_types_map = Map.new(state.fixture_types, &{&1.id, &1})
 
@@ -57,6 +58,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
             config,
             scenes,
             programmer,
+            users,
             fixtures_map,
             fixture_types_map,
             universe_number

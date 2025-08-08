@@ -462,11 +462,11 @@ defmodule LiveLightingControl.InitialState do
     users = [
       %User{
         id: "5db04ee7-9bc4-43f3-9ac1-e0f2b8bb9f6f",
-        label: "User A",
+        label: "User A"
       },
       %User{
         id: "3c1499f0-32ba-430e-81f9-f808eb999209",
-        label: "User B",
+        label: "User B"
       }
     ]
 

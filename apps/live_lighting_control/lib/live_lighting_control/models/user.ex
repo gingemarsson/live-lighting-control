@@ -6,12 +6,14 @@ defmodule LiveLightingControl.Models.User do
           label: String.t(),
           selected_fixture_ids: [CommonTypes.fixture_id()],
           primary_selected_fixture_id: CommonTypes.fixture_id(),
-          current_page_index: number()
+          current_page_index: number(),
+          highlight: boolean()
         }
 
   defstruct id: nil,
             label: nil,
             selected_fixture_ids: [],
             primary_selected_fixture_id: nil,
-            current_page_index: 0
+            current_page_index: 0,
+            highlight: false
 end

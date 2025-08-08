@@ -43,6 +43,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        selected_fixture_ids: user.selected_fixture_ids,
        primary_selected_fixture_id: user.primary_selected_fixture_id,
        current_page_index: user.current_page_index,
+       highlight: user.highlight,
        # Output
        output: %{},
        # Local
@@ -54,7 +55,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   # Subscriptions from other parts of application
 
   def handle_info({:state_update, updated_state}, socket) do
-    user = Enum.find(updated_state.users, fn user -> (user.id == socket.assigns.current_user_id) end)
+    user =
+      Enum.find(updated_state.users, fn user -> user.id == socket.assigns.current_user_id end)
 
     # Always update all scenes
     {:noreply,
@@ -79,7 +81,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        # User
        selected_fixture_ids: user.selected_fixture_ids,
        primary_selected_fixture_id: user.primary_selected_fixture_id,
-       current_page_index: user.current_page_index
+       current_page_index: user.current_page_index,
+       highlight: user.highlight
      )}
   end
 
@@ -124,7 +127,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     updated_fixture_ids =
       toggle_select_fixtures([fixture_id], socket.assigns.selected_fixture_ids)
 
-    LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, selected_fixture_ids: updated_fixture_ids, primary_selected_fixture_id: nil})
+    LiveLightingControl.StateManager.update_user(%{
+      id: socket.assigns.current_user_id,
+      selected_fixture_ids: updated_fixture_ids,
+      primary_selected_fixture_id: nil
+    })
 
     {:noreply, socket}
   end
@@ -139,7 +146,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     updated_fixture_ids =
       toggle_select_fixtures(fixture_group.fixture_ids, socket.assigns.selected_fixture_ids)
 
-    LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, selected_fixture_ids: updated_fixture_ids, primary_selected_fixture_id: nil})
+    LiveLightingControl.StateManager.update_user(%{
+      id: socket.assigns.current_user_id,
+      selected_fixture_ids: updated_fixture_ids,
+      primary_selected_fixture_id: nil
+    })
 
     {:noreply, socket}
   end
@@ -173,9 +184,15 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_event("toggle_select_user", %{"user-id" => user_id}, socket) do
     user = Enum.find(socket.assigns.users, &(&1.id == user_id))
-    {:noreply, assign(socket, current_user_id: user_id, selected_fixture_ids: user.selected_fixture_ids,
-    primary_selected_fixture_id: user.primary_selected_fixture_id,
-    current_page_index: user.current_page_index)}
+
+    {:noreply,
+     assign(socket,
+       current_user_id: user_id,
+       selected_fixture_ids: user.selected_fixture_ids,
+       primary_selected_fixture_id: user.primary_selected_fixture_id,
+       current_page_index: user.current_page_index,
+       highlight: user.highlight
+     )}
   end
 
   def handle_event(
@@ -248,7 +265,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"executorId" => executor_id},
         socket
       ) do
-    LiveLightingControl.ExecutorManager.handle_executor_action(executor_id, :button_down, socket.assigns.executor_pages)
+    LiveLightingControl.ExecutorManager.handle_executor_action(
+      executor_id,
+      :button_down,
+      socket.assigns.executor_pages
+    )
 
     {:noreply, socket}
   end
@@ -258,7 +279,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"executorId" => executor_id},
         socket
       ) do
-    LiveLightingControl.ExecutorManager.handle_executor_action(executor_id, :button_up, socket.assigns.executor_pages)
+    LiveLightingControl.ExecutorManager.handle_executor_action(
+      executor_id,
+      :button_up,
+      socket.assigns.executor_pages
+    )
 
     {:noreply, socket}
   end
@@ -402,11 +427,21 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         {:noreply, socket}
 
       :page_up ->
-        LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, current_page_index: rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))})
+        LiveLightingControl.StateManager.update_user(%{
+          id: socket.assigns.current_user_id,
+          current_page_index:
+            rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
+        })
+
         {:noreply, socket}
 
       :page_down ->
-        LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, current_page_index: rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))})
+        LiveLightingControl.StateManager.update_user(%{
+          id: socket.assigns.current_user_id,
+          current_page_index:
+            rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
+        })
+
         {:noreply, socket}
 
       :toggle_blackout ->
@@ -426,11 +461,19 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         {:noreply, socket}
 
       :highlight ->
-        IO.puts(":highlight")
+        LiveLightingControl.StateManager.update_user(%{
+          id: socket.assigns.current_user_id,
+          highlight: !socket.assigns.highlight
+        })
+
         {:noreply, socket}
 
       :reset_primary_selection ->
-        LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, primary_selected_fixture_id: nil})
+        LiveLightingControl.StateManager.update_user(%{
+          id: socket.assigns.current_user_id,
+          primary_selected_fixture_id: nil
+        })
+
         {:noreply, socket}
 
       :next_primary_selection ->
@@ -453,7 +496,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
               Enum.at(selected_fixture_ids, new_index)
           end
 
-        LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, primary_selected_fixture_id: new_primary_selected_fixture_id})
+        LiveLightingControl.StateManager.update_user(%{
+          id: socket.assigns.current_user_id,
+          primary_selected_fixture_id: new_primary_selected_fixture_id
+        })
+
         {:noreply, socket}
 
       :previous_primary_selection ->
@@ -476,8 +523,13 @@ defmodule LiveLightingControlWeb.ControlPageLive do
               Enum.at(selected_fixture_ids, new_index)
           end
 
-          LiveLightingControl.StateManager.update_user(%{id: socket.assigns.current_user_id, primary_selected_fixture_id: new_primary_selected_fixture_id})
-          {:noreply, socket}
+        LiveLightingControl.StateManager.update_user(%{
+          id: socket.assigns.current_user_id,
+          primary_selected_fixture_id: new_primary_selected_fixture_id
+        })
+
+        {:noreply, socket}
+
       _ ->
         {:noreply, socket}
     end
@@ -497,6 +549,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 views={@views}
                 users={@users}
                 current_user_id={@current_user_id}
+                highlight={@highlight}
               />
             <% :fixtures -> %>
               <.live_component
