@@ -1,5 +1,4 @@
 defmodule LiveLightingControl.ExecutorManager do
-  alias LiveLightingControl.Models.Executor
   alias LiveLightingControl.Utils
 
   def handle_executor_slider(executor_id, new_value) do

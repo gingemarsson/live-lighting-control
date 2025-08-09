@@ -3,75 +3,55 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   alias Phoenix.LiveView.JS
   alias LiveLightingControl.Utils
 
-  def get_id_for_executor(row_number, executor_number, current_page) do
+  def get_executor_info(row_number, executor_number, current_page, scenes) do
     case Utils.get_executor(row_number, executor_number, current_page) do
       nil ->
-        nil
+        %{
+          id: nil,
+          active: nil,
+          value: 0,
+          label: "-",
+          cues: [],
+          current_cue_index: nil,
+          button_label: "-"
+        }
 
-      %{id: id} ->
-        id
+      %{id: id, state: state} = executor ->
+        scene =
+          case executor do
+            %{type: :scene, entity_id: scene_id} -> Map.get(scenes, scene_id)
+            _ -> nil
+          end
+
+        %{
+          id: id,
+          active: Access.get(state, :active, false),
+          value: get_value(executor, scene),
+          label: get_label(executor, scene),
+          cues: get_cues(executor, scene),
+          current_cue_index: get_current_cue_index(executor, scene),
+          button_label: get_button_label(executor)
+        }
     end
   end
 
-  def get_active_for_executor(row_number, executor_number, current_page) do
-    case Utils.get_executor(row_number, executor_number, current_page) do
-      nil ->
-        nil
+  defp get_value(%{type: :scene}, %{state: %{master: master}}), do: master
+  defp get_value(_, _), do: 100
 
-      %{state: state} ->
-        Access.get(state, :active, false)
-    end
-  end
+  defp get_label(%{type: :scene}, %{label: label}), do: label
+  defp get_label(_, _), do: "N/A"
 
-  def get_value_for_executor(row_number, executor_number, current_page, scenes) do
-    case Utils.get_executor(row_number, executor_number, current_page) do
-      nil ->
-        0
+  defp get_cues(%{type: :scene}, %{cues: cues}), do: cues
+  defp get_cues(_, _), do: []
 
-      %{type: :scene, entity_id: id} ->
-        scene = Map.get(scenes, id)
-        scene.state.master
+  defp get_current_cue_index(%{type: :scene}, %{state: %{cue_index: cue_index}}), do: cue_index
+  defp get_current_cue_index(_, _), do: nil
 
-      _other ->
-        100
-    end
-  end
-
-  def get_label_for_executor(row_number, executor_number, current_page, scenes) do
-    case Utils.get_executor(row_number, executor_number, current_page) do
-      nil ->
-        "-"
-
-      %{type: :scene, entity_id: id} ->
-        scene = Map.get(scenes, id)
-        scene.label
-
-      _other ->
-        "N/A"
-    end
-  end
-
-  def get_button_label_for_executor(row_number, executor_number, current_page, _scenes) do
-    case Utils.get_executor(row_number, executor_number, current_page) do
-      nil ->
-        "-"
-
-      %{button_type: :go} ->
-        "Go"
-
-      %{button_type: :flash} ->
-        "Flash"
-
-      %{button_type: :next} ->
-        "Next"
-
-      %{button_type: :previous} ->
-        "Prev"
-
-      _other ->
-        "N/A"
-    end
-  end
+  defp get_button_label(%{button_type: :go}), do: "Go"
+  defp get_button_label(%{button_type: :flash}), do: "Flash"
+  defp get_button_label(%{button_type: :next}), do: "Next"
+  defp get_button_label(%{button_type: :previous}), do: "Prev"
+  defp get_button_label(_), do: "N/A"
 
   def render(assigns) do
     ~H"""
@@ -88,8 +68,10 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
       <div class="m-2 mx-auto" id="hidden-content-executors">
         <div class="flex flex-row flex-grow gap-2 h-full">
           <%= for executor_number <- 1..8 do %>
-            <% value = get_value_for_executor(0, executor_number, current_page, @scenes) %>
+            <% executor_info = get_executor_info(0, executor_number, current_page, @scenes) %>
+            <%!-- <% value = get_value_for_executor(0, executor_number, current_page, @scenes) %>
             <% label = get_label_for_executor(0, executor_number, current_page, @scenes) %>
+            <% cues = get_cues_for_executor(0, executor_number, current_page, @scenes) %>
             <% button_label = get_button_label_for_executor(0, executor_number, current_page, @scenes) %>
             <% executor_id = get_id_for_executor(0, executor_number, current_page) %>
             <% executor_active =
@@ -97,15 +79,17 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
                 0,
                 executor_number,
                 current_page
-              ) %>
+              ) %> --%>
             <.live_component
               module={LiveLightingControlWeb.ExecutorComponent}
               id={"executor-#{current_page_number}-0-#{executor_number}"}
-              executor_id={executor_id}
-              executor_active={executor_active}
-              value={value}
-              label={label}
-              button_label={button_label}
+              executor_id={executor_info.id}
+              executor_active={executor_info.active}
+              value={executor_info.value}
+              label={executor_info.label}
+              button_label={executor_info.button_label}
+              cues={executor_info.cues}
+              current_cue_index={executor_info.current_cue_index}
             />
           <% end %>
 
@@ -114,49 +98,16 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <div class="grid grid-cols-8 gap-2">
             <%= for executor_button_row_index <- 1..4 do %>
               <%= for executor_button_col_index <- 1..8 do %>
-                <% _value =
-                  get_value_for_executor(
-                    executor_button_row_index,
-                    executor_button_col_index,
-                    current_page,
-                    @scenes
-                  ) %>
-                <% label =
-                  get_label_for_executor(
-                    executor_button_row_index,
-                    executor_button_col_index,
-                    current_page,
-                    @scenes
-                  ) %>
-                <% button_label =
-                  get_button_label_for_executor(
-                    executor_button_row_index,
-                    executor_button_col_index,
-                    current_page,
-                    @scenes
-                  ) %>
-                <% executor_id =
-                  get_id_for_executor(
-                    executor_button_row_index,
-                    executor_button_col_index,
-                    current_page
-                  ) %>
-                <% executor_active =
-                  get_active_for_executor(
-                    executor_button_row_index,
-                    executor_button_col_index,
-                    current_page
-                  ) %>
-
+              <% executor_info = get_executor_info(executor_button_row_index, executor_button_col_index, current_page, @scenes) %>
                 <button
                   phx-hook="ExecutorButtonHook"
                   id={"executor-#{current_page_number}-#{executor_button_row_index}-#{executor_button_col_index}"}
-                  data-executor-id={executor_id}
-                  class={"bg-neutral-800 w-24 py-1 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer disabled:cursor-default disabled:border-neutral-700 #{if executor_active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
-                  disabled={executor_id == nil}
+                  data-executor-id={executor_info.id}
+                  class={"bg-neutral-800 w-24 py-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer disabled:cursor-default disabled:border-neutral-700 #{if executor_info.active do "border-orange-600" else "border-neutral-600 hover:border-neutral-400" end}"}
+                  disabled={executor_info.id == nil}
                 >
-                  <p class="text-sm">{label}</p>
-                  <p class="text-xs">{button_label}</p>
+                  <p class="text-sm">{executor_info.label}</p>
+                  <p class="text-xs">{executor_info.button_label}</p>
                 </button>
               <% end %>
             <% end %>
@@ -194,6 +145,8 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
             value={@config.main_master}
             label="Main"
             button_label="Blackout"
+            cues={[]}
+            current_cue_index={nil}
           />
         </div>
       </div>
