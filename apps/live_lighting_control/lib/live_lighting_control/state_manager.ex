@@ -72,7 +72,7 @@ defmodule LiveLightingControl.StateManager do
     element_id = partial_element.id
     list = Map.get(state, list_key)
 
-    existing = Enum.find(list, %{id: element_id}, fn %{id: id} -> id == element_id end)
+    existing = Utils.find_in_list_by_id(list, %{id: element_id}, element_id)
     updated = Utils.deep_merge(existing, partial_element)
 
     updated_list = update_element_in_list_by_id(list, element_id, fn _ -> updated end)

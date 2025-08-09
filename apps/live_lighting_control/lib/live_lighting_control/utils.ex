@@ -1,6 +1,15 @@
 defmodule LiveLightingControl.Utils do
+
+  def find_in_list_by_id(list, id) do
+    Enum.find(list, &(&1.id == id))
+  end
+
+  def find_in_list_by_id(list, default, id) do
+    Enum.find(list, default, &(&1.id == id))
+  end
+
   def get_selected_fixtures(fixtures, selected_fixture_ids) do
-    find_fixture_by_id = &Enum.find(fixtures, fn fixture -> fixture.id == &1 end)
+    find_fixture_by_id = &find_in_list_by_id(fixtures, &1)
     Enum.map(selected_fixture_ids, find_fixture_by_id)
   end
 

@@ -2,6 +2,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   use LiveLightingControlWeb, :live_view
   require UUID
   alias LiveLightingControl.Models.Scene
+  alias LiveLightingControl.Models.Cue
   alias LiveLightingControl.Utils
   alias LiveLightingControl.MidiUtils
 
@@ -55,8 +56,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   # Subscriptions from other parts of application
 
   def handle_info({:state_update, updated_state}, socket) do
-    user =
-      Enum.find(updated_state.users, fn user -> user.id == socket.assigns.current_user_id end)
+    user = Utils.find_in_list_by_id(updated_state.users, socket.assigns.current_user_id)
 
     # Always update all scenes
     {:noreply,
@@ -183,7 +183,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def handle_event("toggle_select_user", %{"user-id" => user_id}, socket) do
-    user = Enum.find(socket.assigns.users, &(&1.id == user_id))
+    user = Utils.find_in_list_by_id(socket.assigns.users, user_id)
 
     {:noreply,
      assign(socket,
@@ -240,8 +240,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       ) do
     LiveLightingControl.ExecutorManager.handle_executor_slider(
       executor_id,
-      value,
-      socket.assigns.executor_pages
+      value
     )
 
     {:noreply, socket}
@@ -267,8 +266,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       ) do
     LiveLightingControl.ExecutorManager.handle_executor_action(
       executor_id,
-      :button_down,
-      socket.assigns.executor_pages
+      :button_down
     )
 
     {:noreply, socket}
@@ -281,8 +279,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       ) do
     LiveLightingControl.ExecutorManager.handle_executor_action(
       executor_id,
-      :button_up,
-      socket.assigns.executor_pages
+      :button_up
     )
 
     {:noreply, socket}
@@ -339,7 +336,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     new_scene = %Scene{
       id: UUID.uuid4(),
       label: "New scene",
-      fixtures: socket.assigns.programmer,
+      cues: [%Cue{id: UUID.uuid4(), label: "Cue 1", fixture_attribute_map: socket.assigns.programmer}],
       state: %{master: 100}
     }
 
@@ -369,8 +366,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
             :button_down ->
               LiveLightingControl.ExecutorManager.handle_executor_action(
                 executor.id,
-                :button_down,
-                socket.assigns.executor_pages
+                :button_down
               )
 
               {:noreply, socket}
@@ -378,8 +374,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
             :button_up ->
               LiveLightingControl.ExecutorManager.handle_executor_action(
                 executor.id,
-                :button_up,
-                socket.assigns.executor_pages
+                :button_up
               )
 
               {:noreply, socket}
@@ -387,8 +382,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
             :slider_change ->
               LiveLightingControl.ExecutorManager.handle_executor_slider(
                 executor.id,
-                MidiUtils.get_value_from_midi_value(raw_value),
-                socket.assigns.executor_pages
+                MidiUtils.get_value_from_midi_value(raw_value)
               )
 
               {:noreply, socket}

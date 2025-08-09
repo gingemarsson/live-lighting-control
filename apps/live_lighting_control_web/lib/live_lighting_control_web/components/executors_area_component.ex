@@ -62,6 +62,12 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
       %{button_type: :flash} ->
         "Flash"
 
+      %{button_type: :next} ->
+        "Next"
+
+      %{button_type: :previous} ->
+        "Prev"
+
       _other ->
         "N/A"
     end

@@ -1,5 +1,6 @@
 defmodule LiveLightingControl.InitialState do
   alias LiveLightingControl.Models.Card
+  alias LiveLightingControl.Models.Cue
   alias LiveLightingControl.Models.Executor
   alias LiveLightingControl.Models.ExecutorPage
   alias LiveLightingControl.Models.Fixture
@@ -87,6 +88,12 @@ defmodule LiveLightingControl.InitialState do
               type: :scene,
               entity_id: "00d0b87a-c9f7-4727-84a7-841f15c9fcae",
               button_type: :flash
+            },
+            %Executor{
+              id: UUID.uuid4(),
+              type: :scene,
+              entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
+              button_type: :next
             }
           ],
           [
@@ -116,7 +123,18 @@ defmodule LiveLightingControl.InitialState do
             }
           ],
           [],
-          [],
+          [            %Executor{
+            id: UUID.uuid4(),
+            type: :scene,
+            entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
+            button_type: :next
+          },
+          %Executor{
+            id: UUID.uuid4(),
+            type: :scene,
+            entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
+            button_type: :previous
+          }],
           []
         ]
       },
@@ -392,34 +410,82 @@ defmodule LiveLightingControl.InitialState do
       %Scene{
         id: "69ac89df-fdaf-481d-9788-d522a159a465",
         label: "Moody",
-        description: "A moody lighting scene.",
-        fixtures: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}},
-        state: %{master: 90}
+        cues: [
+          %Cue{
+            id: "6ef55585-5222-48f6-beec-412f714ad697",
+            label: "Cue 1",
+            fixture_attribute_map: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}}
+          }
+        ],
+        state: %{master: 90, cue_index: 0}
       },
       %Scene{
         id: "4b17863d-99f3-4ce9-bacb-e9e3e67b9b31",
         label: "Party",
-        description: "A vibrant party lighting scene.",
-        fixtures: %{"83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}},
-        state: %{master: 50}
+        cues: [
+          %Cue{
+            id: "a971dd1b-755e-4df7-ac7d-4d054b46792a",
+            label: "Cue 1",
+            fixture_attribute_map: %{"83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}}
+          }
+        ],
+        state: %{master: 90, cue_index: 0}
       },
       %Scene{
         id: "7b7f7fc7-69c0-4eb2-86a5-22fa8e2d1144",
         label: "Relax",
-        description: "A relaxing lighting scene.",
-        fixtures: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}},
-        state: %{master: 50}
+        cues: [
+          %Cue{
+            id: "33efb147-de4d-4e9a-b4dd-0a7dc58d87d2",
+            label: "Cue 1",
+            fixture_attribute_map: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}},
+          }
+        ],
+        state: %{master: 90, cue_index: 0}
       },
       %Scene{
         id: "00d0b87a-c9f7-4727-84a7-841f15c9fcae",
         label: "All lights",
-        description: "A relaxing lighting scene.",
-        fixtures: %{
-          "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255},
-          "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255},
-          "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
-        },
-        state: %{master: 50}
+        cues: [
+          %Cue{
+            id: "0187c872-bed4-49de-8fd0-31c2a2981550",
+            label: "Cue 1",
+            fixture_attribute_map: %{
+              "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255},
+              "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255},
+              "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
+            },
+          }
+        ],
+        state: %{master: 90, cue_index: 0}
+      },
+      %Scene{
+        id: "683d4473-7c32-4eba-ae23-1f0229078301",
+        label: "Cues",
+        cues: [
+          %Cue{
+            id: "472446e6-6f4e-42a2-947d-3750a60bc78d",
+            label: "Cue 1",
+            fixture_attribute_map: %{
+              "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}
+            },
+          },
+          %Cue{
+            id: "871e5c65-0413-4a4b-a4fc-3cca6c14e9e4",
+            label: "Cue 2",
+            fixture_attribute_map: %{
+              "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}
+            },
+          },
+          %Cue{
+            id: "16e0345c-1eef-45da-acb0-ad9b48ac188b",
+            label: "Cue 3",
+            fixture_attribute_map: %{
+              "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
+            },
+          }
+        ],
+        state: %{master: 90, cue_index: 0}
       }
     ]
 

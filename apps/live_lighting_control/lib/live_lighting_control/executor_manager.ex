@@ -2,11 +2,10 @@ defmodule LiveLightingControl.ExecutorManager do
   alias LiveLightingControl.Models.Executor
   alias LiveLightingControl.Utils
 
-  @impl true
-  @impl true
-  def handle_executor_slider(executor_id, new_value, executor_pages) do
-    executors = Enum.flat_map(executor_pages, fn page -> List.flatten(page.executors) end)
-    executor = Enum.find(executors, fn %Executor{id: id} -> id == executor_id end)
+  def handle_executor_slider(executor_id, new_value) do
+    state = LiveLightingControl.StateManager.get_state()
+    executors = Enum.flat_map(state.executor_pages, fn page -> List.flatten(page.executors) end)
+    executor = Utils.find_in_list_by_id(executors, executor_id)
 
     case executor do
       nil ->
@@ -20,10 +19,10 @@ defmodule LiveLightingControl.ExecutorManager do
     end
   end
 
-  @impl true
-  def handle_executor_action(executor_id, action, executor_pages) do
-    executors = Enum.flat_map(executor_pages, fn page -> List.flatten(page.executors) end)
-    executor = Enum.find(executors, fn %Executor{id: id} -> id == executor_id end)
+  def handle_executor_action(executor_id, action) do
+    state = LiveLightingControl.StateManager.get_state()
+    executors = Enum.flat_map(state.executor_pages, fn page -> List.flatten(page.executors) end)
+    executor = Utils.find_in_list_by_id(executors, executor_id)
 
     case {executor, action} do
       {nil, _} ->
@@ -35,6 +34,15 @@ defmodule LiveLightingControl.ExecutorManager do
       {%{type: :scene, entity_id: entity_id, button_type: :flash}, :button_up} ->
         LiveLightingControl.StateManager.update_scene(%{id: entity_id, state: %{flash: false}})
 
+      {%{type: :scene, entity_id: entity_id, button_type: :next}, :button_down} ->
+        scene = Utils.find_in_list_by_id(state.scenes, entity_id)
+        updated_cue_index = rem(scene.state.cue_index + 1, length(scene.cues))
+        LiveLightingControl.StateManager.update_scene(%{id: entity_id, state: %{cue_index: updated_cue_index}})
+
+      {%{type: :scene, entity_id: entity_id, button_type: :previous}, :button_down} ->
+        scene = Utils.find_in_list_by_id(state.scenes, entity_id)
+        updated_cue_index = rem(scene.state.cue_index - 1, length(scene.cues))
+        LiveLightingControl.StateManager.update_scene(%{id: entity_id, state: %{cue_index: updated_cue_index}})
       {_, _} ->
         nil
     end

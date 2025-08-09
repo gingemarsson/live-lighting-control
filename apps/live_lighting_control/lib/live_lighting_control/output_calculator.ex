@@ -72,7 +72,7 @@ defmodule LiveLightingControl.OutputCalculator do
     |> Enum.reduce(%{}, &htp_fixture_merge/2)
   end
 
-  defp compute_scene_values(%Scene{fixtures: fixture_map, state: state}) do
+  defp compute_scene_values(%Scene{cues: cues, state: state}) do
     scene_master =
       max(
         state.master,
@@ -83,8 +83,10 @@ defmodule LiveLightingControl.OutputCalculator do
         end
       )
 
+    current_cue = Enum.at(cues, state.cue_index)
+
     scaled_by_scene_master =
-      Enum.into(fixture_map, %{}, fn {guid, attributes_map} ->
+      Enum.into(current_cue.fixture_attribute_map, %{}, fn {guid, attributes_map} ->
         updated =
           attributes_map
           |> Enum.map(fn {key, value} -> {key, value * scene_master / 255} end)
