@@ -11,6 +11,7 @@ defmodule LiveLightingControl.SACNSenderHelper do
     # Pad DMX values to 512 bytes
     dmx_data =
       dmx_values
+      |> Enum.map(& &1.value)
       |> Enum.map(&max(min(&1, 255), 0))
       |> Enum.map(&trunc/1)
       |> :binary.list_to_bin()

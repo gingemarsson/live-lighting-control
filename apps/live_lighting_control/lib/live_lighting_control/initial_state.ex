@@ -96,6 +96,12 @@ defmodule LiveLightingControl.InitialState do
               type: :scene,
               entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
               button_type: :next
+            },
+            %Executor{
+              id: get_new_guid(),
+              type: :scene,
+              entity_id: "396d6903-318c-42da-b9de-85559765d5ca",
+              button_type: :next
             }
           ],
           [
@@ -496,6 +502,43 @@ defmodule LiveLightingControl.InitialState do
             id: "16e0345c-1eef-45da-acb0-ad9b48ac188b",
             label: "Cue 3",
             fixture_attribute_map: %{
+              "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
+            },
+            state: %{triggered_time: 0, fade_completed_time: 0}
+          }
+        ],
+        state: %{master: 90, cue_index: 0}
+      },
+      %Scene{
+        id: "396d6903-318c-42da-b9de-85559765d5ca",
+        label: "Cues 2",
+        cues: [
+          %Cue{
+            id: "0a345e25-d054-45bd-958c-1b5af24e8ce1",
+            label: "Cue 1",
+            fixture_attribute_map: %{
+              "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255},
+              "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 0},
+              "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 0}
+            },
+            state: %{triggered_time: 0, fade_completed_time: 0}
+          },
+          %Cue{
+            id: "c420f635-5aa4-4502-b166-9e5d4f1b9ce0",
+            label: "Cue 2",
+            fixture_attribute_map: %{
+              "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 0},
+              "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255},
+              "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 0}
+            },
+            state: %{triggered_time: 0, fade_completed_time: 0}
+          },
+          %Cue{
+            id: "10a3d64b-8629-4d40-980d-9748cd37ace1",
+            label: "Cue 3",
+            fixture_attribute_map: %{
+              "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 0},
+              "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 0},
               "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
             },
             state: %{triggered_time: 0, fade_completed_time: 0}

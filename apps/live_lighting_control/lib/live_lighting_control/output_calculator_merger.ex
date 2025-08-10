@@ -20,7 +20,12 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
   # Step 1
   defp collect_cues(scenes, current_time) do
     Enum.flat_map(scenes, fn scene ->
-      Enum.map(scene.cues, fn cue ->
+      cue_index = scene.state.cue_index || 0
+
+      scene.cues
+      |> Enum.with_index()
+      |> Enum.filter(fn {_cue, idx} -> idx <= cue_index end)
+      |> Enum.map(fn {cue, _idx} ->
         %{
           cue: cue,
           scene_id: scene.id,
