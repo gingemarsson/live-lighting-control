@@ -75,7 +75,7 @@ defmodule LiveLightingControl.StateManager do
     existing = Utils.find_in_list_by_id(list, %{id: element_id}, element_id)
     updated = Utils.deep_merge(existing, partial_element)
 
-    updated_list = update_element_in_list_by_id(list, element_id, fn _ -> updated end)
+    updated_list = Utils.update_element_in_list_by_id(list, element_id, fn _ -> updated end)
     updated_state = Map.put(state, list_key, updated_list)
 
     notify_state_updated(updated_state)
@@ -146,13 +146,6 @@ defmodule LiveLightingControl.StateManager do
   end
 
   # Helper functions
-
-  defp update_element_in_list_by_id(list, target_id, update_fn) do
-    Enum.map(list, fn
-      %{id: ^target_id} = exec -> update_fn.(exec)
-      exec -> exec
-    end)
-  end
 
   defp update_element_in_2d_list_by_id(list, target_id, update_fn) do
     Enum.map(list, fn row ->

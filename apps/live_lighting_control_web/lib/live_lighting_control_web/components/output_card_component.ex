@@ -14,6 +14,7 @@ defmodule LiveLightingControlWeb.OutputCardComponent do
     }
   end
 
+  @spec get_dmx_channel_position_in_selected_fixtures(any(), any(), any(), any(), any()) :: any()
   def get_dmx_channel_position_in_selected_fixtures(
         universe,
         channel,
@@ -61,7 +62,8 @@ defmodule LiveLightingControlWeb.OutputCardComponent do
           <h3 class="p-1 text-sm font-semibold">Universe {universe_number}</h3>
 
           <div class="grid grid-cols-64 gap-0">
-            <%= for {value, channel} <- Enum.with_index(values, 1) do %>
+            <%= for {value_wrapper, channel} <- Enum.with_index(values, 1) do %>
+              <% value = value_wrapper.value %>
               <% color = "rgb(#{value}, #{value}, #{value})" %>
               <% pos =
                 get_dmx_channel_position_in_selected_fixtures(
@@ -74,6 +76,7 @@ defmodule LiveLightingControlWeb.OutputCardComponent do
               <div
                 class={"flex items-center justify-center text-xs font-mono py-2 border border-2  #{border_class(pos)}"}
                 style={"background-color: #{color}; color: #{if value > 128, do: "black", else: "white"};"}
+                title={inspect(value_wrapper)}
               >
                 {trunc(value)}
               </div>

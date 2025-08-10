@@ -1,4 +1,5 @@
 defmodule LiveLightingControl.OutputCalculator do
+  alias LiveLightingControl.OutputCalculatorMerger
   alias LiveLightingControl.Models.Scene
   alias LiveLightingControl.Utils
 
@@ -9,16 +10,17 @@ defmodule LiveLightingControl.OutputCalculator do
         users,
         fixtures_map,
         fixture_types_map,
-        universe_number
+        universe_number,
+        current_time
       ) do
     highlight_data = get_highlight_data(users)
 
     # The merged control data is a map of fixture ids, pointing to a map of attributes pointing to values between 0 and 255
     merged_control_data =
       %{}
-      |> Utils.deep_merge(if(config.enable_scenes, do: merge_scenes(scenes), else: %{}))
-      |> Utils.deep_merge(if(config.enable_programmer, do: programmer, else: %{}))
-      |> Utils.deep_merge(highlight_data)
+      |> Utils.deep_merge(if(config.enable_scenes, do: OutputCalculatorMerger.merge_scenes(scenes, current_time), else: %{}))
+      # |> Utils.deep_merge(if(config.enable_programmer, do: programmer, else: %{}))
+      # |> Utils.deep_merge(highlight_data)
 
     scale_factor =
       if config.blackout do
@@ -46,7 +48,7 @@ defmodule LiveLightingControl.OutputCalculator do
             dmx_channel = fixture.dmx_address + channel.dmx_address
             value = Access.get(fixture_attribute_values, channel.attribute)
 
-            {dmx_channel, value || channel.default_value}
+            {dmx_channel, value || %{value: channel.default_value, contributors: [], type: :default_for_fixture}}
           end)
 
         Map.new(channels)
@@ -54,7 +56,7 @@ defmodule LiveLightingControl.OutputCalculator do
 
     # merge maps
     merged_channels = Enum.reduce(all_channels, %{}, &Map.merge/2)
-    default_values = List.to_tuple(List.duplicate(0, 512))
+    default_values = List.to_tuple(List.duplicate(%{value: 0, contributors: [], type: :no_fixture}, 512))
 
     dmx_values =
       Enum.reduce(merged_channels, default_values, fn {index, value}, acc ->
@@ -62,48 +64,51 @@ defmodule LiveLightingControl.OutputCalculator do
       end)
       |> Tuple.to_list()
 
+    # IO.puts("dmx_values")
+    # IO.puts(inspect(dmx_values))
+
     dmx_values
   end
 
-  defp merge_scenes(scenes) do
-    scenes
-    |> Enum.filter(&(&1.state.master > 0 or Access.get(&1.state, :flash)))
-    |> Enum.map(&compute_scene_values/1)
-    |> Enum.reduce(%{}, &htp_fixture_merge/2)
-  end
+  # defp merge_scenes(scenes) do
+  #   scenes
+  #   |> Enum.filter(&(&1.state.master > 0 or Access.get(&1.state, :flash)))
+  #   |> Enum.map(&compute_scene_values/1)
+  #   |> Enum.reduce(%{}, &htp_fixture_merge/2)
+  # end
 
-  defp compute_scene_values(%Scene{cues: cues, state: state}) do
-    scene_master =
-      max(
-        state.master,
-        if Access.get(state, :flash) do
-          255
-        else
-          0
-        end
-      )
+  # defp compute_scene_values(%Scene{cues: cues, state: state}) do
+  #   scene_master =
+  #     max(
+  #       state.master,
+  #       if Access.get(state, :flash) do
+  #         255
+  #       else
+  #         0
+  #       end
+  #     )
 
-    current_cue = Enum.at(cues, state.cue_index)
+  #   current_cue = Enum.at(cues, state.cue_index)
 
-    scaled_by_scene_master =
-      Enum.into(current_cue.fixture_attribute_map, %{}, fn {guid, attributes_map} ->
-        updated =
-          attributes_map
-          |> Enum.map(fn {key, value} -> {key, value * scene_master / 255} end)
-          |> Enum.into(%{})
+  #   scaled_by_scene_master =
+  #     Enum.into(current_cue.fixture_attribute_map, %{}, fn {guid, attributes_map} ->
+  #       updated =
+  #         attributes_map
+  #         |> Enum.map(fn {key, value} -> {key, value * scene_master / 255} end)
+  #         |> Enum.into(%{})
 
-        {guid, updated}
-      end)
+  #       {guid, updated}
+  #     end)
 
-    scaled_by_scene_master
-  end
+  #   scaled_by_scene_master
+  # end
 
   def scale_dimmers(fixtures, factor) do
     for {fixture_id, attribute_map} <- fixtures, into: %{} do
       new_attribute_map =
         case attribute_map do
-          %{"dimmer" => dimmer} when is_number(dimmer) ->
-            Map.put(attribute_map, "dimmer", dimmer * factor)
+          %{"dimmer" => %{value: value} = attribute_wrapper} when is_number(value) ->
+            Map.put(attribute_map, "dimmer", Map.put(attribute_wrapper, :value, value * factor))
 
           _ ->
             attribute_map
@@ -113,13 +118,13 @@ defmodule LiveLightingControl.OutputCalculator do
     end
   end
 
-  defp htp_fixture_merge(map_1, map_2) do
-    Map.merge(map_1, map_2, fn _key, v1, v2 -> htp_merge(v1, v2) end)
-  end
+  # defp htp_fixture_merge(map_1, map_2) do
+  #   Map.merge(map_1, map_2, fn _key, v1, v2 -> htp_merge(v1, v2) end)
+  # end
 
-  defp htp_merge(map_1, map_2) do
-    Map.merge(map_1, map_2, fn _key, v1, v2 -> max(v1, v2) end)
-  end
+  # defp htp_merge(map_1, map_2) do
+  #   Map.merge(map_1, map_2, fn _key, v1, v2 -> max(v1, v2) end)
+  # end
 
   defp get_highlight_data(users) do
     users

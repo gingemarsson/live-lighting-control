@@ -46,6 +46,8 @@ defmodule LiveLightingControl.OutputBroadcaster do
     fixtures_map = Map.new(state.fixtures, &{&1.id, &1})
     fixture_types_map = Map.new(state.fixture_types, &{&1.id, &1})
 
+    current_time = System.os_time(:millisecond)
+
     universes =
       state.fixtures
       |> Enum.map(& &1.universe)
@@ -61,7 +63,8 @@ defmodule LiveLightingControl.OutputBroadcaster do
             users,
             fixtures_map,
             fixture_types_map,
-            universe_number
+            universe_number,
+            current_time
           )
 
         {universe_number, output_for_universe}

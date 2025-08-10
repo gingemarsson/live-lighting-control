@@ -69,25 +69,25 @@ defmodule LiveLightingControl.InitialState do
               id: UUID.uuid4(),
               type: :scene,
               entity_id: "69ac89df-fdaf-481d-9788-d522a159a465",
-              button_type: :flash
+              button_type: :go
             },
             %Executor{
               id: UUID.uuid4(),
               type: :scene,
               entity_id: "4b17863d-99f3-4ce9-bacb-e9e3e67b9b31",
-              button_type: :flash
+              button_type: :go
             },
             %Executor{
               id: UUID.uuid4(),
               type: :scene,
               entity_id: "7b7f7fc7-69c0-4eb2-86a5-22fa8e2d1144",
-              button_type: :flash
+              button_type: :go
             },
             %Executor{
               id: UUID.uuid4(),
               type: :scene,
               entity_id: "00d0b87a-c9f7-4727-84a7-841f15c9fcae",
-              button_type: :flash
+              button_type: :go
             },
             %Executor{
               id: UUID.uuid4(),
@@ -414,7 +414,8 @@ defmodule LiveLightingControl.InitialState do
           %Cue{
             id: "6ef55585-5222-48f6-beec-412f714ad697",
             label: "Cue 1",
-            fixture_attribute_map: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}}
+            fixture_attribute_map: %{"1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}},
+            state: %{triggered_time: 0, fade_completed_time: 0}
           }
         ],
         state: %{master: 90, cue_index: 0}
@@ -426,7 +427,8 @@ defmodule LiveLightingControl.InitialState do
           %Cue{
             id: "a971dd1b-755e-4df7-ac7d-4d054b46792a",
             label: "Cue 1",
-            fixture_attribute_map: %{"83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}}
+            fixture_attribute_map: %{"83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}},
+            state: %{triggered_time: 0, fade_completed_time: 0}
           }
         ],
         state: %{master: 90, cue_index: 0}
@@ -439,6 +441,7 @@ defmodule LiveLightingControl.InitialState do
             id: "33efb147-de4d-4e9a-b4dd-0a7dc58d87d2",
             label: "Cue 1",
             fixture_attribute_map: %{"15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}},
+            state: %{triggered_time: 0, fade_completed_time: 0}
           }
         ],
         state: %{master: 90, cue_index: 0}
@@ -455,6 +458,7 @@ defmodule LiveLightingControl.InitialState do
               "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255},
               "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
             },
+            state: %{triggered_time: 0, fade_completed_time: 0}
           }
         ],
         state: %{master: 90, cue_index: 0}
@@ -469,6 +473,7 @@ defmodule LiveLightingControl.InitialState do
             fixture_attribute_map: %{
               "1c06d0c8-5eb5-4a1c-9e6c-f9df2ee68f8a" => %{"dimmer" => 255}
             },
+            state: %{triggered_time: 0, fade_completed_time: 0}
           },
           %Cue{
             id: "871e5c65-0413-4a4b-a4fc-3cca6c14e9e4",
@@ -476,6 +481,7 @@ defmodule LiveLightingControl.InitialState do
             fixture_attribute_map: %{
               "83e98c74-c272-42db-91b0-d4ce6adb4c90" => %{"dimmer" => 255}
             },
+            state: %{triggered_time: 0, fade_completed_time: 0}
           },
           %Cue{
             id: "16e0345c-1eef-45da-acb0-ad9b48ac188b",
@@ -483,6 +489,7 @@ defmodule LiveLightingControl.InitialState do
             fixture_attribute_map: %{
               "15867280-3f56-4824-a56c-5059b16b183b" => %{"dimmer" => 255}
             },
+            state: %{triggered_time: 0, fade_completed_time: 0}
           }
         ],
         state: %{master: 90, cue_index: 0}
