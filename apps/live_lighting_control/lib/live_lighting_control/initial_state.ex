@@ -1,4 +1,6 @@
 defmodule LiveLightingControl.InitialState do
+  require UUID
+
   alias LiveLightingControl.Models.Card
   alias LiveLightingControl.Models.Cue
   alias LiveLightingControl.Models.Executor
@@ -44,7 +46,7 @@ defmodule LiveLightingControl.InitialState do
         }
       },
       %Layout{
-        id: UUID.uuid4(),
+        id: get_new_guid(),
         label: "SixPars Vertical Rows",
         fixtures: %{
           "687eb125-ba48-4000-a088-f8c5d5919baf" => %{x: 20, y: 20, label: "SixPar 1"},
@@ -66,31 +68,31 @@ defmodule LiveLightingControl.InitialState do
         executors: [
           [
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "69ac89df-fdaf-481d-9788-d522a159a465",
               button_type: :go
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "4b17863d-99f3-4ce9-bacb-e9e3e67b9b31",
               button_type: :go
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "7b7f7fc7-69c0-4eb2-86a5-22fa8e2d1144",
               button_type: :go
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "00d0b87a-c9f7-4727-84a7-841f15c9fcae",
               button_type: :go
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
               button_type: :next
@@ -98,25 +100,25 @@ defmodule LiveLightingControl.InitialState do
           ],
           [
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "69ac89df-fdaf-481d-9788-d522a159a465",
               button_type: :flash
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "4b17863d-99f3-4ce9-bacb-e9e3e67b9b31",
               button_type: :flash
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "7b7f7fc7-69c0-4eb2-86a5-22fa8e2d1144",
               button_type: :flash
             },
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "00d0b87a-c9f7-4727-84a7-841f15c9fcae",
               button_type: :flash
@@ -124,13 +126,13 @@ defmodule LiveLightingControl.InitialState do
           ],
           [],
           [            %Executor{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             type: :scene,
             entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
             button_type: :next
           },
           %Executor{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             type: :scene,
             entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
             button_type: :previous
@@ -144,7 +146,7 @@ defmodule LiveLightingControl.InitialState do
         executors: [
           [
             %Executor{
-              id: UUID.uuid4(),
+              id: get_new_guid(),
               type: :scene,
               entity_id: "69ac89df-fdaf-481d-9788-d522a159a465",
               button_type: :flash
@@ -158,9 +160,9 @@ defmodule LiveLightingControl.InitialState do
       }
     ]
 
-    dimmer_fixturetype_id = UUID.uuid4()
-    rgb_fixturetype_id = UUID.uuid4()
-    sixpar_300_fixturetype_id = UUID.uuid4()
+    dimmer_fixturetype_id = get_new_guid()
+    rgb_fixturetype_id = get_new_guid()
+    sixpar_300_fixturetype_id = get_new_guid()
 
     fixture_types = [
       %FixtureType{
@@ -168,7 +170,7 @@ defmodule LiveLightingControl.InitialState do
         label: "Dimmer",
         channels: [
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "dimmer",
             dmx_address: 0,
             type: :dimmer
@@ -180,31 +182,31 @@ defmodule LiveLightingControl.InitialState do
         label: "Dimmer",
         channels: [
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "dimmer",
             dmx_address: 0,
             type: :dimmer
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "red",
             dmx_address: 1,
             type: :color_red
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "green",
             dmx_address: 2,
             type: :color_green
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "blue",
             dmx_address: 3,
             type: :color_blue
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "strobe",
             dmx_address: 4,
             type: :strobe,
@@ -217,44 +219,44 @@ defmodule LiveLightingControl.InitialState do
         label: "Elation SixPar 300 (8ch)",
         channels: [
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "red",
             dmx_address: 0,
             type: :color_red
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "green",
             dmx_address: 1,
             type: :color_green
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "blue",
             dmx_address: 2,
             type: :color_blue
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "white",
             dmx_address: 3,
             type: :color_white
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "amber",
             dmx_address: 4,
             type: :color_amber
           },
-          %FixtureTypeChannel{id: UUID.uuid4(), attribute: "uv", dmx_address: 5, type: :color_uv},
+          %FixtureTypeChannel{id: get_new_guid(), attribute: "uv", dmx_address: 5, type: :color_uv},
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "dimmer",
             dmx_address: 6,
             type: :dimmer
           },
           %FixtureTypeChannel{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             attribute: "strobe",
             dmx_address: 7,
             type: :strobe
@@ -296,7 +298,7 @@ defmodule LiveLightingControl.InitialState do
       ] ++
         Enum.map(5..32, fn i ->
           %Fixture{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             label: "Dimmer #{i}",
             dmx_address: i,
             universe: 1,
@@ -305,21 +307,21 @@ defmodule LiveLightingControl.InitialState do
         end) ++
         [
           %Fixture{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             label: "Tourled 1",
             dmx_address: 210,
             universe: 1,
             fixture_type_id: rgb_fixturetype_id
           },
           %Fixture{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             label: "Tourled 2",
             dmx_address: 215,
             universe: 1,
             fixture_type_id: rgb_fixturetype_id
           },
           %Fixture{
-            id: UUID.uuid4(),
+            id: get_new_guid(),
             label: "Tourled 3",
             dmx_address: 220,
             universe: 1,
@@ -395,12 +397,12 @@ defmodule LiveLightingControl.InitialState do
 
     fixture_groups = [
       %FixtureGroup{
-        id: UUID.uuid4(),
+        id: get_new_guid(),
         label: "Dimmers",
         fixture_ids: dimmer_ids
       },
       %FixtureGroup{
-        id: UUID.uuid4(),
+        id: get_new_guid(),
         label: "SixPars",
         fixture_ids: sixpar_ids
       }
@@ -501,33 +503,33 @@ defmodule LiveLightingControl.InitialState do
         id: "07c82518-62dc-4ddc-8db9-2c745f0a2f10",
         label: "Default View",
         cards: [
-          %Card{id: UUID.uuid4(), type: :config, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :layouts, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :programmer, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :output, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :scenes, configuration: %{}}
+          %Card{id: get_new_guid(), type: :config, configuration: %{}},
+          %Card{id: get_new_guid(), type: :fixture_groups, configuration: %{}},
+          %Card{id: get_new_guid(), type: :fixtures, configuration: %{}},
+          %Card{id: get_new_guid(), type: :layouts, configuration: %{}},
+          %Card{id: get_new_guid(), type: :programmer, configuration: %{}},
+          %Card{id: get_new_guid(), type: :output, configuration: %{}},
+          %Card{id: get_new_guid(), type: :scenes, configuration: %{}}
         ]
       },
       %View{
         id: "abaa628c-c33e-4082-908c-7afa19f4970c",
         label: "Select fixtures",
         cards: [
-          %Card{id: UUID.uuid4(), type: :config, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}}
+          %Card{id: get_new_guid(), type: :config, configuration: %{}},
+          %Card{id: get_new_guid(), type: :fixture_groups, configuration: %{}},
+          %Card{id: get_new_guid(), type: :fixtures, configuration: %{}},
+          %Card{id: get_new_guid(), type: :selected_fixtures, configuration: %{}}
         ]
       },
       %View{
         id: "a7114549-d9db-444c-9249-ed635869f3d3",
         label: "Programmer",
         cards: [
-          %Card{id: UUID.uuid4(), type: :config, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :programmer, configuration: %{}},
-          %Card{id: UUID.uuid4(), type: :output, configuration: %{}}
+          %Card{id: get_new_guid(), type: :config, configuration: %{}},
+          %Card{id: get_new_guid(), type: :fixture_groups, configuration: %{}},
+          %Card{id: get_new_guid(), type: :programmer, configuration: %{}},
+          %Card{id: get_new_guid(), type: :output, configuration: %{}}
         ]
       }
     ]
@@ -557,5 +559,9 @@ defmodule LiveLightingControl.InitialState do
     }
 
     state
+  end
+
+  defp get_new_guid do
+    UUID.uuid4()
   end
 end

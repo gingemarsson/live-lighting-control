@@ -1,19 +1,18 @@
 defmodule LiveLightingControl.OutputCalculator do
   alias LiveLightingControl.OutputCalculatorMerger
-  alias LiveLightingControl.Models.Scene
   alias LiveLightingControl.Utils
 
   def calculate_output(
         config,
         scenes,
-        programmer,
+        _programmer,
         users,
         fixtures_map,
         fixture_types_map,
         universe_number,
         current_time
       ) do
-    highlight_data = get_highlight_data(users)
+    _highlight_data = get_highlight_data(users)
 
     # The merged control data is a map of fixture ids, pointing to a map of attributes pointing to values between 0 and 255
     merged_control_data =
@@ -64,44 +63,8 @@ defmodule LiveLightingControl.OutputCalculator do
       end)
       |> Tuple.to_list()
 
-    # IO.puts("dmx_values")
-    # IO.puts(inspect(dmx_values))
-
     dmx_values
   end
-
-  # defp merge_scenes(scenes) do
-  #   scenes
-  #   |> Enum.filter(&(&1.state.master > 0 or Access.get(&1.state, :flash)))
-  #   |> Enum.map(&compute_scene_values/1)
-  #   |> Enum.reduce(%{}, &htp_fixture_merge/2)
-  # end
-
-  # defp compute_scene_values(%Scene{cues: cues, state: state}) do
-  #   scene_master =
-  #     max(
-  #       state.master,
-  #       if Access.get(state, :flash) do
-  #         255
-  #       else
-  #         0
-  #       end
-  #     )
-
-  #   current_cue = Enum.at(cues, state.cue_index)
-
-  #   scaled_by_scene_master =
-  #     Enum.into(current_cue.fixture_attribute_map, %{}, fn {guid, attributes_map} ->
-  #       updated =
-  #         attributes_map
-  #         |> Enum.map(fn {key, value} -> {key, value * scene_master / 255} end)
-  #         |> Enum.into(%{})
-
-  #       {guid, updated}
-  #     end)
-
-  #   scaled_by_scene_master
-  # end
 
   def scale_dimmers(fixtures, factor) do
     for {fixture_id, attribute_map} <- fixtures, into: %{} do
@@ -117,14 +80,6 @@ defmodule LiveLightingControl.OutputCalculator do
       {fixture_id, new_attribute_map}
     end
   end
-
-  # defp htp_fixture_merge(map_1, map_2) do
-  #   Map.merge(map_1, map_2, fn _key, v1, v2 -> htp_merge(v1, v2) end)
-  # end
-
-  # defp htp_merge(map_1, map_2) do
-  #   Map.merge(map_1, map_2, fn _key, v1, v2 -> max(v1, v2) end)
-  # end
 
   defp get_highlight_data(users) do
     users

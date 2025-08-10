@@ -42,7 +42,8 @@ defmodule LiveLightingControl.MixProject do
       {:ecto_sqlite3, ">= 0.0.0"},
       {:jason, "~> 1.2"},
       {:swoosh, "~> 1.5"},
-      {:finch, "~> 0.13"}
+      {:finch, "~> 0.13"},
+      {:elixir_uuid, "~> 1.2"}
     ]
   end
 
