@@ -22,8 +22,6 @@ defmodule LiveLightingControl.ExecutorManager do
     state = LiveLightingControl.StateManager.get_state()
     executors = Enum.flat_map(state.executor_pages, fn page -> List.flatten(page.executors) end)
     executor = Utils.find_in_list_by_id(executors, executor_id)
-    current_time = System.os_time(:millisecond)
-    fade_time = 2000
 
     case {executor, action} do
       {nil, _} ->
@@ -40,17 +38,14 @@ defmodule LiveLightingControl.ExecutorManager do
         cue_index = scene.state.cue_index
         cue = Enum.at(scene.cues, cue_index)
 
-        updated_cues =
-          Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue ->
-            Utils.deep_merge(cue, %{
-              state: %{
-                triggered_time: current_time,
-                fade_completed_time: current_time + fade_time
-              }
-            })
-          end)
+        add_scene_and_cue_to_active(scene.id, cue.id)
 
-        LiveLightingControl.StateManager.update_scene(%{id: entity_id, cues: updated_cues})
+      {%{type: :scene, entity_id: entity_id, button_type: :off}, :button_down} ->
+        scene = Utils.find_in_list_by_id(state.scenes, entity_id)
+        cue_index = scene.state.cue_index
+        cue = Enum.at(scene.cues, cue_index)
+
+        set_off_fade_for_scene_and_cue(scene.id, cue.id)
 
       {%{type: :scene, entity_id: entity_id, button_type: :next}, :button_down} ->
         scene = Utils.find_in_list_by_id(state.scenes, entity_id)
@@ -58,19 +53,10 @@ defmodule LiveLightingControl.ExecutorManager do
 
         cue = Enum.at(scene.cues, updated_cue_index)
 
-        updated_cues =
-          Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue ->
-            Utils.deep_merge(cue, %{
-              state: %{
-                triggered_time: current_time,
-                fade_completed_time: current_time + fade_time
-              }
-            })
-          end)
+        add_scene_and_cue_to_active(scene.id, cue.id)
 
         LiveLightingControl.StateManager.update_scene(%{
           id: entity_id,
-          cues: updated_cues,
           state: %{cue_index: updated_cue_index}
         })
 
@@ -80,19 +66,10 @@ defmodule LiveLightingControl.ExecutorManager do
 
         cue = Enum.at(scene.cues, updated_cue_index)
 
-        updated_cues =
-          Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue ->
-            Utils.deep_merge(cue, %{
-              state: %{
-                triggered_time: current_time,
-                fade_completed_time: current_time + fade_time
-              }
-            })
-          end)
+        add_scene_and_cue_to_active(scene.id, cue.id)
 
         LiveLightingControl.StateManager.update_scene(%{
           id: entity_id,
-          cues: updated_cues,
           state: %{cue_index: updated_cue_index}
         })
 
@@ -102,6 +79,46 @@ defmodule LiveLightingControl.ExecutorManager do
 
     LiveLightingControl.StateManager.update_executor(executor_id, fn x ->
       Utils.deep_merge(x, %{state: %{active: action == :button_down}})
+    end)
+  end
+
+  defp add_scene_and_cue_to_active(scene_id, cue_id) do
+    current_time = System.os_time(:millisecond)
+    fade_time = 2000
+
+    element = %LiveLightingControl.Models.ActiveCue{
+      id: UUID.uuid4(),
+      type: :scene_cue,
+      scene_id: scene_id,
+      cue_id: cue_id,
+      fade_in_triggered_time: current_time,
+      fade_in_completed_time: current_time + fade_time,
+      fade_out_triggered_time: nil,
+      fade_out_completed_time: nil
+    }
+
+    LiveLightingControl.StateManager.add_active(element)
+  end
+
+  def set_off_fade_for_scene_and_cue(scene_id, cue_id) do
+    current_time = System.os_time(:millisecond)
+    fade_time = 2000
+
+    fade_out_completed_time = current_time + fade_time
+
+    LiveLightingControl.StateManager.update_active_by_scene_id(scene_id, [cue_id], nil, fn x ->
+      cond do
+        # Skip update if fade-out already ongoing
+        x.fade_out_triggered_time && current_time >= x.fade_out_triggered_time ->
+          x
+
+        # Otherwise, start/continue fade-out
+        true ->
+          Map.merge(x, %{
+            fade_out_triggered_time: current_time,
+            fade_out_completed_time: fade_out_completed_time
+          })
+      end
     end)
   end
 end

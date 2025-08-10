@@ -4,6 +4,7 @@ defmodule LiveLightingControl.OutputCalculator do
 
   def calculate_output(
         config,
+        active,
         scenes,
         _programmer,
         users,
@@ -19,7 +20,7 @@ defmodule LiveLightingControl.OutputCalculator do
       %{}
       |> Utils.deep_merge(
         if(config.enable_scenes,
-          do: OutputCalculatorMerger.merge_scenes(scenes, current_time),
+          do: OutputCalculatorMerger.merge_scenes(active, scenes, current_time),
           else: %{}
         )
       )

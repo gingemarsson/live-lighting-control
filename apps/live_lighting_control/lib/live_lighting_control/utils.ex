@@ -61,4 +61,32 @@ defmodule LiveLightingControl.Utils do
         "border-neutral-600 hover:border-neutral-400"
     end
   end
+
+  # Output
+
+  def get_fade_factor(
+        %{
+          fade_in_triggered_time: t_in_start,
+          fade_in_completed_time: t_in_end,
+          fade_out_triggered_time: t_out_start,
+          fade_out_completed_time: t_out_end
+        },
+        now
+      ) do
+    fade_in_val =
+      cond do
+        now <= t_in_start -> 0.0
+        now >= t_in_end -> 1.0
+        true -> (now - t_in_start) / (t_in_end - t_in_start)
+      end
+
+    fade_out_val =
+      cond do
+        now < t_out_start -> 1.0
+        now >= t_out_end -> 0.0
+        true -> 1.0 - (now - t_out_start) / (t_out_end - t_out_start)
+      end
+
+    min(fade_in_val, fade_out_val)
+  end
 end

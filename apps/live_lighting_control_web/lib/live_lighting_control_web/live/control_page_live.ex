@@ -1,4 +1,5 @@
 defmodule LiveLightingControlWeb.ControlPageLive do
+  alias LiveLightingControl.ExecutorManager
   use LiveLightingControlWeb, :live_view
   require UUID
   alias LiveLightingControl.Models.Scene
@@ -33,6 +34,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        views: state.views,
        scenes: state.scenes,
        users: state.users,
+       active: state.active,
        # Maps
        fixtures_map: Map.new(state.fixtures, &{&1.id, &1}),
        fixture_types_map: Map.new(state.fixture_types, &{&1.id, &1}),
@@ -71,6 +73,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        views: updated_state.views,
        scenes: updated_state.scenes,
        users: updated_state.users,
+       active: updated_state.active,
        # Maps
        fixtures_map: Map.new(updated_state.fixtures, &{&1.id, &1}),
        fixture_types_map: Map.new(updated_state.fixture_types, &{&1.id, &1}),
@@ -152,6 +155,16 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       primary_selected_fixture_id: nil
     })
 
+    {:noreply, socket}
+  end
+
+  def handle_event(
+        "click_entity",
+        %{"entity-type" => "active", "entity-id" => active_id},
+        socket
+      ) do
+    active = Utils.find_in_list_by_id(socket.assigns.active, active_id)
+    ExecutorManager.set_off_fade_for_scene_and_cue(active.scene_id, active.cue_id)
     {:noreply, socket}
   end
 
@@ -604,6 +617,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
                 fixture_types={Map.values(@fixture_types_map)}
                 selected_fixture_ids={@selected_fixture_ids}
                 primary_selected_fixture_id={@primary_selected_fixture_id}
+              />
+            <% :active-> %>
+              <.live_component
+                module={LiveLightingControlWeb.ActiveCardComponent}
+                id={card.id}
+                active={@active}
+                scenes={@scenes}
+                output={@output}
               />
           <% end %>
         </div>

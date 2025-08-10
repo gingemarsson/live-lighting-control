@@ -16,10 +16,15 @@ defmodule LiveLightingControl.OutputBroadcaster do
 
   @impl true
   def handle_info(:tick, state) do
+    # Perform cleanup
+    LiveLightingControl.StateManager.clear_active_with_fade_out_completed()
+
+    # Generate output
     output = calculate_output()
 
     Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, output})
 
+    # Send sACN
     config = LiveLightingControl.StateManager.get_state().config
 
     if config.enable_sacn_output do
@@ -41,6 +46,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
     state = LiveLightingControl.StateManager.get_state()
     config = state.config
     scenes = state.scenes
+    active = state.active
     programmer = state.programmer
     users = state.users
     fixtures_map = Map.new(state.fixtures, &{&1.id, &1})
@@ -58,6 +64,7 @@ defmodule LiveLightingControl.OutputBroadcaster do
         output_for_universe =
           LiveLightingControl.OutputCalculator.calculate_output(
             config,
+            active,
             scenes,
             programmer,
             users,

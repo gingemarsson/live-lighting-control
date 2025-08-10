@@ -48,6 +48,7 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   defp get_current_cue_index(_, _), do: nil
 
   defp get_button_label(%{button_type: :go}), do: "Go"
+  defp get_button_label(%{button_type: :off}), do: "Off"
   defp get_button_label(%{button_type: :flash}), do: "Flash"
   defp get_button_label(%{button_type: :next}), do: "Next"
   defp get_button_label(%{button_type: :previous}), do: "Prev"

@@ -1,15 +1,18 @@
 defmodule LiveLightingControl.OutputCalculatorMerger do
+  alias LiveLightingControl.Utils
+
   @doc """
   Merges scenes into a final fixture → attribute → %{value, contributors} map
   based on cue ordering and fade calculations.
 
+  `active` is a list if ActiveCue structs.
   `scenes` is a list of Scene structs.
   `current_time` is the timestamp (same units as triggered_time/fade_completed_time).
   """
-  def merge_scenes(scenes, current_time) do
+  def merge_scenes(active, scenes, current_time) do
     result =
-      scenes
-      |> collect_cues(current_time)
+      active
+      |> collect_cues(scenes, current_time)
       |> sort_cues_by_trigger_time()
       |> group_by_fixture_and_attribute()
       |> merge_attributes()
@@ -18,21 +21,22 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
   end
 
   # Step 1
-  defp collect_cues(scenes, current_time) do
-    Enum.flat_map(scenes, fn scene ->
-      cue_index = scene.state.cue_index || 0
+  defp collect_cues(active, scenes, current_time) do
+    scenes_map = Map.new(scenes, &{&1.id, &1})
+    cues_map = Enum.flat_map(scenes, & &1.cues) |> Map.new(&{&1.id, &1})
 
-      scene.cues
-      |> Enum.with_index()
-      |> Enum.filter(fn {_cue, idx} -> idx <= cue_index end)
-      |> Enum.map(fn {cue, _idx} ->
-        %{
-          cue: cue,
-          scene_id: scene.id,
-          scene_master: scene_master(scene),
-          fade_factor: fade_factor(cue, current_time)
-        }
-      end)
+    Enum.map(active, fn active_cue ->
+      scene = Map.get(scenes_map, active_cue.scene_id)
+      cue = Map.get(cues_map, active_cue.cue_id)
+
+      %{
+        active_id: active_cue.id,
+        cue: cue,
+        scene_id: scene.id,
+        scene_master: scene_master(scene),
+        fade_factor: Utils.get_fade_factor(active_cue, current_time),
+        fade_in_triggered_time: active_cue.fade_in_triggered_time
+      }
     end)
   end
 
@@ -47,17 +51,9 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
     )
   end
 
-  defp fade_factor(%{state: %{triggered_time: t_start, fade_completed_time: t_end}}, now) do
-    cond do
-      now <= t_start -> 0.0
-      now >= t_end -> 1.0
-      true -> (now - t_start) / (t_end - t_start)
-    end
-  end
-
   # Step 2
   defp sort_cues_by_trigger_time(cue_wrappers) do
-    Enum.sort_by(cue_wrappers, fn cue_wrapper -> cue_wrapper.cue.state.triggered_time end, :desc)
+    Enum.sort_by(cue_wrappers, fn cue_wrapper -> cue_wrapper.fade_in_triggered_time end, :desc)
   end
 
   # Step 3
@@ -151,9 +147,7 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
                 scene_id: scene_id,
                 cue_id: cue.id,
                 value: value,
-                weight: weight,
-                triggered_time: cue.state.triggered_time,
-                fade_completed_time: cue.state.fade_completed_time
+                weight: weight
               }
             ],
           remaining - weight
