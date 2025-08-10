@@ -1,5 +1,4 @@
 defmodule LiveLightingControl.OutputCalculatorMerger do
-
   @doc """
   Merges scenes into a final fixture → attribute → %{value, contributors} map
   based on cue ordering and fade calculations.
@@ -8,11 +7,12 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
   `current_time` is the timestamp (same units as triggered_time/fade_completed_time).
   """
   def merge_scenes(scenes, current_time) do
-    result = scenes
-    |> collect_cues(current_time)
-    |> sort_cues_by_trigger_time()
-    |> group_by_fixture_and_attribute()
-    |> merge_attributes()
+    result =
+      scenes
+      |> collect_cues(current_time)
+      |> sort_cues_by_trigger_time()
+      |> group_by_fixture_and_attribute()
+      |> merge_attributes()
 
     result
   end
@@ -61,26 +61,45 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
     |> Enum.reduce(%{}, fn cue_wrapper, acc ->
       Enum.reduce(cue_wrapper.cue.fixture_attribute_map, acc, fn {fixture_id, attr_map}, acc ->
         Enum.reduce(attr_map, acc, fn {attr_id, value}, acc ->
-          Map.update(acc, fixture_id, %{attr_id => [%{
-            cue: cue_wrapper.cue,
-            scene_id: cue_wrapper.scene_id,
-            value: value * cue_wrapper.scene_master/255 ,
-            fade_factor: cue_wrapper.fade_factor
-          }]}, fn existing_fixture_map ->
-            Map.update(existing_fixture_map, attr_id, [%{
-              cue: cue_wrapper.cue,
-              scene_id: cue_wrapper.scene_id,
-              value: value * cue_wrapper.scene_master/255 ,
-              fade_factor: cue_wrapper.fade_factor
-            }], fn existing_attr_list ->
-              existing_attr_list ++ [%{
-                cue: cue_wrapper.cue,
-                scene_id: cue_wrapper.scene_id,
-                value: value * cue_wrapper.scene_master/255 ,
-                fade_factor: cue_wrapper.fade_factor
-              }]
-            end)
-          end)
+          Map.update(
+            acc,
+            fixture_id,
+            %{
+              attr_id => [
+                %{
+                  cue: cue_wrapper.cue,
+                  scene_id: cue_wrapper.scene_id,
+                  value: value * cue_wrapper.scene_master / 255,
+                  fade_factor: cue_wrapper.fade_factor
+                }
+              ]
+            },
+            fn existing_fixture_map ->
+              Map.update(
+                existing_fixture_map,
+                attr_id,
+                [
+                  %{
+                    cue: cue_wrapper.cue,
+                    scene_id: cue_wrapper.scene_id,
+                    value: value * cue_wrapper.scene_master / 255,
+                    fade_factor: cue_wrapper.fade_factor
+                  }
+                ],
+                fn existing_attr_list ->
+                  existing_attr_list ++
+                    [
+                      %{
+                        cue: cue_wrapper.cue,
+                        scene_id: cue_wrapper.scene_id,
+                        value: value * cue_wrapper.scene_master / 255,
+                        fade_factor: cue_wrapper.fade_factor
+                      }
+                    ]
+                end
+              )
+            end
+          )
         end)
       end)
     end)
@@ -109,13 +128,29 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
 
   defp weighted_merge(cue_list) do
     {final_value, contributors, _remaining} =
-      Enum.reduce(cue_list, {0.0, [], 1.0}, fn %{cue: cue, scene_id: scene_id, value: value, fade_factor: factor}, {acc_val, acc_contribs, remaining} ->
+      Enum.reduce(cue_list, {0.0, [], 1.0}, fn %{
+                                                 cue: cue,
+                                                 scene_id: scene_id,
+                                                 value: value,
+                                                 fade_factor: factor
+                                               },
+                                               {acc_val, acc_contribs, remaining} ->
         weight = remaining * factor
         new_value = acc_val + value * weight
 
         {
           new_value,
-          acc_contribs ++ [%{scene_id: scene_id, cue_id: cue.id, value: value, weight: weight, triggered_time: cue.state.triggered_time, fade_completed_time: cue.state.fade_completed_time}],
+          acc_contribs ++
+            [
+              %{
+                scene_id: scene_id,
+                cue_id: cue.id,
+                value: value,
+                weight: weight,
+                triggered_time: cue.state.triggered_time,
+                fade_completed_time: cue.state.fade_completed_time
+              }
+            ],
           remaining - weight
         }
       end)

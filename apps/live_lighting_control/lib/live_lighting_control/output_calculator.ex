@@ -17,9 +17,15 @@ defmodule LiveLightingControl.OutputCalculator do
     # The merged control data is a map of fixture ids, pointing to a map of attributes pointing to values between 0 and 255
     merged_control_data =
       %{}
-      |> Utils.deep_merge(if(config.enable_scenes, do: OutputCalculatorMerger.merge_scenes(scenes, current_time), else: %{}))
-      # |> Utils.deep_merge(if(config.enable_programmer, do: programmer, else: %{}))
-      # |> Utils.deep_merge(highlight_data)
+      |> Utils.deep_merge(
+        if(config.enable_scenes,
+          do: OutputCalculatorMerger.merge_scenes(scenes, current_time),
+          else: %{}
+        )
+      )
+
+    # |> Utils.deep_merge(if(config.enable_programmer, do: programmer, else: %{}))
+    # |> Utils.deep_merge(highlight_data)
 
     scale_factor =
       if config.blackout do
@@ -47,7 +53,9 @@ defmodule LiveLightingControl.OutputCalculator do
             dmx_channel = fixture.dmx_address + channel.dmx_address
             value = Access.get(fixture_attribute_values, channel.attribute)
 
-            {dmx_channel, value || %{value: channel.default_value, contributors: [], type: :default_for_fixture}}
+            {dmx_channel,
+             value ||
+               %{value: channel.default_value, contributors: [], type: :default_for_fixture}}
           end)
 
         Map.new(channels)
@@ -55,7 +63,9 @@ defmodule LiveLightingControl.OutputCalculator do
 
     # merge maps
     merged_channels = Enum.reduce(all_channels, %{}, &Map.merge/2)
-    default_values = List.to_tuple(List.duplicate(%{value: 0, contributors: [], type: :no_fixture}, 512))
+
+    default_values =
+      List.to_tuple(List.duplicate(%{value: 0, contributors: [], type: :no_fixture}, 512))
 
     dmx_values =
       Enum.reduce(merged_channels, default_values, fn {index, value}, acc ->

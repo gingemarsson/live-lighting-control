@@ -22,16 +22,25 @@ defmodule LiveLightingControlWeb.ExecutorComponent do
         <div class="text-xs mb-1 font-medium" style="height: 8rem;">
           <% number_of_cues = length(@cues) %>
           <% current_cue = Enum.at(@cues, @current_cue_index, nil) %>
-          <% next_cue_label = if number_of_cues > 1 do Enum.at(@cues, rem(@current_cue_index + 1, number_of_cues), nil).label else "" end %>
-          <% nextnext_cue_label = if number_of_cues > 2 do Enum.at(@cues, rem(@current_cue_index + 2, number_of_cues), nil).label else "" end %>
+          <% next_cue_label =
+            if number_of_cues > 1 do
+              Enum.at(@cues, rem(@current_cue_index + 1, number_of_cues), nil).label
+            else
+              ""
+            end %>
+          <% nextnext_cue_label =
+            if number_of_cues > 2 do
+              Enum.at(@cues, rem(@current_cue_index + 2, number_of_cues), nil).label
+            else
+              ""
+            end %>
 
           <p>{current_cue.label}</p>
           <p class="text-gray-500 italic">{next_cue_label}</p>
           <p class="text-gray-500 italic">{nextnext_cue_label}</p>
         </div>
       <% else %>
-        <div class="text-xs mb-1 font-medium" style="height: 8rem;">
-        </div>
+        <div class="text-xs mb-1 font-medium" style="height: 8rem;"></div>
       <% end %>
 
       <div class="text-xs mb-1 text-gray-500 font-medium">

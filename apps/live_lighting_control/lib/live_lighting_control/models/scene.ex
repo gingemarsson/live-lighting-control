@@ -17,7 +17,6 @@ defmodule LiveLightingControl.Models.Scene do
             state: nil
 end
 
-
 defmodule LiveLightingControl.Models.Cue do
   alias LiveLightingControl.Models.CommonTypes
 

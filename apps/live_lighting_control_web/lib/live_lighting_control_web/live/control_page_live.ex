@@ -336,7 +336,9 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     new_scene = %Scene{
       id: UUID.uuid4(),
       label: "New scene",
-      cues: [%Cue{id: UUID.uuid4(), label: "Cue 1", fixture_attribute_map: socket.assigns.programmer}],
+      cues: [
+        %Cue{id: UUID.uuid4(), label: "Cue 1", fixture_attribute_map: socket.assigns.programmer}
+      ],
       state: %{master: 100}
     }
 

@@ -1,5 +1,4 @@
 defmodule LiveLightingControl.Utils do
-
   def find_in_list_by_id(list, id) do
     Enum.find(list, &(&1.id == id))
   end

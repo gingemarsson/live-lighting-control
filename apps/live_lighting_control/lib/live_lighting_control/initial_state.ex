@@ -125,18 +125,20 @@ defmodule LiveLightingControl.InitialState do
             }
           ],
           [],
-          [            %Executor{
-            id: get_new_guid(),
-            type: :scene,
-            entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
-            button_type: :next
-          },
-          %Executor{
-            id: get_new_guid(),
-            type: :scene,
-            entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
-            button_type: :previous
-          }],
+          [
+            %Executor{
+              id: get_new_guid(),
+              type: :scene,
+              entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
+              button_type: :next
+            },
+            %Executor{
+              id: get_new_guid(),
+              type: :scene,
+              entity_id: "683d4473-7c32-4eba-ae23-1f0229078301",
+              button_type: :previous
+            }
+          ],
           []
         ]
       },
@@ -248,7 +250,12 @@ defmodule LiveLightingControl.InitialState do
             dmx_address: 4,
             type: :color_amber
           },
-          %FixtureTypeChannel{id: get_new_guid(), attribute: "uv", dmx_address: 5, type: :color_uv},
+          %FixtureTypeChannel{
+            id: get_new_guid(),
+            attribute: "uv",
+            dmx_address: 5,
+            type: :color_uv
+          },
           %FixtureTypeChannel{
             id: get_new_guid(),
             attribute: "dimmer",

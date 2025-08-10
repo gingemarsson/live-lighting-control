@@ -98,7 +98,13 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <div class="grid grid-cols-8 gap-2">
             <%= for executor_button_row_index <- 1..4 do %>
               <%= for executor_button_col_index <- 1..8 do %>
-              <% executor_info = get_executor_info(executor_button_row_index, executor_button_col_index, current_page, @scenes) %>
+                <% executor_info =
+                  get_executor_info(
+                    executor_button_row_index,
+                    executor_button_col_index,
+                    current_page,
+                    @scenes
+                  ) %>
                 <button
                   phx-hook="ExecutorButtonHook"
                   id={"executor-#{current_page_number}-#{executor_button_row_index}-#{executor_button_col_index}"}

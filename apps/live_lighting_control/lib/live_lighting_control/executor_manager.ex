@@ -39,7 +39,16 @@ defmodule LiveLightingControl.ExecutorManager do
         scene = Utils.find_in_list_by_id(state.scenes, entity_id)
         cue_index = scene.state.cue_index
         cue = Enum.at(scene.cues, cue_index)
-        updated_cues = Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue -> Utils.deep_merge(cue, %{state: %{triggered_time: current_time, fade_completed_time: current_time + fade_time}}) end)
+
+        updated_cues =
+          Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue ->
+            Utils.deep_merge(cue, %{
+              state: %{
+                triggered_time: current_time,
+                fade_completed_time: current_time + fade_time
+              }
+            })
+          end)
 
         LiveLightingControl.StateManager.update_scene(%{id: entity_id, cues: updated_cues})
 
@@ -48,18 +57,45 @@ defmodule LiveLightingControl.ExecutorManager do
         updated_cue_index = rem(scene.state.cue_index + 1, length(scene.cues))
 
         cue = Enum.at(scene.cues, updated_cue_index)
-        updated_cues = Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue -> Utils.deep_merge(cue, %{state: %{triggered_time: current_time, fade_completed_time: current_time + fade_time}}) end)
 
-        LiveLightingControl.StateManager.update_scene(%{id: entity_id, cues: updated_cues, state: %{cue_index: updated_cue_index}})
+        updated_cues =
+          Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue ->
+            Utils.deep_merge(cue, %{
+              state: %{
+                triggered_time: current_time,
+                fade_completed_time: current_time + fade_time
+              }
+            })
+          end)
+
+        LiveLightingControl.StateManager.update_scene(%{
+          id: entity_id,
+          cues: updated_cues,
+          state: %{cue_index: updated_cue_index}
+        })
 
       {%{type: :scene, entity_id: entity_id, button_type: :previous}, :button_down} ->
         scene = Utils.find_in_list_by_id(state.scenes, entity_id)
         updated_cue_index = rem(scene.state.cue_index - 1, length(scene.cues))
 
         cue = Enum.at(scene.cues, updated_cue_index)
-        updated_cues = Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue -> Utils.deep_merge(cue, %{state: %{triggered_time: current_time, fade_completed_time: current_time + fade_time}}) end)
 
-        LiveLightingControl.StateManager.update_scene(%{id: entity_id, cues: updated_cues, state: %{cue_index: updated_cue_index}})
+        updated_cues =
+          Utils.update_element_in_list_by_id(scene.cues, cue.id, fn cue ->
+            Utils.deep_merge(cue, %{
+              state: %{
+                triggered_time: current_time,
+                fade_completed_time: current_time + fade_time
+              }
+            })
+          end)
+
+        LiveLightingControl.StateManager.update_scene(%{
+          id: entity_id,
+          cues: updated_cues,
+          state: %{cue_index: updated_cue_index}
+        })
+
       {_, _} ->
         nil
     end
