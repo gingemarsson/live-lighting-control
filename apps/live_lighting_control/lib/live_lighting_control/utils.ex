@@ -62,6 +62,10 @@ defmodule LiveLightingControl.Utils do
     end
   end
 
+  def color_puts(color, text) do
+    IO.puts(IO.ANSI.format([color, text, :reset]))
+  end
+
   # Output
 
   def get_fade_factor(

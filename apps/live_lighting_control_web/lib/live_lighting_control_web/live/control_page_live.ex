@@ -264,10 +264,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"executorId" => "master-executor"},
         socket
       ) do
-    LiveLightingControl.StateManager.set_config(%{
-      config_name: :blackout,
-      value: !socket.assigns.config[:blackout]
-    })
+    execute_command(socket, :toggle_blackout, nil)
 
     {:noreply, socket}
   end
@@ -418,130 +415,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def execute_command(socket, command, value) do
-    case command do
-      :toggle_sacn_output ->
-        LiveLightingControl.StateManager.set_config(%{
-          config_name: :enable_sacn_output,
-          value: !socket.assigns.config[:enable_sacn_output]
-        })
-
-        {:noreply, socket}
-
-      :toggle_programmer ->
-        LiveLightingControl.StateManager.set_config(%{
-          config_name: :enable_programmer,
-          value: !socket.assigns.config[:enable_programmer]
-        })
-
-        {:noreply, socket}
-
-      :page_up ->
-        LiveLightingControl.StateManager.update_user(%{
-          id: socket.assigns.current_user_id,
-          current_page_index:
-            rem(socket.assigns.current_page_index + 1, length(socket.assigns.executor_pages))
-        })
-
-        {:noreply, socket}
-
-      :page_down ->
-        LiveLightingControl.StateManager.update_user(%{
-          id: socket.assigns.current_user_id,
-          current_page_index:
-            rem(socket.assigns.current_page_index - 1, length(socket.assigns.executor_pages))
-        })
-
-        {:noreply, socket}
-
-      :toggle_blackout ->
-        LiveLightingControl.StateManager.set_config(%{
-          config_name: :blackout,
-          value: !socket.assigns.config[:blackout]
-        })
-
-        {:noreply, socket}
-
-      :main_master ->
-        LiveLightingControl.StateManager.set_config(%{
-          config_name: :main_master,
-          value: value
-        })
-
-        {:noreply, socket}
-
-      :highlight ->
-        LiveLightingControl.StateManager.update_user(%{
-          id: socket.assigns.current_user_id,
-          highlight: !socket.assigns.highlight
-        })
-
-        {:noreply, socket}
-
-      :reset_primary_selection ->
-        LiveLightingControl.StateManager.update_user(%{
-          id: socket.assigns.current_user_id,
-          primary_selected_fixture_id: nil
-        })
-
-        {:noreply, socket}
-
-      :next_primary_selection ->
-        current_primary_selected_fixture_id = socket.assigns.primary_selected_fixture_id
-        selected_fixture_ids = socket.assigns.selected_fixture_ids
-
-        new_primary_selected_fixture_id =
-          case current_primary_selected_fixture_id do
-            nil ->
-              Enum.at(selected_fixture_ids, 0)
-
-            _ ->
-              current_index =
-                Enum.find_index(
-                  selected_fixture_ids,
-                  &(&1 == current_primary_selected_fixture_id)
-                )
-
-              new_index = rem(current_index + 1, length(selected_fixture_ids))
-              Enum.at(selected_fixture_ids, new_index)
-          end
-
-        LiveLightingControl.StateManager.update_user(%{
-          id: socket.assigns.current_user_id,
-          primary_selected_fixture_id: new_primary_selected_fixture_id
-        })
-
-        {:noreply, socket}
-
-      :previous_primary_selection ->
-        current_primary_selected_fixture_id = socket.assigns.primary_selected_fixture_id
-        selected_fixture_ids = socket.assigns.selected_fixture_ids
-
-        new_primary_selected_fixture_id =
-          case current_primary_selected_fixture_id do
-            nil ->
-              Enum.at(selected_fixture_ids, 0)
-
-            _ ->
-              current_index =
-                Enum.find_index(
-                  selected_fixture_ids,
-                  &(&1 == current_primary_selected_fixture_id)
-                )
-
-              new_index = rem(current_index - 1, length(selected_fixture_ids))
-              Enum.at(selected_fixture_ids, new_index)
-          end
-
-        LiveLightingControl.StateManager.update_user(%{
-          id: socket.assigns.current_user_id,
-          primary_selected_fixture_id: new_primary_selected_fixture_id
-        })
-
-        {:noreply, socket}
-
-      _ ->
-        {:noreply, socket}
-    end
+    LiveLightingControl.StateManager.execute_command(command, %{value: value, user_id: socket.assigns.current_user_id})
+    {:noreply, socket}
   end
 
   def render(assigns) do

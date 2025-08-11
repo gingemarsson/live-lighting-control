@@ -13,6 +13,13 @@ defmodule LiveLightingControl.StateManager do
     GenServer.call(__MODULE__, :get_state)
   end
 
+  def execute_command(command, parameters) do
+    GenServer.cast(
+      __MODULE__,
+      {:execute_command, %{command: command, parameters: parameters}}
+    )
+  end
+
   defp update_element_in_list_by_id(list, partial_element) do
     GenServer.cast(
       __MODULE__,
@@ -246,6 +253,19 @@ defmodule LiveLightingControl.StateManager do
     notify_state_updated(updated_state)
     {:noreply, updated_state}
 
+    {:noreply, updated_state}
+  end
+
+  @impl true
+  def handle_cast(
+        {:execute_command, %{command: command, parameters: parameters}},
+        state
+      ) do
+
+    Utils.color_puts(:magenta, "[EXECUTE COMMAND] " <> Atom.to_string(command) <> " " <> inspect(parameters))
+    updated_state = LiveLightingControl.StateManagerCommandHandler.execute_command(command, parameters, state)
+
+    notify_state_updated(updated_state)
     {:noreply, updated_state}
   end
 
