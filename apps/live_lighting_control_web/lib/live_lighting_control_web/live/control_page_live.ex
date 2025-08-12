@@ -1,5 +1,4 @@
 defmodule LiveLightingControlWeb.ControlPageLive do
-  alias LiveLightingControl.ExecutorManager
   use LiveLightingControlWeb, :live_view
   require UUID
   alias LiveLightingControl.Models.Scene
@@ -93,49 +92,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket, :output, output)}
   end
 
-  # Helper functions
-
-  def toggle_select_fixtures(fixture_ids, selected_fixture_ids) do
-    all_fixtures_are_already_selected =
-      Utils.is_fixtures_selected?(fixture_ids, selected_fixture_ids) == :all
-
-    updated_fixture_ids =
-      if all_fixtures_are_already_selected do
-        Enum.reject(selected_fixture_ids, fn x -> x in fixture_ids end)
-      else
-        selected_fixture_ids ++ fixture_ids
-      end
-
-    updated_fixture_ids
-  end
-
   # Page events
-
-  def handle_event("toggle_config", %{"config-name" => config_name_string}, socket) do
-    config_name = String.to_existing_atom(config_name_string)
-
-    LiveLightingControl.StateManager.set_config(%{
-      config_name: config_name,
-      value: !socket.assigns.config[config_name]
-    })
-
-    {:noreply, socket}
-  end
 
   def handle_event(
         "click_entity",
         %{"entity-type" => "fixture", "entity-id" => fixture_id},
         socket
       ) do
-    updated_fixture_ids =
-      toggle_select_fixtures([fixture_id], socket.assigns.selected_fixture_ids)
-
-    LiveLightingControl.StateManager.update_user(%{
-      id: socket.assigns.current_user_id,
-      selected_fixture_ids: updated_fixture_ids,
-      primary_selected_fixture_id: nil
-    })
-
+    LiveLightingControl.StateManager.execute_command(:toggle_select_fixture, %{fixture_id: fixture_id, user_id: socket.assigns.current_user_id})
     {:noreply, socket}
   end
 
@@ -144,17 +108,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"entity-type" => "fixture_group", "entity-id" => group_id},
         socket
       ) do
-    fixture_group = Map.get(socket.assigns.fixture_groups_map, group_id)
-
-    updated_fixture_ids =
-      toggle_select_fixtures(fixture_group.fixture_ids, socket.assigns.selected_fixture_ids)
-
-    LiveLightingControl.StateManager.update_user(%{
-      id: socket.assigns.current_user_id,
-      selected_fixture_ids: updated_fixture_ids,
-      primary_selected_fixture_id: nil
-    })
-
+    LiveLightingControl.StateManager.execute_command(:toggle_select_fixture_group, %{fixture_group_id: group_id, user_id: socket.assigns.current_user_id})
     {:noreply, socket}
   end
 
@@ -164,7 +118,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         socket
       ) do
     active = Utils.find_in_list_by_id(socket.assigns.active, active_id)
-    ExecutorManager.set_off_fade_for_scene_and_cue(active.scene_id, active.cue_id)
+    LiveLightingControl.StateManager.execute_command(:off, %{scene_id: active.scene_id, user_id: socket.assigns.current_user_id})
     {:noreply, socket}
   end
 
@@ -295,12 +249,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
-  def handle_event("page_up", _data, socket) do
-    execute_command(socket, :page_up, nil)
-  end
-
-  def handle_event("page_down", _data, socket) do
-    execute_command(socket, :page_down, nil)
+  def handle_event("execute_command", %{"command" => command_string}, socket) do
+    execute_command(socket, String.to_existing_atom(command_string), nil)
   end
 
   def handle_event(

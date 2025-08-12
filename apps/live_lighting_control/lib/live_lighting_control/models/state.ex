@@ -7,7 +7,7 @@ defmodule LiveLightingControl.Models.State do
   alias LiveLightingControl.Models.Scene
   alias LiveLightingControl.Models.View
   alias LiveLightingControl.Models.User
-  alias LiveLightingControl.Models.ActiveCue
+  alias LiveLightingControl.Models.ActiveEntity
   alias LiveLightingControl.Models.CommonTypes
 
   @type t :: %__MODULE__{
@@ -21,7 +21,7 @@ defmodule LiveLightingControl.Models.State do
           executor_pages: [ExecutorPage.t()],
           views: [View.t()],
           users: [User.t()],
-          active: [ActiveCue.t()]
+          active: [ActiveEntity.t()]
         }
 
   defstruct config: nil,

@@ -21,22 +21,15 @@ defmodule LiveLightingControlWeb.ConfigCardComponent do
         <div class="flex flex-row gap-2 p-2">
           <div
             class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_programmer)}"}
-            phx-click="toggle_config"
-            phx-value-config-name="enable_programmer"
+            phx-click="execute_command"
+            phx-value-command="toggle_programmer"
           >
             <p class="text-xs">Programmer</p>
           </div>
           <div
-            class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_scenes)}"}
-            phx-click="toggle_config"
-            phx-value-config-name="enable_scenes"
-          >
-            <p class="text-xs">Scenes</p>
-          </div>
-          <div
             class={"bg-neutral-800 p-2 w-32 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer #{get_border_color(@config.enable_sacn_output)}"}
-            phx-click="toggle_config"
-            phx-value-config-name="enable_sacn_output"
+            phx-click="execute_command"
+            phx-value-command="toggle_sacn_output"
           >
             <p class="text-xs">sACN Output</p>
           </div>

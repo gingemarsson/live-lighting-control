@@ -17,10 +17,10 @@ defmodule LiveLightingControlWeb.ActiveCardComponent do
           <% cues_map = Enum.flat_map(@scenes, & &1.cues) |> Map.new(&{&1.id, &1}) %>
           <% current_time = System.os_time(:millisecond) %>
 
-          <%= for %{id: active_id, scene_id: scene_id, cue_id: cue_id} = active_cue <- Enum.sort_by(@active, & &1.fade_in_triggered_time) do %>
+          <%= for %{id: active_id, scene_id: scene_id, cue_id: cue_id} = active_entity <- Enum.sort_by(@active, & &1.fade_in_triggered_time) do %>
             <% scene = Map.get(scenes_map, scene_id) %>
             <% cue = Map.get(cues_map, cue_id) %>
-            <% fade_factor = Utils.get_fade_factor(active_cue, current_time) %>
+            <% fade_factor = Utils.get_fade_factor(active_entity, current_time) %>
             <% fade_factor_percent = trunc(fade_factor * 100) %>
             <div
               class="bg-neutral-800 p-2 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
@@ -36,9 +36,6 @@ defmodule LiveLightingControlWeb.ActiveCardComponent do
               </p>
               <p class="text-xs">
                 {cue.label}
-              </p>
-              <p class="text-xs">
-                {active_cue.fade_out_completed_time}
               </p>
             </div>
           <% end %>

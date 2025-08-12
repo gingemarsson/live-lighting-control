@@ -125,7 +125,8 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
           <div class="flex flex-col justify-center items-center">
             <div
               class="bg-neutral-800 w-16 h-16 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
-              phx-click="page_up"
+              phx-click="execute_command"
+              phx-value-command="page_up"
             >
               <p class="">Up</p>
             </div>
@@ -136,7 +137,8 @@ defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
 
             <div
               class="bg-neutral-800 w-16 h-16 rounded-lg flex flex-col items-center justify-center border transition-colors cursor-pointer border-neutral-600 hover:border-neutral-400"
-              phx-click="page_down"
+              phx-click="execute_command"
+              phx-value-command="page_down"
             >
               <p class="">Down</p>
             </div>

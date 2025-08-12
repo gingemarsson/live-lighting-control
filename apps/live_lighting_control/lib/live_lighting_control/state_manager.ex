@@ -27,45 +27,12 @@ defmodule LiveLightingControl.StateManager do
     )
   end
 
-  defp add_element_to_list(list, element) do
-    GenServer.cast(
-      __MODULE__,
-      {:add_element_to_list, %{list: list, element: element}}
-    )
-  end
-
   def update_scene(updated_scene) do
     update_element_in_list_by_id(:scenes, updated_scene)
   end
 
-  def update_user(updated_user) do
-    update_element_in_list_by_id(:users, updated_user)
-  end
-
-  def add_active(active_cue) do
-    add_element_to_list(:active, active_cue)
-  end
-
-  def update_active_by_scene_id(scene_id, cue_ids, except_cue_ids, update_fn) do
-    GenServer.cast(
-      __MODULE__,
-      {:update_active_by_scene_id,
-       %{
-         scene_id: scene_id,
-         cue_ids: cue_ids,
-         except_cue_ids: except_cue_ids,
-         update_fn: update_fn
-       }}
-    )
-  end
-
   def clear_active_with_fade_out_completed() do
     GenServer.cast(__MODULE__, {:clear_active_with_fade_out_completed, nil})
-  end
-
-  @spec set_config(%{:config_name => String.t(), value: any()}) :: :ok
-  def set_config(%{config_name: _config_name, value: _value} = update) do
-    GenServer.cast(__MODULE__, {:set_config, update})
   end
 
   @spec update_programmer(%{
@@ -113,30 +80,6 @@ defmodule LiveLightingControl.StateManager do
 
     updated_list = Utils.update_element_in_list_by_id(list, element_id, fn _ -> updated end)
     updated_state = Map.put(state, list_key, updated_list)
-
-    notify_state_updated(updated_state)
-    {:noreply, updated_state}
-  end
-
-  def handle_cast(
-        {:add_element_to_list, %{list: list_key, element: element}},
-        state
-      ) do
-    list = Map.get(state, list_key)
-
-    updated_list = [element | list]
-    updated_state = Map.put(state, list_key, updated_list)
-
-    notify_state_updated(updated_state)
-    {:noreply, updated_state}
-  end
-
-  @impl true
-  def handle_cast({:set_config, %{config_name: config_name, value: value}}, state) do
-    config = Map.get(state, :config)
-
-    updated_config = Map.put(config, config_name, value)
-    updated_state = Map.put(state, :config, updated_config)
 
     notify_state_updated(updated_state)
     {:noreply, updated_state}
@@ -191,47 +134,6 @@ defmodule LiveLightingControl.StateManager do
     updated_state = Map.put(state, :executor_pages, updated_executor_pages)
 
     notify_state_updated(updated_state)
-    {:noreply, updated_state}
-  end
-
-  @impl true
-  def handle_cast(
-        {:update_active_by_scene_id,
-         %{
-           scene_id: scene_id,
-           cue_ids: cue_ids,
-           except_cue_ids: except_cue_ids,
-           update_fn: update_fn
-         }},
-        state
-      ) do
-    active_list = Map.get(state, :active)
-
-    updated_list =
-      Enum.map(active_list, fn
-        %{scene_id: ^scene_id, cue_id: cue_id} = exec ->
-          cond do
-            # Always skip if in except list
-            cue_id in (except_cue_ids || []) ->
-              exec
-
-            # If cue_ids filter is provided, only update if in it
-            cue_ids != nil and cue_ids != [] and cue_id not in cue_ids ->
-              exec
-
-            true ->
-              update_fn.(exec)
-          end
-
-        exec ->
-          exec
-      end)
-
-    updated_state = Map.put(state, :active, updated_list)
-
-    notify_state_updated(updated_state)
-    {:noreply, updated_state}
-
     {:noreply, updated_state}
   end
 

@@ -5,7 +5,7 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
   Merges scenes into a final fixture → attribute → %{value, contributors} map
   based on cue ordering and fade calculations.
 
-  `active` is a list if ActiveCue structs.
+  `active` is a list if ActiveEntity structs.
   `scenes` is a list of Scene structs.
   `current_time` is the timestamp (same units as triggered_time/fade_completed_time).
   """
@@ -25,17 +25,17 @@ defmodule LiveLightingControl.OutputCalculatorMerger do
     scenes_map = Map.new(scenes, &{&1.id, &1})
     cues_map = Enum.flat_map(scenes, & &1.cues) |> Map.new(&{&1.id, &1})
 
-    Enum.map(active, fn active_cue ->
-      scene = Map.get(scenes_map, active_cue.scene_id)
-      cue = Map.get(cues_map, active_cue.cue_id)
+    Enum.map(active, fn active_entity ->
+      scene = Map.get(scenes_map, active_entity.scene_id)
+      cue = Map.get(cues_map, active_entity.cue_id)
 
       %{
-        active_id: active_cue.id,
+        active_id: active_entity.id,
         cue: cue,
         scene_id: scene.id,
         scene_master: scene_master(scene),
-        fade_factor: Utils.get_fade_factor(active_cue, current_time),
-        fade_in_triggered_time: active_cue.fade_in_triggered_time
+        fade_factor: Utils.get_fade_factor(active_entity, current_time),
+        fade_in_triggered_time: active_entity.fade_in_triggered_time
       }
     end)
   end

@@ -1,4 +1,4 @@
-defmodule LiveLightingControl.Models.ActiveCue do
+defmodule LiveLightingControl.Models.ActiveEntity do
   @type t :: %__MODULE__{
           id: String.t(),
           type: atom(),
