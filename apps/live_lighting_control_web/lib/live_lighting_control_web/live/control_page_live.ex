@@ -50,7 +50,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        output: %{},
        # Local
        cards: cards,
-       current_user_id: user.id
+       current_user_id: user.id,
+       command: ""
      )}
   end
 
@@ -282,6 +283,16 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
+  def handle_event("execute_text_command", %{"command" => command}, socket) do
+    LiveLightingControl.TextCommandHandler.execute_text_command(command, socket.assigns.current_user_id)
+    {:noreply, assign(socket, command: "")}
+  end
+
+  def handle_event("command_change", %{"command" => command}, socket) do
+    IO.puts("Command entered 123: #{command}")
+    {:noreply, assign(socket, command: command)}
+  end
+
   def handle_event("execute_command", %{"action-name" => action_name}, socket) do
     execute_command(socket, String.to_existing_atom(action_name), nil)
   end
@@ -457,14 +468,24 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     </div>
 
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
-      <.live_component
-        module={LiveLightingControlWeb.ExecutorsAreaComponent}
-        id="executors"
-        executor_pages={@executor_pages}
-        current_page_index={@current_page_index}
-        scenes={@scenes_map}
-        config={@config}
-      />
+      <div class="m-2 mx-auto" style="max-width: 1800px">
+        <div class="w-full flex flex-col gap-2">
+        <.live_component
+            module={LiveLightingControlWeb.CommandLineComponent}
+            id="executors"
+            config={@config}
+            command={@command}
+          />
+          <.live_component
+            module={LiveLightingControlWeb.ExecutorsAreaComponent}
+            id="executors"
+            executor_pages={@executor_pages}
+            current_page_index={@current_page_index}
+            scenes={@scenes_map}
+            config={@config}
+          />
+        </div>
+      </div>
     </div>
 
     <div id="midi" phx-hook="MidiHook" />

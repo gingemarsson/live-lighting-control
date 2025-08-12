@@ -435,7 +435,7 @@ defmodule LiveLightingControl.InitialState do
 
     fixture_groups = [
       %FixtureGroup{
-        id: get_new_guid(),
+        id: "75f993ca-446a-4744-a2a9-5686d31282ad",
         label: "Dimmers",
         fixture_ids: dimmer_ids
       },
