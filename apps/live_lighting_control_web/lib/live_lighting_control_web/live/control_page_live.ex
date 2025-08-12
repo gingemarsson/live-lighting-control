@@ -470,12 +470,6 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     <div class="fixed bottom-0 left-0 w-full bg-neutral-800 ">
       <div class="m-2 mx-auto" style="max-width: 1800px">
         <div class="w-full flex flex-col gap-2">
-        <.live_component
-            module={LiveLightingControlWeb.CommandLineComponent}
-            id="executors"
-            config={@config}
-            command={@command}
-          />
           <.live_component
             module={LiveLightingControlWeb.ExecutorsAreaComponent}
             id="executors"
@@ -483,6 +477,12 @@ defmodule LiveLightingControlWeb.ControlPageLive do
             current_page_index={@current_page_index}
             scenes={@scenes_map}
             config={@config}
+          />
+          <.live_component
+            module={LiveLightingControlWeb.CommandLineComponent}
+            id="executors"
+            config={@config}
+            command={@command}
           />
         </div>
       </div>
