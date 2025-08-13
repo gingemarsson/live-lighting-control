@@ -34,6 +34,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        scenes: state.scenes,
        users: state.users,
        active: state.active,
+       command_history: state.command_history,
        # Maps
        fixtures_map: Map.new(state.fixtures, &{&1.id, &1}),
        fixture_types_map: Map.new(state.fixture_types, &{&1.id, &1}),
@@ -51,7 +52,8 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        # Local
        cards: cards,
        current_user_id: user.id,
-       command: ""
+       command: "",
+       command_history_index: 0
      )}
   end
 
@@ -74,6 +76,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        scenes: updated_state.scenes,
        users: updated_state.users,
        active: updated_state.active,
+       command_history: updated_state.command_history,
        # Maps
        fixtures_map: Map.new(updated_state.fixtures, &{&1.id, &1}),
        fixture_types_map: Map.new(updated_state.fixture_types, &{&1.id, &1}),
@@ -283,19 +286,50 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, socket}
   end
 
+  # Command line
+
   def handle_event("execute_text_command", %{"command" => command}, socket) do
     LiveLightingControl.TextCommandHandler.execute_text_command(command, socket.assigns.current_user_id)
-    {:noreply, assign(socket, command: "")}
+    {:noreply, assign(socket, command: "", command_history_index: 0) |> push_event("set-command", %{value: ""})}
   end
 
   def handle_event("command_change", %{"command" => command}, socket) do
-    IO.puts("Command entered 123: #{command}")
     {:noreply, assign(socket, command: command)}
   end
+
+  def handle_event("navigate_command_history", %{"key" => "ArrowUp"}, socket) do
+    history_length = length(socket.assigns.command_history)
+    new_index = min(history_length, socket.assigns.command_history_index + 1)
+    command = Enum.at(socket.assigns.command_history, history_length - new_index)
+
+    {:noreply, assign(socket,
+    command_history_index: new_index,
+    command: command
+    ) |> push_event("set-command", %{value: command})}
+  end
+
+  def handle_event("navigate_command_history", %{"key" => "ArrowDown"}, socket) do
+    history_length = length(socket.assigns.command_history)
+    new_index = max(0, socket.assigns.command_history_index - 1)
+    command = Enum.at(socket.assigns.command_history, history_length - new_index)
+
+    {:noreply, assign(socket,
+    command_history_index: new_index,
+    command: command
+    ) |> push_event("set-command", %{value: command})}
+  end
+
+  def handle_event("navigate_command_history", _data, socket) do
+    {:noreply, socket}
+  end
+
+  # General commands
 
   def handle_event("execute_command", %{"action-name" => action_name}, socket) do
     execute_command(socket, String.to_existing_atom(action_name), nil)
   end
+
+# Programmer
 
   def handle_event("clear-programmer", _data, socket) do
     LiveLightingControl.StateManager.clear_programmer()
@@ -480,9 +514,10 @@ defmodule LiveLightingControlWeb.ControlPageLive do
           />
           <.live_component
             module={LiveLightingControlWeb.CommandLineComponent}
-            id="executors"
+            id="command-line"
             config={@config}
             command={@command}
+            command_history={@command_history}
           />
         </div>
       </div>

@@ -21,4 +21,24 @@ defmodule LiveLightingControl.TextCommandHandler do
 
   defp handle_command(_parts, _params) do nil end
 
+  def get_text_command(command, parameters) do
+    get_text_command_text(command, parameters)
+  end
+
+  defp get_text_command_text(:toggle_blackout, _parameters) do "blackout" end
+  defp get_text_command_text(:toggle_programmer, _parameters) do "blind" end
+  defp get_text_command_text(:toggle_sacn_output, _parameters) do "toggle-sacn-output" end
+
+  defp get_text_command_text(:page_up, _parameters) do "page-up" end
+  defp get_text_command_text(:page_down, _parameters) do "page-down" end
+
+  defp get_text_command_text(:highlight, _parameters) do "highlight" end
+  defp get_text_command_text(:next_primary_selection, _parameters) do "next" end
+  defp get_text_command_text(:previous_primary_selection, _parameters) do "prev" end
+  defp get_text_command_text(:reset_primary_selection, _parameters) do "set" end
+
+  defp get_text_command_text(:toggle_select_fixture, %{fixture_id: fixture_id}) do "select " <> fixture_id end
+  defp get_text_command_text(:toggle_select_fixture_group, %{fixture_group_id: fixture_group_id}) do "select-group " <> fixture_group_id end
+
+  defp get_text_command_text(atom, _param) do Atom.to_string(atom) end
 end

@@ -21,7 +21,8 @@ defmodule LiveLightingControl.Models.State do
           executor_pages: [ExecutorPage.t()],
           views: [View.t()],
           users: [User.t()],
-          active: [ActiveEntity.t()]
+          active: [ActiveEntity.t()],
+          command_history: [String.t()]
         }
 
   defstruct config: nil,
@@ -34,5 +35,6 @@ defmodule LiveLightingControl.Models.State do
             executor_pages: nil,
             views: nil,
             users: nil,
-            active: []
+            active: [],
+            command_history: []
 end

@@ -167,8 +167,10 @@ defmodule LiveLightingControl.StateManager do
     Utils.color_puts(:magenta, "[EXECUTE COMMAND] " <> Atom.to_string(command) <> " " <> inspect(parameters))
     updated_state = LiveLightingControl.StateManagerCommandHandler.execute_command(command, parameters, state)
 
-    notify_state_updated(updated_state)
-    {:noreply, updated_state}
+    updated_state_with_command_history = %{updated_state | command_history: updated_state.command_history ++ [LiveLightingControl.TextCommandHandler.get_text_command(command, parameters)]}
+
+    notify_state_updated(updated_state_with_command_history)
+    {:noreply, updated_state_with_command_history}
   end
 
   # Helper functions

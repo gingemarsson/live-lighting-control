@@ -3,6 +3,14 @@
 
 let Hooks = {}
 
+Hooks.CommandLine = {
+  mounted() {
+    this.handleEvent("set-command", ({ value }) => {
+      this.el.value = value || ""
+    })
+  }
+}
+
 Hooks.VerticalSlider = {
   mounted() {
     const slider = this.el;

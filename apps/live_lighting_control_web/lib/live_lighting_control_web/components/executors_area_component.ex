@@ -1,6 +1,5 @@
 defmodule LiveLightingControlWeb.ExecutorsAreaComponent do
   use Phoenix.LiveComponent
-  alias Phoenix.LiveView.JS
   alias LiveLightingControl.Utils
 
   def get_executor_info(row_number, executor_number, current_page, scenes) do
