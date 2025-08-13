@@ -6,14 +6,16 @@ defmodule LiveLightingControl.OutputCalculator do
         config,
         active,
         scenes,
-        _programmer,
+        programmer,
         users,
         fixtures_map,
         fixture_types_map,
         universe_number,
         current_time
       ) do
-    _highlight_data = get_highlight_data(users)
+    highlight_data = get_highlight_data(users)
+
+    programmer_data = get_programmer_data(programmer)
 
     # The merged control data is a map of fixture ids, pointing to a map of attributes pointing to values between 0 and 255
     merged_control_data =
@@ -25,8 +27,8 @@ defmodule LiveLightingControl.OutputCalculator do
         )
       )
 
-    # |> Utils.deep_merge(if(config.enable_programmer, do: programmer, else: %{}))
-    # |> Utils.deep_merge(highlight_data)
+    |> Utils.deep_merge(if(config.enable_programmer, do: programmer_data, else: %{}))
+    |> Utils.deep_merge(highlight_data)
 
     scale_factor =
       if config.blackout do
@@ -103,10 +105,19 @@ defmodule LiveLightingControl.OutputCalculator do
         end
 
       Enum.reduce(fixture_ids, acc, fn fixture_id, acc2 ->
-        Map.update(acc2, fixture_id, %{"dimmer" => 255}, fn attrs ->
-          Map.put(attrs, "dimmer", 255)
+        Map.update(acc2, fixture_id, %{"dimmer" => %{type: :highlight, value: 255, contributors: []}}, fn attrs ->
+          Map.put(attrs, "dimmer", %{type: :highlight, value: 255, contributors: []})
         end)
       end)
     end)
+  end
+
+  def get_programmer_data(original_map) do
+    for {uuid, attrs} <- original_map, into: %{} do
+      {uuid,
+       for {attr, value} <- attrs, into: %{} do
+         {attr, %{type: :programmer, value: value, contributors: []}}
+       end}
+    end
   end
 end
