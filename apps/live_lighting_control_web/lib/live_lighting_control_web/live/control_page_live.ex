@@ -11,6 +11,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
       %{id: UUID.uuid4(), type: :config, configuration: %{}},
       %{id: UUID.uuid4(), type: :fixture_groups, configuration: %{}},
       %{id: UUID.uuid4(), type: :fixtures, configuration: %{}},
+      %{id: UUID.uuid4(), type: :selected_fixtures, configuration: %{}},
       %{id: UUID.uuid4(), type: :output, configuration: %{}}
     ]
 
@@ -49,6 +50,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
        highlight: user.highlight,
        # Output
        output: %{},
+       calculated_fixture_values: %{},
        # Local
        cards: cards,
        current_user_id: user.id,
@@ -94,6 +96,10 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_info({:output_update, output}, socket) do
     {:noreply, assign(socket, :output, output)}
+  end
+
+  def handle_info({:calculated_fixture_values_update, calculated_fixture_values}, socket) do
+    {:noreply, assign(socket, :calculated_fixture_values, calculated_fixture_values)}
   end
 
   # Page events
@@ -474,9 +480,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
               <.live_component
                 module={LiveLightingControlWeb.SelectedFixturesCardComponent}
                 id={card.id}
+                configuration={card.configuration}
                 fixtures={@fixtures}
                 selected_fixture_ids={@selected_fixture_ids}
                 primary_selected_fixture_id={@primary_selected_fixture_id}
+                calculated_fixture_values={@calculated_fixture_values}
               />
             <% :programmer-> %>
               <.live_component

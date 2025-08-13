@@ -2,15 +2,12 @@ defmodule LiveLightingControl.OutputCalculator do
   alias LiveLightingControl.OutputCalculatorMerger
   alias LiveLightingControl.Utils
 
-  def calculate_output(
+  def get_calculated_fixture_values(
         config,
         active,
         scenes,
         programmer,
         users,
-        fixtures_map,
-        fixture_types_map,
-        universe_number,
         current_time
       ) do
     highlight_data = get_highlight_data(users)
@@ -37,8 +34,18 @@ defmodule LiveLightingControl.OutputCalculator do
         config.main_master / 255
       end
 
-    merged_control_data_after_main_master_and_blackout =
-      scale_dimmers(merged_control_data, scale_factor)
+      calculated_fixture_values =
+        scale_dimmers(merged_control_data, scale_factor)
+
+      calculated_fixture_values
+    end
+
+    def generate_dmx(
+      calculated_fixture_values,
+      fixtures_map,
+      fixture_types_map,
+      universe_number
+    ) do
 
     fixtures = Map.values(fixtures_map)
     fixtures_for_universe = Enum.filter(fixtures, &(&1.universe == universe_number))
@@ -49,7 +56,7 @@ defmodule LiveLightingControl.OutputCalculator do
         fixture_type = Map.get(fixture_types_map, fixture.fixture_type_id)
 
         fixture_attribute_values =
-          Map.get(merged_control_data_after_main_master_and_blackout, fixture.id)
+          Map.get(calculated_fixture_values, fixture.id)
 
         channels =
           Enum.map(fixture_type.channels, fn channel ->

@@ -20,15 +20,16 @@ defmodule LiveLightingControl.OutputBroadcaster do
     LiveLightingControl.StateManager.clear_active_with_fade_out_completed()
 
     # Generate output
-    output = calculate_output()
+    {calculated_fixture_values, dmx_output} = calculate_output()
 
-    Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, output})
+    Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, dmx_output})
+    Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:calculated_fixture_values_update, calculated_fixture_values})
 
     # Send sACN
     config = LiveLightingControl.StateManager.get_state().config
 
     if config.enable_sacn_output do
-      LiveLightingControl.SACNSender.send_packet(output)
+      LiveLightingControl.SACNSender.send_packet(dmx_output)
     end
 
     schedule_tick()
@@ -54,30 +55,34 @@ defmodule LiveLightingControl.OutputBroadcaster do
 
     current_time = System.os_time(:millisecond)
 
+    calculated_fixture_values = LiveLightingControl.OutputCalculator.get_calculated_fixture_values(
+      config,
+      active,
+      scenes,
+      programmer,
+      users,
+      current_time
+    )
+
     universes =
       state.fixtures
       |> Enum.map(& &1.universe)
       |> Enum.uniq()
 
-    output =
+    dmx_output =
       Enum.map(universes, fn universe_number ->
         output_for_universe =
-          LiveLightingControl.OutputCalculator.calculate_output(
-            config,
-            active,
-            scenes,
-            programmer,
-            users,
+          LiveLightingControl.OutputCalculator.generate_dmx(
+            calculated_fixture_values,
             fixtures_map,
             fixture_types_map,
-            universe_number,
-            current_time
+            universe_number
           )
 
         {universe_number, output_for_universe}
       end)
       |> Map.new()
 
-    output
+    {calculated_fixture_values, dmx_output}
   end
 end
