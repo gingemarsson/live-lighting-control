@@ -3,9 +3,9 @@
 
 let Hooks = {}
 
-Hooks.CommandLine = {
+Hooks.SetValue = {
   mounted() {
-    this.handleEvent("set-command", ({ value }) => {
+    this.handleEvent("set-value", ({ value }) => {
       this.el.value = value || ""
     })
   }

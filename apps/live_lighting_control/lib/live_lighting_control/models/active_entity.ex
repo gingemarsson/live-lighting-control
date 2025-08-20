@@ -10,6 +10,7 @@ defmodule LiveLightingControl.Models.ActiveEntity do
           fade_out_completed_time: number()
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             type: nil,
             scene_id: nil,

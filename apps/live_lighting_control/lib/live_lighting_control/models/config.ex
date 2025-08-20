@@ -7,6 +7,7 @@ defmodule LiveLightingControl.Models.Config do
           main_master: float()
         }
 
+  @derive Jason.Encoder
   defstruct enable_programmer: nil,
             enable_scenes: nil,
             enable_sacn_output: nil,

@@ -11,6 +11,7 @@ defmodule LiveLightingControl.Models.Scene do
           state: state_map()
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             cues: nil,
@@ -26,6 +27,7 @@ defmodule LiveLightingControl.Models.Cue do
           fixture_attribute_map: CommonTypes.fixture_attribute_map()
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             description: nil,

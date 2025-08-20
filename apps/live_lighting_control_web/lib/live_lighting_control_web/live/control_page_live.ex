@@ -296,7 +296,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
 
   def handle_event("execute_text_command", %{"command" => command}, socket) do
     LiveLightingControl.TextCommandHandler.execute_text_command(command, socket.assigns.current_user_id)
-    {:noreply, assign(socket, command: "", command_history_index: 0) |> push_event("set-command", %{value: ""})}
+    {:noreply, assign(socket, command: "", command_history_index: 0) |> push_event("set-value", %{value: ""})}
   end
 
   def handle_event("command_change", %{"command" => command}, socket) do
@@ -311,7 +311,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket,
     command_history_index: new_index,
     command: command
-    ) |> push_event("set-command", %{value: command})}
+    ) |> push_event("set-value", %{value: command})}
   end
 
   def handle_event("navigate_command_history", %{"key" => "ArrowDown"}, socket) do
@@ -322,7 +322,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     {:noreply, assign(socket,
     command_history_index: new_index,
     command: command
-    ) |> push_event("set-command", %{value: command})}
+    ) |> push_event("set-value", %{value: command})}
   end
 
   def handle_event("navigate_command_history", _data, socket) do

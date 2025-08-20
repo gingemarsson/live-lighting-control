@@ -32,7 +32,7 @@ defmodule LiveLightingControlWeb.CommandLineComponent do
             autocorrect="off"
             autocapitalize="off"
             phx-keydown="navigate_command_history"
-            phx-hook="CommandLine"
+            phx-hook="SetValue"
           />
         </form>
 

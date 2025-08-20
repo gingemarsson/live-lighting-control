@@ -10,6 +10,7 @@ defmodule LiveLightingControl.Models.User do
           highlight: boolean()
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             selected_fixture_ids: [],

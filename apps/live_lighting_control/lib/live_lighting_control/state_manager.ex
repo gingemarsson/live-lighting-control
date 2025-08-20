@@ -13,6 +13,13 @@ defmodule LiveLightingControl.StateManager do
     GenServer.call(__MODULE__, :get_state)
   end
 
+  def import_state_from_json(json_data) do
+    GenServer.cast(
+      __MODULE__,
+      {:import_state_from_json, %{json_data: json_data}}
+    )
+  end
+
   def execute_command(command, parameters) do
     GenServer.cast(
       __MODULE__,
@@ -65,6 +72,19 @@ defmodule LiveLightingControl.StateManager do
   @impl true
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
+  end
+
+  @impl true
+  def handle_cast({:import_state_from_json, %{json_data: json_data}}, old_state) do
+    case LiveLightingControl.StateManagerJsonDecoder.decode_json(json_data) do
+      {:ok, new_state} ->
+        Utils.color_puts(:green, "[IMPORT STATE] State imported")
+        {:noreply, new_state}
+
+      {:error, reason} ->
+        Utils.color_puts(:red, "[IMPORT STATE] Error - Could not import state (#{inspect(reason)})")
+        {:noreply, old_state}
+    end
   end
 
   @impl true

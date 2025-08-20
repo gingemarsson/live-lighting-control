@@ -7,6 +7,7 @@ defmodule LiveLightingControl.Models.View do
           cards: [Card.t()]
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             cards: nil
@@ -19,6 +20,7 @@ defmodule LiveLightingControl.Models.Card do
           configuration: any()
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             type: nil,
             configuration: nil

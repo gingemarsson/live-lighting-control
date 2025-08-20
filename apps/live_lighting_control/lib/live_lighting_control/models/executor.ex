@@ -8,6 +8,7 @@ defmodule LiveLightingControl.Models.ExecutorPage do
           executors: [[Executor.t()]]
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             executors: nil,
@@ -25,6 +26,7 @@ defmodule LiveLightingControl.Models.Executor do
           state: executor_state_map()
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             type: nil,
             button_type: nil,

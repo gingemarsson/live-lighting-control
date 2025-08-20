@@ -9,6 +9,7 @@ defmodule LiveLightingControl.Models.FixtureTypeChannel do
           default_value: 0..255
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             attribute: nil,
             dmx_address: nil,
@@ -26,6 +27,7 @@ defmodule LiveLightingControl.Models.FixtureType do
           channels: [FixtureTypeChannel.t()]
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             channels: nil
@@ -41,6 +43,8 @@ defmodule LiveLightingControl.Models.Fixture do
           dmx_address: integer(),
           fixture_type_id: CommonTypes.fixture_type_id()
         }
+
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             universe: nil,
@@ -56,6 +60,8 @@ defmodule LiveLightingControl.Models.FixtureGroup do
           label: String.t(),
           fixture_ids: [CommonTypes.fixture_id()]
         }
+
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             fixture_ids: nil

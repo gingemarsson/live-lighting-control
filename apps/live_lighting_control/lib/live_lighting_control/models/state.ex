@@ -25,6 +25,7 @@ defmodule LiveLightingControl.Models.State do
           command_history: [String.t()]
         }
 
+  @derive Jason.Encoder
   defstruct config: nil,
             programmer: nil,
             scenes: nil,

@@ -18,6 +18,7 @@ defmodule LiveLightingControlWeb.Router do
     pipe_through :browser
 
     live "/", ControlPageLive, :home
+    live "/manage-show-files", ManageShowFilesPageLive
   end
 
   # Other scopes may use custom stacks.

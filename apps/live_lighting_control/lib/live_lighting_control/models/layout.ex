@@ -9,6 +9,7 @@ defmodule LiveLightingControl.Models.Layout do
           }
         }
 
+  @derive Jason.Encoder
   defstruct id: nil,
             label: nil,
             fixtures: nil
