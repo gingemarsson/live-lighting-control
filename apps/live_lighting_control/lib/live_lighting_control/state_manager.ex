@@ -82,7 +82,11 @@ defmodule LiveLightingControl.StateManager do
         {:noreply, new_state}
 
       {:error, reason} ->
-        Utils.color_puts(:red, "[IMPORT STATE] Error - Could not import state (#{inspect(reason)})")
+        Utils.color_puts(
+          :red,
+          "[IMPORT STATE] Error - Could not import state (#{inspect(reason)})"
+        )
+
         {:noreply, old_state}
     end
   end
@@ -183,11 +187,20 @@ defmodule LiveLightingControl.StateManager do
         {:execute_command, %{command: command, parameters: parameters}},
         state
       ) do
+    Utils.color_puts(
+      :magenta,
+      "[EXECUTE COMMAND] #{Atom.to_string(command)} #{inspect(parameters)}"
+    )
 
-    Utils.color_puts(:magenta, "[EXECUTE COMMAND] " <> Atom.to_string(command) <> " " <> inspect(parameters))
-    updated_state = LiveLightingControl.StateManagerCommandHandler.execute_command(command, parameters, state)
+    updated_state =
+      LiveLightingControl.StateManagerCommandHandler.execute_command(command, parameters, state)
 
-    updated_state_with_command_history = %{updated_state | command_history: updated_state.command_history ++ [LiveLightingControl.TextCommandHandler.get_text_command(command, parameters)]}
+    updated_state_with_command_history = %{
+      updated_state
+      | command_history:
+          updated_state.command_history ++
+            [LiveLightingControl.TextCommandHandler.get_text_command(command, parameters)]
+    }
 
     notify_state_updated(updated_state_with_command_history)
     {:noreply, updated_state_with_command_history}

@@ -13,13 +13,21 @@ defmodule LiveLightingControlWeb.CommandLineComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <div class="hidden rounded-lg border border-neutral-500 bg-neutral-800 px-3 py-2 font-mono text-xs mb-2" id="hidden-content-command-history">
+      <div
+        class="hidden rounded-lg border border-neutral-500 bg-neutral-800 px-3 py-2 font-mono text-xs mb-2"
+        id="hidden-content-command-history"
+      >
         <%= for history_row <- Enum.take(@command_history, -12) do %>
-        <p>> {history_row}</p>
+          <p>> {history_row}</p>
         <% end %>
       </div>
       <div class="flex flex-row flex-grow gap-2">
-      <form phx-change="command_change" phx-submit="execute_text_command" id="command-line-form" class="flex flex-grow items-center rounded-lg border border-neutral-500 bg-neutral-800 px-3 py-2 font-mono text-sm">
+        <form
+          phx-change="command_change"
+          phx-submit="execute_text_command"
+          id="command-line-form"
+          class="flex flex-grow items-center rounded-lg border border-neutral-500 bg-neutral-800 px-3 py-2 font-mono text-sm"
+        >
           <span class="text-neutral-400 mr-2">&gt;</span>
           <input
             id="command-line"
@@ -57,7 +65,6 @@ defmodule LiveLightingControlWeb.CommandLineComponent do
         >
           <p class="text-xs">sACN Output</p>
         </div>
-
       </div>
     </div>
     """

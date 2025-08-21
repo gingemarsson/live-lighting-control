@@ -19,24 +19,25 @@ defmodule LiveLightingControl.StateManagerJsonDecoder do
   def decode_json(json) do
     case Jason.decode(json, keys: :atoms) do
       {:ok, map} ->
-        # try do
-          {:ok, %State{
-            active: Enum.map(map[:active], &decode_active_entity/1),
-            config: struct(Config, map[:config]),
-            programmer: map[:programmer],
-            scenes: Enum.map(map[:scenes], &decode_scene/1),
-            layouts: Enum.map(map[:layouts], &struct(Layout, &1)),
-            fixtures: Enum.map(map[:fixtures], &struct(Fixture, &1)),
-            fixture_types: Enum.map(map[:fixture_types], &decode_fixture_type/1),
-            fixture_groups: Enum.map(map[:fixture_groups], &struct(FixtureGroup, &1)),
-            executor_pages: Enum.map(map[:executor_pages], &decode_executor_page/1),
-            views: Enum.map(map[:views], &decode_view/1),
-            users: Enum.map(map[:users], &struct(User, &1)),
-            command_history: map[:command_history]
-          }}
-        # rescue
-        #   e -> {:error, {:struct_build_failed, e}}
-        # end
+        try do
+          {:ok,
+           %State{
+             active: Enum.map(map[:active], &decode_active_entity/1),
+             config: struct(Config, map[:config]),
+             programmer: map[:programmer],
+             scenes: Enum.map(map[:scenes], &decode_scene/1),
+             layouts: Enum.map(map[:layouts], &struct(Layout, &1)),
+             fixtures: Enum.map(map[:fixtures], &struct(Fixture, &1)),
+             fixture_types: Enum.map(map[:fixture_types], &decode_fixture_type/1),
+             fixture_groups: Enum.map(map[:fixture_groups], &struct(FixtureGroup, &1)),
+             executor_pages: Enum.map(map[:executor_pages], &decode_executor_page/1),
+             views: Enum.map(map[:views], &decode_view/1),
+             users: Enum.map(map[:users], &struct(User, &1)),
+             command_history: map[:command_history]
+           }}
+        rescue
+          e -> {:error, {:struct_build_failed, e}}
+        end
 
       {:error, reason} ->
         {:error, {:invalid_json, reason}}

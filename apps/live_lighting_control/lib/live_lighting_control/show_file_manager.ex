@@ -19,7 +19,8 @@ defmodule LiveLightingControl.ShowFileManager do
   end
 
   def delete_show_file(name) do
-    show_file = LiveLightingControl.Repo.get_by(LiveLightingControl.Schema.StoredShowFile, name: name)
+    show_file =
+      LiveLightingControl.Repo.get_by(LiveLightingControl.Schema.StoredShowFile, name: name)
 
     case show_file do
       nil -> {:error, :not_found}

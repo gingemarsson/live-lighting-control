@@ -23,7 +23,12 @@ defmodule LiveLightingControl.OutputBroadcaster do
     {calculated_fixture_values, dmx_output} = calculate_output()
 
     Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:output_update, dmx_output})
-    Phoenix.PubSub.broadcast(LiveLightingControl.PubSub, "output", {:calculated_fixture_values_update, calculated_fixture_values})
+
+    Phoenix.PubSub.broadcast(
+      LiveLightingControl.PubSub,
+      "output",
+      {:calculated_fixture_values_update, calculated_fixture_values}
+    )
 
     # Send sACN
     config = LiveLightingControl.StateManager.get_state().config
@@ -55,14 +60,15 @@ defmodule LiveLightingControl.OutputBroadcaster do
 
     current_time = System.os_time(:millisecond)
 
-    calculated_fixture_values = LiveLightingControl.OutputCalculator.get_calculated_fixture_values(
-      config,
-      active,
-      scenes,
-      programmer,
-      users,
-      current_time
-    )
+    calculated_fixture_values =
+      LiveLightingControl.OutputCalculator.get_calculated_fixture_values(
+        config,
+        active,
+        scenes,
+        programmer,
+        users,
+        current_time
+      )
 
     universes =
       state.fixtures

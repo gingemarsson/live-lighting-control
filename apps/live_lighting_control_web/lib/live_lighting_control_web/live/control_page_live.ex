@@ -109,7 +109,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"entity-type" => "fixture", "entity-id" => fixture_id},
         socket
       ) do
-    LiveLightingControl.StateManager.execute_command(:toggle_select_fixture, %{fixture_id: fixture_id, user_id: socket.assigns.current_user_id})
+    LiveLightingControl.StateManager.execute_command(:toggle_select_fixture, %{
+      fixture_id: fixture_id,
+      user_id: socket.assigns.current_user_id
+    })
+
     {:noreply, socket}
   end
 
@@ -118,7 +122,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         %{"entity-type" => "fixture_group", "entity-id" => group_id},
         socket
       ) do
-    LiveLightingControl.StateManager.execute_command(:toggle_select_fixture_group, %{fixture_group_id: group_id, user_id: socket.assigns.current_user_id})
+    LiveLightingControl.StateManager.execute_command(:toggle_select_fixture_group, %{
+      fixture_group_id: group_id,
+      user_id: socket.assigns.current_user_id
+    })
+
     {:noreply, socket}
   end
 
@@ -128,7 +136,12 @@ defmodule LiveLightingControlWeb.ControlPageLive do
         socket
       ) do
     active = Utils.find_in_list_by_id(socket.assigns.active, active_id)
-    LiveLightingControl.StateManager.execute_command(:off, %{scene_id: active.scene_id, user_id: socket.assigns.current_user_id})
+
+    LiveLightingControl.StateManager.execute_command(:off, %{
+      scene_id: active.scene_id,
+      user_id: socket.assigns.current_user_id
+    })
+
     {:noreply, socket}
   end
 
@@ -295,8 +308,14 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   # Command line
 
   def handle_event("execute_text_command", %{"command" => command}, socket) do
-    LiveLightingControl.TextCommandHandler.execute_text_command(command, socket.assigns.current_user_id)
-    {:noreply, assign(socket, command: "", command_history_index: 0) |> push_event("set-value", %{value: ""})}
+    LiveLightingControl.TextCommandHandler.execute_text_command(
+      command,
+      socket.assigns.current_user_id
+    )
+
+    {:noreply,
+     assign(socket, command: "", command_history_index: 0)
+     |> push_event("set-value", %{value: ""})}
   end
 
   def handle_event("command_change", %{"command" => command}, socket) do
@@ -308,10 +327,12 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     new_index = min(history_length, socket.assigns.command_history_index + 1)
     command = Enum.at(socket.assigns.command_history, history_length - new_index)
 
-    {:noreply, assign(socket,
-    command_history_index: new_index,
-    command: command
-    ) |> push_event("set-value", %{value: command})}
+    {:noreply,
+     assign(socket,
+       command_history_index: new_index,
+       command: command
+     )
+     |> push_event("set-value", %{value: command})}
   end
 
   def handle_event("navigate_command_history", %{"key" => "ArrowDown"}, socket) do
@@ -319,10 +340,12 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     new_index = max(0, socket.assigns.command_history_index - 1)
     command = Enum.at(socket.assigns.command_history, history_length - new_index)
 
-    {:noreply, assign(socket,
-    command_history_index: new_index,
-    command: command
-    ) |> push_event("set-value", %{value: command})}
+    {:noreply,
+     assign(socket,
+       command_history_index: new_index,
+       command: command
+     )
+     |> push_event("set-value", %{value: command})}
   end
 
   def handle_event("navigate_command_history", _data, socket) do
@@ -335,7 +358,7 @@ defmodule LiveLightingControlWeb.ControlPageLive do
     execute_command(socket, String.to_existing_atom(action_name), nil)
   end
 
-# Programmer
+  # Programmer
 
   def handle_event("clear-programmer", _data, socket) do
     LiveLightingControl.StateManager.clear_programmer()
@@ -416,7 +439,11 @@ defmodule LiveLightingControlWeb.ControlPageLive do
   end
 
   def execute_command(socket, command, value) do
-    LiveLightingControl.StateManager.execute_command(command, %{value: value, user_id: socket.assigns.current_user_id})
+    LiveLightingControl.StateManager.execute_command(command, %{
+      value: value,
+      user_id: socket.assigns.current_user_id
+    })
+
     {:noreply, socket}
   end
 

@@ -23,9 +23,8 @@ defmodule LiveLightingControl.OutputCalculator do
           else: %{}
         )
       )
-
-    |> Utils.deep_merge(if(config.enable_programmer, do: programmer_data, else: %{}))
-    |> Utils.deep_merge(highlight_data)
+      |> Utils.deep_merge(if(config.enable_programmer, do: programmer_data, else: %{}))
+      |> Utils.deep_merge(highlight_data)
 
     scale_factor =
       if config.blackout do
@@ -34,19 +33,18 @@ defmodule LiveLightingControl.OutputCalculator do
         config.main_master / 255
       end
 
-      calculated_fixture_values =
-        scale_dimmers(merged_control_data, scale_factor)
+    calculated_fixture_values =
+      scale_dimmers(merged_control_data, scale_factor)
 
-      calculated_fixture_values
-    end
+    calculated_fixture_values
+  end
 
-    def generate_dmx(
-      calculated_fixture_values,
-      fixtures_map,
-      fixture_types_map,
-      universe_number
-    ) do
-
+  def generate_dmx(
+        calculated_fixture_values,
+        fixtures_map,
+        fixture_types_map,
+        universe_number
+      ) do
     fixtures = Map.values(fixtures_map)
     fixtures_for_universe = Enum.filter(fixtures, &(&1.universe == universe_number))
 
@@ -112,9 +110,14 @@ defmodule LiveLightingControl.OutputCalculator do
         end
 
       Enum.reduce(fixture_ids, acc, fn fixture_id, acc2 ->
-        Map.update(acc2, fixture_id, %{"dimmer" => %{type: :highlight, value: 255, contributors: []}}, fn attrs ->
-          Map.put(attrs, "dimmer", %{type: :highlight, value: 255, contributors: []})
-        end)
+        Map.update(
+          acc2,
+          fixture_id,
+          %{"dimmer" => %{type: :highlight, value: 255, contributors: []}},
+          fn attrs ->
+            Map.put(attrs, "dimmer", %{type: :highlight, value: 255, contributors: []})
+          end
+        )
       end)
     end)
   end
