@@ -38,6 +38,11 @@ defmodule LiveLightingControl.StateManager do
     update_element_in_list_by_id(:scenes, updated_scene)
   end
 
+  def update_fixture_type(updated_fixture_type) do
+    IO.puts(inspect(updated_fixture_type))
+    update_element_in_list_by_id(:fixture_types, updated_fixture_type)
+  end
+
   def clear_active_with_fade_out_completed() do
     GenServer.cast(__MODULE__, {:clear_active_with_fade_out_completed, nil})
   end

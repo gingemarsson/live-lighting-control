@@ -19,6 +19,11 @@ defmodule LiveLightingControlWeb.Router do
 
     live "/", ControlPageLive, :home
     live "/manage-show-files", ManageShowFilesPageLive
+    live "/manage-fixtures", ManageFixturesLive
+
+    live "/manage-fixture-types", ManageFixtureTypesLive, :index
+    live "/manage-fixture-types/new", ManageFixtureTypesLive, :new
+    live "/manage-fixture-types/:id/edit", ManageFixtureTypesLive, :edit
   end
 
   # Other scopes may use custom stacks.
